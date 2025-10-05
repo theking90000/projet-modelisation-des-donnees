@@ -1,0 +1,293 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{parskip}
+\usepackage{eurosym}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2.5cm,right=2.5cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage[pdftex,
+            pdfauthor={Groupe 5 : Finance (Petro Borys, Martin Coghetto, Alexandre Daoust, Louis Garlement)},
+            pdftitle={Projet BAB3 : Modélisation des données, Groupe 5 : Finance, Cahier des Charges (v1)}]{hyperref}
+
+\title{Projet BAB3 : Modélisation des données\\Groupe 5 : Finance\\Cahier des Charges \texttt{(v1)}}
+\author{Petro Borys\\Martin Coghetto\\Alexandre Daoust\\Louis Garlement}
+\date{Octobre 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Contexte et définition du problème}
+
+Cette application s'inscrit dans le contexte de gestion des placements financiers. Aujourd'hui, les marchés financiers étant devenus pour la plupart numérisés, il devient très facile d'acheter et de vendre des actifs financiers grâce à diverses plateformes de brokers. 
+
+Cependant, il existe plusieurs types d'actifs financiers tels que des actions d'entreprises cotées en bourse, des fonds négociés en bourse (ETF), des obligations \ldots Tous ces produits d'investissement sont gérés par divers gestionnaires d'actifs. Lors de la multiplication d'actifs composant un portefeuille, il devient plus difficile de faire un suivi global de son patrimoine lorsque les plateformes de gestion sont multiples.
+
+De plus, certaines plateformes ne permettent pas un suivi des plus-values latentes, des évolutions et des perspectives d'investissement. Certains titres ne possèdent également pas de système de suivi.
+
+
+% - Périmètre : intégration des données de finance, base de données finances intégrées au sein de l'application (récupération des données à tel intervalle->description fonctionnelle).
+
+\section{Objectif du projet}
+
+Ce projet se focalisera principalement sur la conception d'une application web permettant le suivi des titres financiers gérés depuis plusieurs plateformes.
+
+
+%- Besoin d'un gestionnaire de portefeuille financier permettant de gérer des actifs, obligation liquidités, ... (à définir dans périmètre)
+%- Actifs parfois difficiles à suivre (différents types)
+
+%- Client: nous, Entreprises, Particuliers
+%- Historique achat-vente
+%- Autour d'un portfolio (ou plusieurs)
+%- Portfolio composés d'actifs, etf, obligations,...
+%- Utilisateur introduit les transaction (achats, ventes) à tel prix, telle date, tel truc.
+%- Plusieurs utilisateurs
+%- Plusieurs Portfolio par utilisateurs (partage de portfolio écriture ou lecture seule?)
+
+Notre application peut concerner autant des entreprises qui gèrent leurs finances que des particuliers, nous pourrions alors nous-mêmes être clients et le but visé est donc de permettre aux utilisateurs une gestion plus facile de leurs portefeuilles en ligne.
+
+L'objectif est de proposer à un ou plusieurs utilisateurs un gestionnaire de portfolios financiers permettant à chacun d'encoder ses transactions et de pouvoir avoir accès à l'entièreté de leurs informations centralisées, accessibles de manière plus pratique et au même endroit.
+
+Ainsi, le portfolio d'un utilisateur lui permet de visualiser ses actifs, mais également le cours des monnaies, actions\ldots \hspace{2pt} qu'il souhaite connaître, l'historique de ses achats et ventes (encodés par l'utilisateur lui-même) ainsi que des statistiques sur ses gains (plus-values latentes, pourcentages, etc.)
+
+\section{Périmètre du projet}
+
+L'application n'a pas pour but d'être une plateforme de trading, elle se focalise sur la gestion de portefeuille uniquement. On ne peut donc que visionner ses actifs (pas d'achat ni de revente).
+
+Nous pourrions imaginer introduire dans l'application la gestion d'actifs autres que financiers, mais cela n'est pas l'objectif de l'application. Elle gérera uniquement des actifs financiers.
+
+%L'application vise uniquement la récolte de données financières pour permettre à l'utilisateur de gérer ses actifs. Celle-ci ne reprendra donc pas l'historique entier d'un cours de bourse mais seulement une partie temporelle que nous définirons par la suite.
+
+L'application sera capable de recevoir des données de la part de l'utilisateur. Celui-ci pourra, par exemple, encoder manuellement ses transactions. Nous pourrions envisager l'encodage automatique des transactions mais cela ne sera pas réalisé dans le cadre de ce projet.
+
+L'application utilisera un système de gestion de base de données supportant le \textbf{SQL}.
+
+L'application sera accessible depuis un \textbf{navigateur web}.
+
+L'application sera \textbf{multi-utilisateurs}.
+
+La langue de l'application sera le \textbf{français} et elle se basera sur un \textbf{fuseau horaire belge} (\texttt{UTC+1} ou \texttt{UTC+2} en fonction de l'heure d'hiver ou d'été).
+
+\section{Description fonctionnelle des besoins}
+
+L'application est multi-utilisateur, chaque utilisateur peut se connecter en utilisant son identifiant (adresse mail) et son mot de passe. Un nouvel utilisateur peut également créer un compte sur l'application, pour cela il doit indiquer son adresse mail et un mot de passe à utiliser. Il ne peut pas y avoir 2 utilisateurs ayant la même adresse mail. L'utilisateur doit pouvoir modifier son mot de passe et supprimer son compte. En cas de suppression d'un compte les données associées au compte de l'utilisateur doivent également être supprimées. 
+
+Une fois connecté à son compte, un utilisateur peut accéder à la liste de ses portfolios. Un portfolio possède un nom. Plusieurs portfolios peuvent posséder le même nom. Un utilisateur peut posséder aucun ou plusieurs portfolios. L'utilisateur a la possibilité de créer un portfolio en indiquant son nom. Il devient alors son propriétaire. 
+
+L'utilisateur peut ensuite accéder au portfolio. Un utilisateur étant le propriétaire d'un portfolio peut décider d'ajouter d'autres utilisateurs (identifiés par leurs adresses mail) à un portfolio, il peut choisir si les utilisateurs ont des droits d'accès en modification ou en lecture seule. Il peut également avoir accès à la liste des utilisateurs ayant accès au portfolio et changer leurs droits d'accès, leur révoquer l'accès ou encore transférer la propriété du portfolio vers un autre utilisateur. L'utilisateur ayant la propriété du portfolio peut changer son nom et décider de supprimer le portfolio.
+
+Le portfolio est composé de divers titres, un titre peut être de plusieurs sortes : actions d'entreprise, fonds indiciels (\texttt{ETF}), obligations ou encore devises. 
+
+Les actions sont identifiées par la bourse où elles sont échangées (\texttt{euronext}, \texttt{nasdaq}, \ldots ), l'identifiant de l'entreprise (\texttt{NVDA}, \texttt{AAPL}, \texttt{AMZN}, \ldots ) ainsi que la devise (\texttt{EUR}, \texttt{USD}) dans laquelle le titre est échangé. Les informations sur les bourses sont également renseignées (identifiant, nom complet, emplacement, heure d'ouverture, heure de fermeture dans le fuseau horaire \texttt{UTC}). L'entreprise est renseignée par des informations (identifiant, nom complet, secteur d'activité, emplacement).
+
+Les spécificités des autres types de titres (fonds indiciels, obligations, devises) seront détaillées dans la phase de modélisation technique.
+
+%Les fonds indiciels sont identifiés par \ldots
+
+%Les obligations sont identifiées par \ldots
+
+%Les devises sont identifiées par \ldots
+
+Le portfolio conservera l'historique complet des transactions, chaque entrée comprend le type de titre (\texttt{action}, \texttt{entreprise}, \texttt{ETF}, \ldots),  la date et l'heure de l'achat (dans la devise du titre), le nombre acheté (qui n'est pas forcément entier, pour supporter les parts fractionnées), le prix d'achat (dans la devise du titre), l'éventuel prix et date et heure de vente si le titre ne fait plus partie du portfolio, les frais de courtage (lors de l'achat et de la vente si vendu). 
+
+L'utilisateur pourra consulter cet historique trié par date ou par type d'opérations.
+
+Lorsqu'un titre est vendu, il n’apparaît plus dans le portfolio mais peut rester affiché dans l'historique des ventes du portfolio.
+
+Les données du cours d'échange associées à chaque titre sont, dans la mesure du possible, enregistrées dans la base de données. Dans le cas d'une action si la bourse est supportée par l'application, les données du cours de l'action de l'entreprise seront synchronisées\footnote{Via service \texttt{API} externe} dans la base de données périodiquement afin d'avoir des données historiques permettant de déterminer les valeurs de reventes théoriques des titres possédés, calculer les plus values latentes et donner la performance du portfolio.
+
+% Parler de la récupération des cours de bourses en temps réel
+% -> différentes tables de données etc...
+% -> calcul des PnL par rapport au prix d'achats des titres
+% -> liens avec les titres.
+
+%Le portfolio 
+
+\textit{Demande d'un avis sur la pertinence de ce paragraphe} : 
+Via l'application, un client connecté à son compte pourra encoder les nouveaux placements de trésorerie, consulter l'historique de ses actifs ainsi que les performances en temps réel de ceux-ci. Pour les entreprises, un portfolio peut être partagé entre plusieurs employés. Pour ajouter une action, un client doit préciser les paramètres éventuels (actif acheté/vendu, date d'achat/vente, prix d'achat/vente). Par le menu principal, un client peut aussi consulter l'historique des actions avec les statistiques financières comme ROI et PnL fournies.
+
+
+% - Utilisateur (compte personnel, compte d'entreprise) 
+%      email/password -> identifiant unique email.
+% - Chaque utilisateur peut accéder a liste de ses Portfolio
+%      
+%- Historique achat-vente
+%- Autour d'un portfolio (ou plusieurs)
+%- Portfolio composés d'actifs, etf, obligations,...
+%- Utilisateur introduit les transaction (achats, ventes) à tel prix, telle date, tel truc.
+%- Plusieurs utilisateurs
+%- Plusieurs Portfolio par utilisateurs (partage de portfolio écriture ou lecture seule?)
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{4cm}|p{8cm}|p{3cm}|}
+\hline
+\textbf{Fonctionnalité} & \textbf{Description} & \textbf{Acteurs concernés} \\
+\hline
+Gestion des utilisateurs & Création d’un compte à partir d’une adresse mail et d’un mot de passe. Connexion et déconnexion sécurisées. & Utilisateur \\
+\hline
+Création de portfolio & Un utilisateur peut créer un ou plusieurs portfolios dont il est propriétaire. & Utilisateur \\
+\hline
+Partage de portfolio & Le propriétaire peut donner des droits d’accès (lecture ou écriture) à d’autres utilisateurs par adresse mail. & Propriétaire, utilisateur invité \\
+\hline
+Gestion des titres & Ajout, suppression et modification de titres (actions, ETF, obligations, devises). & Utilisateur autorisé \\
+\hline
+Historique des transactions & Suivi des achats et ventes, montants, frais, plus-values latentes, etc. & Utilisateur autorisé \\
+\hline
+Consultation des marchés & Affichage des cours récents ou historiques provenant d’une API externe. & Tous les utilisateurs \\
+\hline
+Statistiques et visualisations & Présentation graphique des performances et répartitions du portefeuille. & Tous les utilisateurs \\
+\hline
+\end{tabular}
+\caption{Synthèse des fonctionnalités principales de l'application}
+
+\end{table}
+
+\section{Partage des tâches entre les membres du groupe}
+
+Nous allons diviser les tâches entre les différents domaines de l'application.
+
+\begin{table}[bthp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Domaine} & \textbf{Membre} \\ \hline
+Gestions des utilisateurs & Louis Garlement \\ \hline
+Gestions des transactions/titres & Martin Coghetto \\ \hline
+Gestions des portfolios & Petro Borys \\ \hline
+\begin{tabular}[c]{@{}l@{}}Gestions des données des \\ cours de bourse\end{tabular} & Alexandre Daoust \\ \hline
+\end{tabular}
+\caption{Répartition des tâches en fonction du domaine de l'application}
+\end{table}
+
+Dans chaque domaine, le membre du groupe assigné réalisera la partie correspondante de modélisation des données (Modèles conceptuels, logiques et physiques) et sera chargé de l'implémentation des requêtes SQL associées, du backend et du frontend.
+
+%Cahier des charges
+%Rapport
+%Présentation
+%Modèle conceptuel de données
+%Modèle logique de données
+%Modèle physique de données
+%Requêtes Base de données
+%Implémentation Backend
+%Implémentation Frontend
+
+%Requêtes SQL / Parties de l'implémentation (utilisateurs, portfolio, titres, données externes)
+
+\section{Enveloppe budgétaire}
+
+\subsection{Coûts de développement}
+
+Nous allons estimer les coûts de développement en nous basant sur les crédits ECTS. Le cours de \textit{Modélisation des données, Big Data et projet} est valorisé à 5 crédits ECTS. Un crédit ECTS est défini comme 30h de travail. 50\% de la note est attribué à notre projet : cela correspond à 2.5 crédits ECTS soit 75h de travail.
+Nous allons considérer que 20\% du projet est consacré a la préparation de l'épreuve orale, il ne seront donc pas considérés dans le temps de développement. Il reste donc 60h de travail par membre du projet.
+
+Cela fait donc un temps total de développement pour 4 développeurs de \textbf{240h}. À 20\euro \, de l'heure cela donne donc \textbf{4800\euro} de coûts de développement.
+
+
+\subsection{Coûts opérationnels}
+
+%Un hébergement sera nécessaire pour la base de données et l'application. 
+
+\subsubsection{Base de données}
+
+En envisageant une réplication pour le système de gestion de base de données (\texttt{SGBD}) sur 3 serveurs et compte tenu de la taille grandissante de la base de données en raison des données temporelles des cours de bourse, le coût d'hébergement de celle-ci est non linéaire et dépendra du nombre d'utilisateurs et de la quantité de données accumulées au cours du temps. 
+
+%Une estimation basse (< 100GB de stockage) sur des serveurs types VPS : 3 VPS à 8-12\euro/mois = 24-36\euro/mois
+
+%Estimation moyenne (100-500GB de stockage) : 3x VPS à 20-30\euro/mois = 60-90\euro/mois
+
+%Estimation élevée (> 500GB de stockage) : 3x VPS dédiés à 60-90\euro/mois = 180-270\euro/mois 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Type de solution} & \textbf{Petit volume} & \textbf{Moyen volume} & \textbf{Grand volume} \\
+ & \textbf{(< 100 GB)} & \textbf{(100-500 GB)} & \textbf{(> 500 GB)} \\
+\hline
+\textbf{VPS (OVH)} & 13,74-21,42~\euro/mois & 21,42-166,83~\euro/mois & 166,83-229,35~\euro/mois \\
+\hline
+\textbf{Base managée (OVH)} & 0,068~\euro~HT/heure & 0,1346~\euro~HT/heure & 0,5436~\euro~HT/heure \\
+\hline
+\textbf{Cloud public (AWS)} & \$71,13-1517,26/mois & \$1517,26-1623,66/mois & \$1623,66-1756,66/mois \\
+\hline
+\end{tabular}
+\caption{Estimation des coûts d'hébergement de la base de données}
+
+\end{table}
+
+\subsubsection{Application}
+
+L'application aura besoin d'un serveur au minimum et éventuellement de plusieurs pour avoir une réplication du service (et ainsi éviter toute interruption liée à un problème sur le serveur).
+
+Puisque l'application est indépendante de la base de données, nous pouvons considérer plusieurs architectures pour l'hébergement de l'application:
+\begin{itemize}
+     \item Architecture verticale
+     \item Architecture horizontale
+\end{itemize}
+
+Les besoins en serveurs seront différents selon l'architecture. Nous pouvons choisir entre les deux, ou bien implémenter la combinaison des deux. Voici un tableau reprenant chaque cas envisagé:
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Architecture} & \textbf{Verticale} & \textbf{Horizontale} & \textbf{Combinée} \\
+\hline
+\textbf{VPS} (OVH) & 4,68-49,98~\euro/mois & 14,28~\euro/mois/serveur & 4,68-49,98~\euro/mois/serveur \\
+\hline
+\textbf{Cloud} (AWS) & \$0.0047-5.517/h & \$0.4224/h/instance & \$0.0047-5.517/h/instance \\
+\hline
+\textbf{Dédié} (OVH) & 65,99-1199,99~\euro/mois & 65,99~\euro/mois/serveur & 65,99-1199,99~\euro/mois/serveur \\
+\hline
+\end{tabular}
+\end{table}
+
+% https://www.tablesgenerator.com/
+\newpage
+\section{Délais}
+
+\subsection{Échéances}
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Date}   & \textbf{Livrable}                                             \\ \hline
+05/10/2025 & Cahier des charges                                   \\ \hline
+26/10/2025 & Cahier des charges + MCD + MLD                       \\ \hline
+12/12/2025 & Evaluation intermédiaire du projet                   \\ \hline
+10/01/2025 & Rapport final, Code source et présentation du projet \\ \hline
+\end{tabular}
+\caption{Échéances des livrables du projet}
+\end{table}
+
+\subsection{Planification temporelle}
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|p{5cm}|p{10cm}|}
+\hline
+\textbf{Semaine}        & \textbf{Description}                        \\ \hline
+29/09/2025 - 05/10/2025 & Réalisation cahier des charges                             \\ \hline
+06/10/2025 - 12/10/2025 & Réalisation MCD                             \\ \hline
+13/10/2025 - 19/10/2025 & Réalisation MCD                             \\ \hline
+19/10/2025 - 26/10/2025 & Réalisation MLD                             \\ \hline
+27/10/2025 - 02/11/2025 & Réalisation MPD                             \\ \hline
+03/11/2025 - 09/11/2025 & Implémentation                             \\ \hline
+10/11/2025 - 16/11/2025 & Implémentation                              \\ \hline
+17/11/2025 - 23/11/2025 & Implémentation                              \\ \hline
+24/11/2025 - 30/11/2025 & Implémentation                              \\ \hline
+01/12/2025 - 07/12/2025 & Implémentation                              \\ \hline
+08/12/2025 - 14/12/2025 & Implémentation + Ajustements                \\ \hline
+05/01/2025 - 10/01/2025 & Finitions et préparation présentation orale \\ \hline
+\end{tabular}
+\caption{Planification temporelle des tâches du projet}
+\end{table}
+
+\end{document}
