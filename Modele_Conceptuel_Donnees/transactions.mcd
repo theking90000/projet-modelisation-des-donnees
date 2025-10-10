@@ -1,5 +1,9 @@
-Action: bourse_id, entreprise_id
+%Titre:
 
+:
+Action: ISIN, _Identifiant Bourse, _Identifiant Entreprise
 émet, 11 Action, 0N Entreprise
-Entreprise: Pays, Numero_entreprise, Nom
 
+Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau Horaire, Heure ouveture, Heure fermeture,
+échange, 0N Bourse, 11 Action
+Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
