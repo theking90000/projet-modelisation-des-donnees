@@ -16,4 +16,5 @@
 
 Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
 est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
-Portfolio: Identifiant Portfolio, Nom Portfolio, Date De Création Portfolio, Créateur
+Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
+% Besoin de l'attribut créateur dans portfolio ? Parce que niveau d'accès peut déjà renseigner sur qui possède un portfolio
