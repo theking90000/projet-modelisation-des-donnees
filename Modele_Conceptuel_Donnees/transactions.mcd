@@ -1,0 +1,5 @@
+Action: bourse_id, entreprise_id
+
+émet, 11 Action, 0N Entreprise
+Entreprise: Pays, Numero_entreprise, Nom
+
