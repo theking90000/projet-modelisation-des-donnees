@@ -5,21 +5,39 @@
 :
 Obligation: Nom
 :
-
-Transaction: Identifiant Transaction
-contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix, Frais Courtage, Taxes
-Instrument Financier: ISIN
-/XT\ Instrument Financier <- Action, Obligation: type
-Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
+:
 
 :
 :
-échange, 0N Bourse, 11 Action
+Devise: 
+est une Obligation, 01 Instrument Financier, 11 Obligation
+:
+:
+
+:
+:
+est une Devise, 01 Instrument Financier, 11 Devise
+Instrument Financier: ISIN, Devise échange
+contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
+Transaction: Identifiant Transaction, type (Vente/Achat)
+
+:
 Action: Symbole, Devise
+est une Action, 01 Instrument Financier, 11 Action
+est un ETF, 01 Instrument Financier, 11 ETF
+ETF: ISIN, Nom
+:
+
 émet, 11 Action, 0N Entreprise
+échange Action, 0N Bourse, 11 Action
+Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
+échange ETF, 0N Bourse, 11 ETF
+gère ETF, 0N Entreprise,  11 ETF
+:
 
 :
 :
-Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
+Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
+:
 :
 :
