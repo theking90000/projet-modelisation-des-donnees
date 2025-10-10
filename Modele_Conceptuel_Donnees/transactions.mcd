@@ -1,9 +1,31 @@
 %Titre:
 
-:
-Action: ISIN, _Identifiant Bourse, _Identifiant Entreprise
+Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
 émet, 11 Action, 0N Entreprise
+:
+:
+:
+
+:
+Action: ISIN, _Identifiant Bourse, _Identifiant Entreprise, Devise
+est une action, 01 Titre, 11 Action
+:
+:
 
 Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau Horaire, Heure ouveture, Heure fermeture,
 échange, 0N Bourse, 11 Action
-Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
+Titre: ISIN
+contient, 11 Transaction, 0N Titre: quantité, prix, Frais Courtage, taxes
+Transaction: Identifiant Transaction
+
+:
+:
+est une obligation, 11 Obligation, 01 Titre
+:
+:
+
+:
+:
+Obligation: ISIN, Nom
+:
+:
