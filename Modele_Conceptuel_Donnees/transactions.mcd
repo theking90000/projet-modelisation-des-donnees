@@ -4,7 +4,7 @@ gère ETF, 0N Entreprise,  11 ETF
 ETF: ISIN, Nom
 est un ETF, 01 Instrument Financier, 11 ETF
 est une Devise, 01 Instrument Financier, 11 Devise
-Devise: 
+Devise: CoupleDevise
 :
 
 Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
@@ -18,7 +18,7 @@ Obligation: Nom
 échange Action, 0N Bourse, 11 Action
 est une Action, 01 Instrument Financier, 11 Action
 contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
-Transaction: Identifiant Transaction, type (Vente/Achat)
+Transaction: Identifiant Transaction, type (Vente/Achat), date, heure
 :
 
 Action: Symbole, Devise
