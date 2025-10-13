@@ -1,20 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%                                        TESTS MCD PARTIE UTILISATEURS
-% Un utilisateur, désigné par son identifiant (adresse mail), son nom, son mdp, peut créer 0,N portfolios et avoir
-% accès à 0,N portfolios (pas forcément propriétaire de tous les porfolios auxquels il à accès
-%
-% Entités : 
-% Utilisateur : Adresse_Mail, Nom, Mot_De_Passe : 
-% Portfolios : Identifiant_Portfolio, Nom_Portfolio, Date_Création, Créateur (Adresse_Mail : référence Utilisateur)
-%
-% Relations :
-% Utilisateur 0,N -- A accès à -- 1,N Portfolio
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
 est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
 Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
-% Besoin de l'attribut créateur dans portfolio ? Parce que niveau d'accès peut déjà renseigner sur qui possède un portfolio
