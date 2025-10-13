@@ -10,7 +10,7 @@ historique de transactions, 0N Portfolio, 11 Transaction
 :
 :
 Devise: CoupleDevise
-Transaction: Identifiant Transaction, type (Vente/Achat)
+Transaction: Identifiant Transaction, type (Vente/Achat), date, heure
 Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
 est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
 
