@@ -1,0 +1,39 @@
+:
+:
+:
+:
+contient transaction, 0N Portfolio, 11 Transaction
+:
+:
+
+:
+:
+:
+Devise: 
+Transaction: Identifiant Transaction, type (Vente/Achat)
+Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
+est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
+
+:
+ETF: ISIN, Nom
+est un ETF, 01 Instrument Financier, 11 ETF
+est une Devise, 01 Instrument Financier, 11 Devise
+contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
+contient instrument financier, 0N Portfolio, 11 Instrument Financier: Quantité
+Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
+
+gère ETF, 0N Entreprise,  11 ETF
+échange ETF, 0N Bourse, 11 ETF
+Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
+échange Action, 0N Bourse, 11 Action
+Instrument Financier: ISIN, Devise échange
+concerne, 0N Instrument Financier, 11 Cours
+Cours: DateTime, Open, Close, High, Low, Volume
+
+:
+Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
+émet, 11 Action, 0N Entreprise
+Action: Symbole, Devise
+est une Action, 01 Instrument Financier, 11 Action
+est une Obligation, 01 Instrument Financier, 11 Obligation
+Obligation: Nom
