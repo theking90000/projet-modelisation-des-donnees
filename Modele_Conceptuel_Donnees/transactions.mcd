@@ -1,29 +1,19 @@
-%Titre:
-
-gère ETF, 0N Entreprise,  11 ETF
-ETF: ISIN, Nom
-est un ETF, 01 Instrument Financier, 11 ETF
-est une Devise, 01 Instrument Financier, 11 Devise
-Devise: CoupleDevise
-:
-
-Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
-échange ETF, 0N Bourse, 11 ETF
 Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
-Instrument Financier: ISIN, Devise échange
-est une Obligation, 01 Instrument Financier, 11 Obligation
-Obligation: Nom
-
-émet, 11 Action, 0N Entreprise
-échange Action, 0N Bourse, 11 Action
-est une Action, 01 Instrument Financier, 11 Action
 contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
-Transaction: Identifiant Transaction, type (Vente/Achat), date, heure
+Transaction: Identifiant Transaction, Identifiant de l'utilisateur ayant encodé la transaction, type (Vente/Achat), date, heure
 :
 
-Action: Symbole, Devise
+échange, 01 Instrument Financier, 0N Bourse
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
+émet1, 0N Pays, 01 Instrument Financier
+Pays: CodeISO3166-1, Nom, DevisePrincipale, ZoneGeo
+
+:
+émet, 01 Instrument Financier, 0N Entreprise
 :
 :
+
 :
+Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
 :
 :
