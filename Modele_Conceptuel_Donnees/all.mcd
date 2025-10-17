@@ -1,65 +1,44 @@
 :
 :
-échange Action, 0N Bourse, 11 Action
-Obligation: Nom
-est une Obligation, 01 Instrument Financier, 11 Obligation
-concerne, 0N Instrument Financier, 11 Cours
+:
+:
+:
+:
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
+:
+
+:
+:
+:
 Cours: DateTime, Open, Close, High, Low, Volume
-:
-:
-:
-
-Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
-Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
-émet, 11 Action, 0N Entreprise
-Action: Symbole, Devise
-est une Action, 01 Instrument Financier, 11 Action
-Instrument Financier: ISIN, Devise échange
-est une Devise, 01 Instrument Financier, 11 Devise
-Devise: CoupleDevise
-:
+concerne, 0N Instrument Financier, 11 Cours
+échange, 01 Instrument Financier, 0N Bourse
+Est située1, 11 Bourse, 0N Pays
 :
 
 :
 :
-gère ETF, 0N Entreprise,  11 ETF
-ETF: ISIN, Nom
-est un ETF, 01 Instrument Financier, 11 ETF
-contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
-contient instrument financier, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
+:
+contient2, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
+émet1, 0N Pays, 01 Instrument Financier
+Pays: Code ISO3166-1, Nom, Devise Principale
+Est située, 11 Entreprise, 0N Pays
+
+:
 Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
-génère, 0N Utilisateur, 11 Audit
-Audit: Adresse Mail, _Identifiant Portfolio, _Date, Action
-
-:
-échange ETF, 0N Bourse, 11 ETF
-:
-:
-:
-Transaction: Identifiant Transaction, type (Vente/Achat), date, heure
-Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
 est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
-:
+Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
+contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais Courtage, Taxes
+émet, 01 Instrument Financier, 0N Entreprise
+Entreprise: Numero_entreprise, Nom, Secteur d'activité
 :
 
-:
-:
-:
-:
-:
+Audit: Adresse Mail, _Identifiant Portfolio, _Date, Action
+génère, 0N Utilisateur, 11 Audit
 :
 historique de transactions, 0N Portfolio, 11 Transaction
-snapshot, 0N Portfolio, 11 Instantané Portfolio
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure
 :
-:
-
-:
-:
-:
-:
-:
-:
-:
-Instantané Portfolio: date, valeur du portfolio, Profit and Loss
 :
 :
