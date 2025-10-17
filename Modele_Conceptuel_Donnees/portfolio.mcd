@@ -1,14 +1,14 @@
 :
-Transaction: Identifiant Transaction, Identifiant de l'utilisateur ayant encodé la transaction, type (Vente/Achat), date, heure
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure
 :
 :
 
-Instantané Portfolio: date, valeur du portfolio, Profit and Loss
+%Instantané Portfolio: date, valeur du portfolio, Profit and Loss
 historique de transactions, 0N Portfolio, 11 Transaction
 :
 :
 
-Instantanés, 0N Portfolio, 11 Instantané Portfolio
-Portfolio: Identifiant Portfolio, Nom Portfolio, Description, Date De Création Portfolio
+%Instantanés, 0N Portfolio, 11 Instantané Portfolio
+Portfolio: Identifiant Portfolio, Nom, Description, Date Création
 contient, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
 Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise)

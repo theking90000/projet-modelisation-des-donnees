@@ -1,19 +1,17 @@
-Bourse: Identifiant Bourse, Nom, Pays, Ville, Fuseau horaire, Heure ouveture, Heure fermeture,
-contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans devise du portfolio, Prix dans la devise de l'instrument financier, Frais Courtage, Taxes
-Transaction: Identifiant Transaction, Identifiant de l'utilisateur ayant encodé la transaction, type (Vente/Achat), date, heure
 :
-
+:
 échange, 01 Instrument Financier, 0N Bourse
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
+Est située1, 11 Bourse, 0N Pays
+
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure
+contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais Courtage, Taxes
 Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
 émet1, 0N Pays, 01 Instrument Financier
-Pays: CodeISO3166-1, Nom, DevisePrincipale, ZoneGeo
+Pays: Code ISO3166-1, Nom, Devise Principale
 
+:
 :
 émet, 01 Instrument Financier, 0N Entreprise
-:
-:
-
-:
-Entreprise: Pays, _Numero_entreprise, Nom, Secteur d'activité, Emplacement
-:
-:
+Entreprise: Numero_entreprise, Nom, Secteur d'activité
+Est située, 11 Entreprise, 0N Pays
