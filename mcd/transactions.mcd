@@ -4,8 +4,8 @@
 Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
 Est située1, 11 Bourse, 0N Pays
 
-Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure
-contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais Courtage, Taxes
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
+concerne, 11 Transaction, 0N Instrument Financier
 Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
 émet1, 0N Pays, 01 Instrument Financier
 Pays: Code ISO3166-1, Nom, Devise Principale

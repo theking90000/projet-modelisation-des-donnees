@@ -1,3 +1,9 @@
+% Forme normale 1: Ok
+% Forme normale 2: Ok
+% Forme normale 3:
+%     - Le prix moyen d'achat peut être caluculé 
+%       à partir du contient des transactions.
+%  Le reste me semble ok.
 :
 :
 :
@@ -19,7 +25,7 @@ Est située1, 11 Bourse, 0N Pays
 :
 :
 :
-contient2, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
+%contient2, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
 Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
 émet1, 0N Pays, 01 Instrument Financier
 Pays: Code ISO3166-1, Nom, Devise Principale
