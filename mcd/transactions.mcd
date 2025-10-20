@@ -1,17 +1,27 @@
 :
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
 :
 échange, 01 Instrument Financier, 0N Bourse
-Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
-Est située1, 11 Bourse, 0N Pays
-
-Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
 concerne, 11 Transaction, 0N Instrument Financier
-Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
+
+:
+Devise: Code ISO4217, Nom, Symbole
+devise2, 0N Devise, 11 Instrument Financier
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
+émet, 01 Instrument Financier, 0N Entreprise
+:
+
+Est située1, 11 Bourse, 0N Pays
+devise3, 11 Pays, 0N Devise
 émet1, 0N Pays, 01 Instrument Financier
-Pays: Code ISO3166-1, Nom, Devise Principale
+Est située, 11 Entreprise, 0N Pays
+Entreprise: Numero_entreprise, Nom, Secteur d'activité
+:
 
 :
 :
-émet, 01 Instrument Financier, 0N Entreprise
-Entreprise: Numero_entreprise, Nom, Secteur d'activité
-Est située, 11 Entreprise, 0N Pays
+Pays: Code ISO3166-1, Nom
+:
+:
+:

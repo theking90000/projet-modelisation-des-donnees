@@ -1,50 +1,34 @@
 % Forme normale 1: Ok
 % Forme normale 2: Ok
 % Forme normale 3:
-%     - Le prix moyen d'achat peut être caluculé 
+%     - Le prix moyen d'achat peut être caluculé
 %       à partir du contient des transactions.
 %  Le reste me semble ok.
-:
-:
-:
-:
-:
-:
-Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
-:
 
-:
-:
-:
-Cours: DateTime, Open, Close, High, Low, Volume
-concerne, 0N Instrument Financier, 11 Cours
-échange, 01 Instrument Financier, 0N Bourse
-Est située1, 11 Bourse, 0N Pays
-:
-
-:
-:
-:
-%contient2, 0N Portfolio, 11 Instrument Financier: Quantité, Prix Moyen d'achat
-Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Devise, Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise) 
-émet1, 0N Pays, 01 Instrument Financier
-Pays: Code ISO3166-1, Nom, Devise Principale
-Est située, 11 Entreprise, 0N Pays
-
-:
+génère, 0N Utilisateur, 11 Audit
 Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
-est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
-Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
-contient, 11 Transaction, 0N Instrument Financier: Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais Courtage, Taxes
-émet, 01 Instrument Financier, 0N Entreprise
-Entreprise: Numero_entreprise, Nom, Secteur d'activité
-:
+Entreprise: Numero entreprise, Nom, Secteur d'activité
+Est située, 11 Entreprise, 0N Pays
+Pays: Code ISO3166-1, Nom
+Est située1, 11 Bourse, 0N Pays
 
 Audit: Adresse Mail, _Identifiant Portfolio, _Date, Action
-génère, 0N Utilisateur, 11 Audit
+est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
+Devise: Code ISO4217, Nom, Symbole
+émet, 01 Instrument Financier, 0N Entreprise
+émet1, 0N Pays, 01 Instrument Financier
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
+
+:
+Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
+devise1, 0N Devise, 11 Portfolio
+devise2, 0N Devise, 11 Instrument Financier
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise)
+échange, 01 Instrument Financier, 0N Bourse
+
 :
 historique de transactions, 0N Portfolio, 11 Transaction
-Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure
-:
-:
-:
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
+contient, 11 Transaction, 0N Instrument Financier
+concerne, 0N Instrument Financier, 11 Cours
+Cours: Date, _Heure, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume
