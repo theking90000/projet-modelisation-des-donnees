@@ -1,0 +1,56 @@
+CREATE TABLE Utilisateur
+(
+    Adresse_Mail VARCHAR(100) PRIMARY KEY,
+    Nom VARCHAR(50),
+    Prenom VARCHAR(50),
+    Date_Creation_Utilisateur DATE
+)
+
+CREATE TABLE Portfolio
+(
+    Identifiant_Portfolio AUTOINCREMENT PRIMARY KEY,
+    Nom VARCHAR(50),
+    Description VARCHAR(255),
+    Date_Creation_Portfolio DATE
+)
+
+CREATE TABLE Devise
+(
+    ISO4217 CHAR(3) PRIMARY KEY,
+    Nom VARCHAR(50),
+    Symbole CHAR(5)
+)
+
+CREATE TABLE Pays
+(
+    ISO3166_1 CHAR(2) PRIMARY KEY,
+    Nom VARCHAR(60)
+)
+
+CREATE TABLE Entreprise
+(
+    Numero_Entreprise VARCHAR(20) PRIMARY KEY,
+    Nom VARCHAR(50),
+    Secteur_Activite VARCHAR(50)
+)
+
+CREATE TABLE Bourse
+(
+    Identifiant_Bourse ??? PRIMARY KEY,
+    Nom VARCHAR(50),
+    Ville VARCHAR(50),
+    Fuseau_Horaire CHAR(10),
+    Heure_Ouverture TIME,
+    Heure_Fermeture TIME
+)
+
+CREATE TABLE Cours
+(
+    Date_ DATE,
+    Heure TIME,
+    Valeur_Ouverture DECIMAL,
+    Valeur_Fermeture DECIMAL,
+    Valeur_Maximale DECIMAL,
+    Valeur_Minimale DECIMAL,
+    Volume INT
+)
