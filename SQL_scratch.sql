@@ -28,6 +28,7 @@ CREATE TABLE Instrument_Financier
     id_bourse VARCHAR(255),
     code_pays CHAR(2),
     numero_entreprise VARCHAR(20),
+    pays_entreprise CHAR(2),
     code_devise CHAR(3)
 );
 
@@ -79,7 +80,7 @@ CREATE TABLE Cours
 
 CREATE TABLE Portfolio
 (
-    id AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(50),
     `description` VARCHAR(255),
     code_devise CHAR(3),
@@ -88,7 +89,7 @@ CREATE TABLE Portfolio
 
 CREATE TABLE `Transaction`
 (
-    id AUTO_INCREMENT,
+    id INT AUTO_INCREMENT,
     id_portfolio INT,
     isin CHAR(12),
     email_utilisateur VARCHAR(100),
@@ -125,7 +126,10 @@ ALTER TABLE Instrument_Financier
 ADD CONSTRAINT pays_instrument FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT entreprise_instrument FOREIGN KEY (numero_entreprise) REFERENCES Entreprise (numero);
+ADD CONSTRAINT entreprise_instrument_numero FOREIGN KEY (numero_entreprise) REFERENCES Entreprise (numero);
+
+ALTER TABLE Instrument_Financier
+ADD CONSTRAINT entreprise_intrument_pays FOREIGN KEY (pays_entreprise) REFERENCES Entreprise (code_pays)
 
 ALTER TABLE Instrument_Financier
 ADD CONSTRAINT devise_instrument FOREIGN KEY (code_devise) REFERENCES Devise (code);
