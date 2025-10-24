@@ -126,10 +126,7 @@ ALTER TABLE Instrument_Financier
 ADD CONSTRAINT pays_instrument FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT entreprise_instrument_numero FOREIGN KEY (numero_entreprise) REFERENCES Entreprise (numero);
-
-ALTER TABLE Instrument_Financier
-ADD CONSTRAINT entreprise_intrument_pays FOREIGN KEY (pays_entreprise) REFERENCES Entreprise (code_pays)
+ADD CONSTRAINT entreprise_instrument_numero FOREIGN KEY (numero_entreprise, pays_entreprise) REFERENCES Entreprise (numero, code_pays);
 
 ALTER TABLE Instrument_Financier
 ADD CONSTRAINT devise_instrument FOREIGN KEY (code_devise) REFERENCES Devise (code);
