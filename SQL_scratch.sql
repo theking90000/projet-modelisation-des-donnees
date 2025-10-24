@@ -17,7 +17,7 @@ CREATE TABLE Membre_Portfolio
 
 CREATE TABLE Instrument_Financier
 (
-    isin CHAR(12),
+    isin CHAR(12) PRIMARY KEY,
     nom VARCHAR(50),
     `type` VARCHAR(10),
     symbole VARCHAR(20),
@@ -28,8 +28,7 @@ CREATE TABLE Instrument_Financier
     id_bourse VARCHAR(255),
     code_pays CHAR(2),
     numero_entreprise VARCHAR(20),
-    code_devise CHAR(3),
-    PRIMARY KEY(isin, id_portfolio)
+    code_devise CHAR(3)
 );
 
 /* 
