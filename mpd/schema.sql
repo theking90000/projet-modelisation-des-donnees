@@ -111,7 +111,7 @@ CREATE TABLE Devise
     symbole VARCHAR(5)
 );
 
--- Nomenclature pour le nom des contraintes : table d'où vient la clé _ table qui fait la référence ( _ nom de l'attribut, si nécessaire)
+-- Nomenclature pour le nom des contraintes : table d'où vient la clé _ table qui fait la référence
 
 ALTER TABLE Membre_Portfolio
 ADD CONSTRAINT utilisateur_membre FOREIGN KEY (email) REFERENCES Utilisateur (email);
@@ -126,7 +126,7 @@ ALTER TABLE Instrument_Financier
 ADD CONSTRAINT pays_instrument FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT entreprise_instrument_numero FOREIGN KEY (numero_entreprise, pays_entreprise) REFERENCES Entreprise (numero, code_pays);
+ADD CONSTRAINT entreprise_instrument FOREIGN KEY (numero_entreprise, pays_entreprise) REFERENCES Entreprise (numero, code_pays);
 
 ALTER TABLE Instrument_Financier
 ADD CONSTRAINT devise_instrument FOREIGN KEY (code_devise) REFERENCES Devise (code);
