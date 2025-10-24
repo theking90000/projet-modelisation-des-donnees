@@ -19,7 +19,7 @@ CREATE TABLE Instrument_Financier
 (
     isin CHAR(12),
     nom VARCHAR(50),
-    "type" VARCHAR(10),
+    `type` VARCHAR(10),
     symbole VARCHAR(20),
     taux DECIMAL,
     date_emission DATE,
@@ -68,33 +68,33 @@ CREATE TABLE Entreprise
 CREATE TABLE Cours
 (
     isin CHAR(12),
-    "date" DATE,
+    `date` DATE,
     heure TIME,
     valeur_ouverture DECIMAL,
     valeur_fermeture DECIMAL,
     valeur_maximale DECIMAL,
     valeur_minimale DECIMAL,
     volume INT,
-    PRIMARY KEY(isin, "date", heure)
+    PRIMARY KEY(isin, `date`, heure)
 )
 
 CREATE TABLE Portfolio
 (
-    id AUTOINCREMENT PRIMARY KEY,
+    id AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(50),
-    "description" VARCHAR(255),
+    `description` VARCHAR(255),
     code_devise CHAR(3),
     date_creation DATE
 )
 
-CREATE TABLE "Transaction"
+CREATE TABLE `Transaction`
 (
-    id AUTOINCREMENT,
+    id AUTO_INCREMENT,
     id_portfolio INT,
     isin CHAR(12),
     email_utilisateur VARCHAR(100),
-    "type" CHAR(5),
-    "date" DATE,
+    `type` CHAR(5),
+    `date` DATE,
     heure TIME,
     quantite DECIMAL,
     valeur_devise_portfolio DECIMAL,
@@ -143,11 +143,11 @@ ADD CONSTRAINT instrument_cours FOREIGN KEY (isin) REFERENCES Instrument_Financi
 ALTER TABLE Portfolio
 ADD CONSTRAINT devise_portfolio FOREIGN KEY (code_devise) REFERENCES Devise (code)
 
-ALTER TABLE "Transaction"
+ALTER TABLE `Transaction`
 ADD CONSTRAINT portfolio_transaction FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
 
-ALTER TABLE "Transaction"
+ALTER TABLE `Transaction`
 ADD CONSTRAINT instrument_transaction FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin)
 
-ALTER TABLE "Transaction"
+ALTER TABLE `Transaction`
 ADD CONSTRAINT utilisateur_transaction FOREIGN KEY (email_utilisateur) REFERENCES Utilisateur (email)
