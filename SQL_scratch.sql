@@ -5,7 +5,7 @@ CREATE TABLE Utilisateur
     prenom VARCHAR(50),
     mot_de_passe VARCHAR(50),
     date_creation DATE
-)
+);
 
 CREATE TABLE Membre_Portfolio
 (
@@ -13,7 +13,7 @@ CREATE TABLE Membre_Portfolio
     id_portfolio INT,
     niveau_acces INT,
     PRIMARY KEY(email, id_portfolio)
-)
+);
 
 CREATE TABLE Instrument_Financier
 (
@@ -30,7 +30,7 @@ CREATE TABLE Instrument_Financier
     numero_entreprise VARCHAR(20),
     code_devise CHAR(3),
     PRIMARY KEY(isin, id_portfolio)
-)
+);
 
 /* 
 Selon Google, pays le plus long compte 51 caractères (Royaume Uni de Grande Bretagne et d'Irlande du Nord) 
@@ -43,7 +43,7 @@ CREATE TABLE Pays
 (
     code CHAR(2) PRIMARY KEY,
     nom VARCHAR(51)
-)
+);
 
 CREATE TABLE Bourse
 (
@@ -54,7 +54,7 @@ CREATE TABLE Bourse
     heure_ouverture TIME,
     heure_fermeture TIME,
     code_pays CHAR(2)
-)
+);
 
 CREATE TABLE Entreprise
 (
@@ -63,7 +63,7 @@ CREATE TABLE Entreprise
     nom VARCHAR(50),
     secteur VARCHAR(50),
     PRIMARY KEY (numero, code_pays)
-)
+);
 
 CREATE TABLE Cours
 (
@@ -76,7 +76,7 @@ CREATE TABLE Cours
     valeur_minimale DECIMAL,
     volume INT,
     PRIMARY KEY(isin, `date`, heure)
-)
+);
 
 CREATE TABLE Portfolio
 (
@@ -85,7 +85,7 @@ CREATE TABLE Portfolio
     `description` VARCHAR(255),
     code_devise CHAR(3),
     date_creation DATE
-)
+);
 
 CREATE TABLE `Transaction`
 (
@@ -102,52 +102,52 @@ CREATE TABLE `Transaction`
     frais DECIMAL,
     taxes DECIMAL,
     PRIMARY KEY (id, id_portfolio)
-)
+);
 
 CREATE TABLE Devise
 (
     code CHAR(3) PRIMARY KEY,
     nom VARCHAR(50),
     symbole VARCHAR(5)
-)
+);
 
 -- Nomenclature pour le nom des contraintes : table d'où vient la clé _ table qui fait la référence ( _ nom de l'attribut, si nécessaire)
 
 ALTER TABLE Membre_Portfolio
-ADD CONSTRAINT utilisateur_membre FOREIGN KEY (email) REFERENCES Utilisateur (email)
+ADD CONSTRAINT utilisateur_membre FOREIGN KEY (email) REFERENCES Utilisateur (email);
 
 ALTER TABLE Membre_Portfolio
-ADD CONSTRAINT portfolio_membre FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
+ADD CONSTRAINT portfolio_membre FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT bourse_instrument FOREIGN KEY (id_bourse) REFERENCES Bourse (id)
+ADD CONSTRAINT bourse_instrument FOREIGN KEY (id_bourse) REFERENCES Bourse (id);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT pays_instrument FOREIGN KEY (code_pays) REFERENCES Pays (code)
+ADD CONSTRAINT pays_instrument FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT entreprise_instrument FOREIGN KEY (numero_entreprise) REFERENCES Entreprise (numero)
+ADD CONSTRAINT entreprise_instrument FOREIGN KEY (numero_entreprise) REFERENCES Entreprise (numero);
 
 ALTER TABLE Instrument_Financier
-ADD CONSTRAINT devise_instrument FOREIGN KEY (code_devise) REFERENCES Devise (code)
+ADD CONSTRAINT devise_instrument FOREIGN KEY (code_devise) REFERENCES Devise (code);
 
 ALTER TABLE Bourse
-ADD CONSTRAINT pays_bourse FOREIGN KEY (code_pays) REFERENCES Pays (code)
+ADD CONSTRAINT pays_bourse FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Entreprise
-ADD CONSTRAINT pays_entreprise FOREIGN KEY (code_pays) REFERENCES Pays (code)
+ADD CONSTRAINT pays_entreprise FOREIGN KEY (code_pays) REFERENCES Pays (code);
 
 ALTER TABLE Cours
-ADD CONSTRAINT instrument_cours FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin)
+ADD CONSTRAINT instrument_cours FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin);
 
 ALTER TABLE Portfolio
-ADD CONSTRAINT devise_portfolio FOREIGN KEY (code_devise) REFERENCES Devise (code)
+ADD CONSTRAINT devise_portfolio FOREIGN KEY (code_devise) REFERENCES Devise (code);
 
 ALTER TABLE `Transaction`
-ADD CONSTRAINT portfolio_transaction FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
+ADD CONSTRAINT portfolio_transaction FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id);
 
 ALTER TABLE `Transaction`
-ADD CONSTRAINT instrument_transaction FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin)
+ADD CONSTRAINT instrument_transaction FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin);
 
 ALTER TABLE `Transaction`
-ADD CONSTRAINT utilisateur_transaction FOREIGN KEY (email_utilisateur) REFERENCES Utilisateur (email)
+ADD CONSTRAINT utilisateur_transaction FOREIGN KEY (email_utilisateur) REFERENCES Utilisateur (email);
