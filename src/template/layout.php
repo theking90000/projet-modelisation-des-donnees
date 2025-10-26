@@ -5,8 +5,8 @@ function render_page(string $pageFile, array $data = []): void
     extract($data, EXTR_SKIP);
 
     $title = $data['title'] ?? 'Finance App';
-    $pagePath = __DIR__ . "/pages/$pageFile";
-
+    $pagePath = __DIR__ . "/../pages/$pageFile";
+    
     if (!preg_match('/^[a-z0-9_-]+\.php$/i', $pageFile) || !file_exists($pagePath)) {
         http_response_code(404);
         echo "Page not found";

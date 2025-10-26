@@ -17,8 +17,10 @@ class Database extends PDO
         try {
             return new Database();
         } catch (PDOException $e) {
-            echo "Connection failed". $e->getMessage();
-            die(500);
+            // Log qqpart?
+            // echo "Connection failed". $e->getMessage();
+            // die(500);
+            throw $e;
         }
     }
 
@@ -28,8 +30,9 @@ class Database extends PDO
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            echo "Request failed". $e->getMessage();
-            die(500);
+            //echo "Request failed". $e->getMessage();
+            // die(500);
+            throw $e;
         }
     }
 }

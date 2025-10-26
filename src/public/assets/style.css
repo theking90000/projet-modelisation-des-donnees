@@ -7,3 +7,19 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.center-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
