@@ -4,6 +4,8 @@ require_once __DIR__ . "/db_password.php";
 
 class Database extends PDO
 {
+    private static $instance = null;
+
     function __construct()
     {
         parent::__construct('mysql:dbname='.DB_NAME.';host='.DB_HOST.';port='.DB_PORT, DB_USER, DB_PASSWORD);
@@ -12,10 +14,13 @@ class Database extends PDO
         //$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('DBStatement', array($this)));
     }
 
-    static function create(): Database
+    public static function instance(): Database
     {
         try {
-            return new Database();
+            if (self::$instance === null) {
+                self::$instance = new self();
+            }
+            return self::$instance;
         } catch (PDOException $e) {
             // Log qqpart?
             // echo "Connection failed". $e->getMessage();

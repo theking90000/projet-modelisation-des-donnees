@@ -1,17 +1,24 @@
 <?php
 
 require_once __DIR__ . '/../lib/db.php';
+require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/router.php';
-
-require_once __DIR__ . '/../template/layout.php';
 
 $router = new Router();
 
-$router->get('/login', function() {
-    render_page( "login.php", ["title"=>"Finance App - Se connecter"]);
-});
+$router->get('/login', 
+    create_render_handle("login.php", ["title"=>"Finance App - Se connecter"]));
+
+$router->post('/login', create_handler('actions/login.php'));
 
 $router->notFound(create_render_handle("404.php", ["title"=>"Finance App - Erreur 404"]));
+
+$router->group("", function($router) {
+  $router->get("/", function() {
+    echo"ok";
+    echo (new Auth())->user_id();
+  });
+}, ['AuthMiddleware']);
 
 // $conn = Database::create();
 

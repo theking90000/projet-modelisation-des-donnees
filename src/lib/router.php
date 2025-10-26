@@ -134,7 +134,7 @@ class Router {
 
 function create_handler($file) {
     $handler = function () use ($file) {
-        require __DIR__ . '/..\/' . $file;
+        require __DIR__ . '/../' . $file;
     };
 
     return $handler;
