@@ -1,6 +1,6 @@
 <?php
-// layout.php
-function layout(string $pageFile, array $data = []): void
+
+function render_page(string $pageFile, array $data = []): void
 {
     extract($data, EXTR_SKIP);
 
@@ -14,17 +14,17 @@ function layout(string $pageFile, array $data = []): void
     }
 
     ?>
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><?= htmlspecialchars($title) ?></title>
-        <link rel="stylesheet" href="/assets/style.css?<?php echo random_int(0, PHP_INT_MAX)?>">
-    </head>
-    <body>
-        <?php require $pagePath; ?>
-    </body>
-    </html>
-    <?php
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($title) ?></title>
+    <link rel="stylesheet" href="/assets/style.css?<?php echo random_int(0, PHP_INT_MAX)?>">
+</head>
+<body>
+    <?php require $pagePath; ?>
+</body>
+</html>
+<?php
 }

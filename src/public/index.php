@@ -13,4 +13,4 @@ $stmt = $conn->execute("SELECT email, nom FROM Utilisateur");
     echo "Nom:".$row["nom"]."<br>";
 }*/
 
-layout("login.php");
+render_page("login.php", ["title"=>"Finance App - Se connecter"]);
