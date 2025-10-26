@@ -3,7 +3,7 @@ CREATE TABLE Utilisateur
     email VARCHAR(100) PRIMARY KEY,
     nom VARCHAR(50),
     prenom VARCHAR(50),
-    mot_de_passe VARCHAR(50),
+    mot_de_passe VARCHAR(200),
     date_creation DATE
 );
 
