@@ -11,7 +11,8 @@ if(empty($email) || empty($password)
     || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
         render_page("login.php", ["title"=>"Finance App - Se connecter",
-        "loginError"=>"Veuillez entrer une adresse email valide et un mot de passe"]);
+        "error"=>"Veuillez entrer une adresse email valide et un mot de passe",
+        "email"=>$email]);
 
         die();
 }
@@ -19,7 +20,9 @@ if(empty($email) || empty($password)
 $auth = new Auth();
 
 if(!$auth->login($email, $password)) {
-    render_page("login.php", ["title"=>"Finance App - Se connecter", "loginError"=>"Connexion impossible - Mauvais email ou mauvais mot de passe."]);
+    render_page("login.php", ["title"=>"Finance App - Se connecter", "error"=>"Connexion impossible - Mauvais email ou mauvais mot de passe.",
+    "email"=>$email]);
+    die();
 }
 
 header("Location: /");
