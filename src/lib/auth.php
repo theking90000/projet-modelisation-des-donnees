@@ -36,6 +36,10 @@ class Auth {
         return true;
     }
 
+    public function logout() {
+        unset($_SESSION["user_id"]);
+    }
+
     private static function hash_password ($password) {
         return password_hash($password, PASSWORD_DEFAULT);
     }

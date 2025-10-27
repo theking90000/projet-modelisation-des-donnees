@@ -10,15 +10,14 @@ $router->get('/login',
     create_render_handle("login.php", ["title"=>"Finance App - Se connecter"]));
 
 $router->post('/login', create_handler('actions/login.php'));
+$router->get('/logout', create_handler('actions/logout.php'));
 
 $router->notFound(create_render_handle("404.php", ["title"=>"Finance App - Erreur 404"]));
 
 $router->group("", function($router) {
-  $router->get("/", function() {
-    echo"ok";
-    echo (new Auth())->user_id();
-  });
+  $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
 }, ['AuthMiddleware']);
+
 
 // $conn = Database::create();
 
