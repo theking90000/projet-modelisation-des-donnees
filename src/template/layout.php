@@ -2,6 +2,10 @@
 
 function render_page(string $pageFile, array $data = []): void
 {
+    foreach ($data as $key => $value) {
+        $data[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
     extract($data, EXTR_SKIP);
 
     $title = $data['title'] ?? 'Finance App';
@@ -19,7 +23,7 @@ function render_page(string $pageFile, array $data = []): void
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title) ?></title>
+    <title><?= $title ?></title>
     <link rel="stylesheet" href="/assets/style.css?<?php echo random_int(0, PHP_INT_MAX)?>">
 </head>
 <body>
