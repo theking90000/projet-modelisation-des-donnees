@@ -51,7 +51,7 @@ class Auth {
 }
 
 class AuthMiddleware {
-    private Auth $auth;
+    protected Auth $auth;
 
     public function __construct() {
         $this->auth = new Auth();
@@ -63,6 +63,17 @@ class AuthMiddleware {
             header("Location: /login");
             die(); // on sait jamais
            // return false;
+        }
+        return true;
+    }
+}
+
+class WithoutAuthMiddleware extends AuthMiddleware {
+    public function handle() {
+        if($this->auth->user_authenticated()) {
+            http_response_code(401);
+            header("Location: /");
+            die();
         }
         return true;
     }
