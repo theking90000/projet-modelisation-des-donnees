@@ -4,18 +4,34 @@ require_once __DIR__ . "/db.php";
 
 class Auth {
     private Database $db;
+    private string $session_key;
 
-    function __construct() {
-        session_start();
+    function __construct($session_key = "user_id") {
         $this->db = Database::instance();
+        $this->session_key = $session_key;
     }
 
-    public function user_id() {
-        return isset( $_SESSION["user_id"] ) ? $_SESSION["user_id"] : null;
+    private function session_check() {
+        if(session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
-    public function user_authenticated() {
-        return $this->user_id() !== null;
+    public function get_user() {
+        $this->session_check();
+
+        if(!isset($_SESSION[$this->session_key]))
+            return null;
+
+        return $_SESSION[$this->session_key];
+    }
+    
+    public static function user() {
+        return (new Auth())->get_user();
+    }
+
+    public static function authenticated() {
+        return self::user() !== null;
     }
 
     public function login ($email, $password) {
@@ -32,12 +48,12 @@ class Auth {
             return false;
         }
 
-        $_SESSION["user_id"] = $row["email"];
+        $_SESSION[$this->session_key] = $row["email"];
         return true;
     }
 
     public function logout() {
-        unset($_SESSION["user_id"]);
+        unset($_SESSION[$this->session_key]);
     }
 
     private static function hash_password ($password) {
@@ -51,14 +67,8 @@ class Auth {
 }
 
 class AuthMiddleware {
-    protected Auth $auth;
-
-    public function __construct() {
-        $this->auth = new Auth();
-    }
-
     public function handle() {
-        if (!$this->auth->user_authenticated()) {
+        if (!Auth::authenticated()) {
             http_response_code(401);
             header("Location: /login");
             die(); // on sait jamais
@@ -70,7 +80,7 @@ class AuthMiddleware {
 
 class WithoutAuthMiddleware extends AuthMiddleware {
     public function handle() {
-        if($this->auth->user_authenticated()) {
+        if(Auth::authenticated()) {
             http_response_code(401);
             header("Location: /");
             die();
