@@ -17,7 +17,7 @@ Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fe
 Entreprise: Numero entreprise, Nom, Secteur d'activité
 émet1, 0N Pays, 01 Instrument Financier
 échange, 01 Instrument Financier, 0N Bourse
-encode, 0N Utilisateur, 11 Transaction
+encode, 0N Utilisateur, 11 Transaction, 0N Portfolio
 Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
 est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
 
@@ -25,7 +25,7 @@ est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
 Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise)
 contient, 11 Transaction, 0N Instrument Financier
 Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
-historique de transactions, 0N Portfolio, 11 Transaction
+%historique de transactions, 0N Portfolio, 11 Transaction
 Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
 
 Cours: Date, _Heure, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume
