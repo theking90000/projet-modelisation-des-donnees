@@ -24,10 +24,12 @@ function render_page(string $pageFile, array $data = []): void
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
-    <link rel="stylesheet" href="/assets/style.css?<?php echo random_int(0, PHP_INT_MAX)?>">
+    <link rel="stylesheet" href="/assets/style.css?<?= random_int(0, PHP_INT_MAX)?>">
 </head>
 <body>
     <?php require $pagePath; ?>
+
+    <script src="/assets/script.js?<?= random_int(0, PHP_INT_MAX)?>"></script>
 </body>
 </html>
 <?php

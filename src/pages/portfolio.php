@@ -8,5 +8,6 @@
     Portfolio <?= $portfolio["nom"] ?>
     <br>
 
+    <a href="/portfolio/<?= $portfolio_id ?>/parametres">Paramètres</a>
     <a href="/">Retour</a>
 </div>
