@@ -38,12 +38,24 @@ class Router {
     private function addRoute($method, $pattern, $handler, $middleware = []) {
         $fullPattern = $this->buildFullPattern($pattern);
         $fullMiddleware = $this->buildFullMiddleware($middleware);
+
+        $compiledPattern = $this->compilePattern($fullPattern);
+        
+        $route = [
+            'method' => strtoupper($method),
+            'pattern' => $pattern,
+            'compiled' => $compiledPattern['pattern'],
+            'params' => $compiledPattern['params'],
+            'handler' => $handler
+        ];
         
         $this->routes[] = [
             'method' => $method,
             'pattern' => $fullPattern,
             'handler' => $handler,
-            'middleware' => $fullMiddleware
+            'middleware' => $fullMiddleware,
+            'compiled' => $compiledPattern['pattern'],
+            'params' => $compiledPattern['params'],
         ];
     }
     
@@ -66,26 +78,60 @@ class Router {
         
         return array_merge($fullMiddleware, $middleware);
     }
+
+    private function compilePattern($pattern) {
+        $params = [];
+        
+        // Replace named parameters {param} with regex
+        $compiled = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/',
+            function($matches) use (&$params) {
+                $params[] = $matches[1];
+                return '([^/]+)';
+            },
+            $pattern
+        );
+        
+        // Replace optional parameters {param?}
+        $compiled = preg_replace_callback(
+            '/\{([a-zA-Z_][a-zA-Z0-9_]*)\?\}/',
+            function($matches) use (&$params) {
+                $params[] = $matches[1];
+                return '([^/]*)';
+            },
+            $compiled
+        );
+        
+        return [
+            'pattern' => '#^' . $compiled . '$#',
+            'params' => $params
+        ];
+    }
     
     public function dispatch($requestUri, $requestMethod) {
         foreach ($this->routes as $route) {
             if ($route['method'] !== $requestMethod) {
                 continue;
             }
-            
-            $pattern = '#^' . $route['pattern'] . '$#';
-            if (preg_match($pattern, $requestUri, $matches)) {
+
+            //$pattern = '#^' . $route['pattern'] . '$#';
+            if (preg_match($route['compiled'], $requestUri, $matches)) {
                 array_shift($matches);
+
+                $params = [];
+                foreach ($route['params'] as $index => $name) {
+                    $params[$name] = $matches[$index] ?? null;
+                }
                 
                 // Execute middleware
                 foreach ($route['middleware'] as $middlewareClass) {
                     $middleware = new $middlewareClass();
-                    if (!$middleware->handle()) {
+                    if (!$middleware->handle($params)) {
                         return; // Middleware blocked the request
                     }
                 }
                 
-                return $this->callHandler($route['handler'], $matches);
+                return $this->callHandler($route['handler'], $params);
             }
         }
         
@@ -94,7 +140,7 @@ class Router {
     
     private function callHandler($handler, $params) {
         if (is_callable($handler)) {
-            return call_user_func_array($handler, $params);
+            return call_user_func($handler, $params);
         }
         
         if (is_string($handler)) {
@@ -102,7 +148,7 @@ class Router {
             if (class_exists($controller)) {
                 $instance = new $controller();
                 if (method_exists($instance, $method)) {
-                    return call_user_func_array([$instance, $method], $params);
+                    return call_user_func([$instance, $method], $params);
                 }
             }
         }
@@ -133,7 +179,8 @@ class Router {
 }
 
 function create_handler($file) {
-    $handler = function () use ($file) {
+    $handler = function ($params) use ($file) {
+        extract($params);
         require __DIR__ . '/../' . $file;
     };
 
@@ -141,9 +188,9 @@ function create_handler($file) {
 }
 
 function create_render_handle($file, $params = []) {
-    $handler = function () use ($file, $params) {
+    $handler = function ($p2) use ($file, $params) {
         require_once __DIR__ . '/../template/layout.php';
-        
+        $params = array_merge($params, $p2);
         render_page($file, $params);
     };
 

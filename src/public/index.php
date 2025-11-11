@@ -9,11 +9,9 @@ $router = new Router();
 
 
 $router->group("", function ($router) {
-
   $router->get('/login', create_render_handle("login.php", ["title"=>"Finance App - Se connecter"]));
 
   $router->post('/login', create_handler('actions/login.php'));
-  
 }, ['WithoutAuthMiddleware']);
 
 $router->get('/logout', create_handler('actions/logout.php'));
@@ -24,6 +22,9 @@ $router->group("", function($router) {
   $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
 }, ['AuthMiddleware']);
 
+$router->group("/portfolio/{portfolio_id}", function ($router) {
+    $router->get("", create_render_handle("portfolio.php", ["title"=>"Mon portfolio"]));
+}, ['AuthMiddleware', 'CheckPortfolioAccess']);
 
 // $conn = Database::create();
 
