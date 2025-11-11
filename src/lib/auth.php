@@ -108,3 +108,21 @@ class CheckPortfolioAccess {
         return true;
     }
 }
+
+class CheckPortfolioOwner {
+    public function handle($params) {
+        $portfolio_id = intval($params["portfolio_id"]);
+
+        $stmt = Database::instance()->execute("SELECT 1 FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ? And Membre_Portfolio.niveau_acces >= 3", [Auth::user(), $portfolio_id]);
+
+        $access = $stmt->rowCount() > 0;
+
+        if(!$access) {
+            http_response_code(401);
+            header("Location: /");
+            die();
+        }
+
+        return true;
+    }
+}

@@ -24,8 +24,13 @@ $router->group("", function($router) {
 
 $router->group("/portfolio/{portfolio_id}", function ($router) {
     $router->get("", create_render_handle("portfolio.php", ["title"=>"Mon portfolio"]));
-    $router->get("/parametres", create_render_handle("parametres_portfolio.php", ["title"=>"Paramètres du portfolio"]));
-    $router->post("/parametres", create_handler('actions/parametres_portfolio.php'));
+
+    $router->group("", function ($router) {
+        $router->get("/parametres", create_render_handle("parametres_portfolio.php", ["title"=>"Paramètres du portfolio"]));
+        $router->post("/parametres", create_handler('actions/parametres_portfolio.php'));
+
+        $router->get("/membres", create_render_handle("membres_portfolio.php", ["title"=>"Membres du portfolio"]));
+    }, ['CheckPortfolioOwner']);
 }, ['AuthMiddleware', 'CheckPortfolioAccess']);
 
 // $conn = Database::create();

@@ -23,6 +23,7 @@
         </form>
     </div>
 
+    <a href="/portfolio/<?= $portfolio_id ?>/membres">Gérer les membres</a>
     <a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 </div>
 
