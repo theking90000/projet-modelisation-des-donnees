@@ -1,17 +1,17 @@
 <?php
+
     $stmt = Database::instance()->execute("SELECT Portfolio.id, Portfolio.nom, Membre_Portfolio.niveau_acces  FROM Portfolio JOIN Membre_Portfolio ON Membre_Portfolio.id_portfolio = Portfolio.id JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Portfolio.id = ? AND Utilisateur.email = ?", [$portfolio_id, Auth::user()]);
     
     $portfolio = $stmt->fetch();
+
+    $stmt = Database::instance()->execute("SELECT Transaction.* FROM Transaction WHERE Transaction.id_portfolio = ?", [$portfolio_id]);
+
+    $transactions = $stmt->fetchAll();
 ?>
 
 <div class="center center-col h-screen">
-    Portfolio <?= $portfolio["nom"] ?>
+    Transactions du portfolio <?= $portfolio["nom"] ?>
     <br>
-
-    <a href="/portfolio/<?= $portfolio_id ?>/transactions">Voir transactions</a>
-
-    <?php if($portfolio['niveau_acces'] >= 3) { ?>
-    <a href="/portfolio/<?= $portfolio_id ?>/parametres">Paramètres</a>
-    <?php } ?>
-    <a href="/">Retour</a>
+    
+    <a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 </div>
