@@ -1,7 +1,7 @@
 function open(element) {
   const load = element.getAttribute("data-load");
 
-  if (load && element.style.display === "none") {
+  if (load /*&& element.style.display === "none"*/) {
     fetch(load)
       .then((res) => res.text())
       .then((html) => {
@@ -22,6 +22,7 @@ function close(el) {
   }
   el.style.display = "none";
 }
+const closePopup = close;
 
 let id = 0; /** Compteur d'élements détectés */
 function forElements(selector, callback) {
@@ -66,16 +67,18 @@ function detect() {
   // Détecter tous les selecteur de données externes
   forElements("[data-ext-select]", (element) => {
     try {
+      const value = element.getAttribute("data-value");
+
       const input = document.createElement("input");
       input.hidden = true;
       input.name = element.getAttribute("data-name");
-      input.value = null;
+      input.value = value;
 
       input.setAttribute("data-for-id", element.getAttribute("data-id"));
 
-      input.after(element);
+      element.parentElement.appendChild(input);
 
-      element.parentElement.addEventListener("click", (e) => {
+      element.addEventListener("click", (e) => {
         const callback = element.getAttribute("data-id");
         const url = element.getAttribute("data-ext-select");
 
@@ -148,3 +151,12 @@ const search_instrument_debounce = createDebouncer(function (
 ) {
   search_instrument(element, 0, endpoint);
 });
+
+function submit_form(form, callback) {
+  fetch(form.action, {
+    method: "POST",
+    body: new FormData(form),
+  })
+    .then((res) => res.text())
+    .then((html) => callback(html));
+}
