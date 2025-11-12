@@ -10,7 +10,7 @@
 
     <a href="#" data-open="#modifier-nom">Modifier le nom</a>
 
-    <div id="modifier-nom" style="display: <?php if (isset($erreur_nom)) { echo "block"; } else { echo "none"; }  ?>;">
+    <div id="modifier-nom" class="popup" style="display: <?php if (isset($erreur_nom)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Modifier le nom du portfolio</h3>
         <form action="" method="post" class="center-col">
             <input name="nom" id="nom" placeholder="Nouveau nom" value="<?= $nom ?>" />

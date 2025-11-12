@@ -13,6 +13,23 @@ document.addEventListener("DOMContentLoaded", function () {
         element.style.display === "block" ? "none" : "block";
     });
   });
+
+  const popups = document.querySelectorAll(".popup");
+
+  popups.forEach((popup) => {
+    popup.addEventListener("click", (e) => {
+      if (e.target !== popup) return;
+
+      let x = e.offsetX;
+      let y = e.offsetY;
+
+      // Click dans le coin supérieur droit
+      if (popup.offsetWidth - e.offsetX <= 60 && e.offsetY <= 25) {
+        popup.style.display = "none";
+      }
+      // console.log(x, y, e.target.offsetWidth, e.target.offsetHeight);
+    });
+  });
 });
 
 function close(el) {
