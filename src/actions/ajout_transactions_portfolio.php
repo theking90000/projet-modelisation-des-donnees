@@ -84,7 +84,7 @@
         <option <?= $type === "vente" ? "selected" : "" ?> value="vente">Vente</option>
     </select>
 
-    <input name="taxe" id="taxe" placeholder="Taxes" value="<?= @$taxes ?>" />
+    <input name="taxes" id="taxes" placeholder="Taxes" value="<?= @$taxes ?>" />
 
     <?php if(isset($erreur_taxes)) { ?>
         <span style="color: red;"><?= $erreur_taxes ?></span>
