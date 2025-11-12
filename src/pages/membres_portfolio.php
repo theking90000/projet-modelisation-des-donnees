@@ -28,16 +28,21 @@
 
     <a href="#" data-open="#transfer">Transférer propriété</a>
 
-    <div id="ajout-membre" style="display: <?php if (isset($erreur_ajout_membre)) { echo "block"; } else { echo "none"; }  ?>;">
+    <div id="ajout-membre" style="display: <?php if (isset($erreur_ajout_membre_email)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Ajouter un membre</h3>
         <form action="" method="post" class="center-col">
+            <input hidden name="ajout_membre" value="1" />
+
             <input name="ajout_membre_email" id="ajout_membre_email" type="email" placeholder="Adresse Email" value="<?= $ajout_membre_email ?>" />
 
             <?php if(isset($erreur_ajout_membre_email)) { ?>
                 <span style="color: red;"><?= $erreur_ajout_membre_email ?></span>
             <?php } ?>
 
-            SELECT - POUR TYPE acces
+            <select name="ajout_membre_acces">
+                <option selected value="1">Lecture</option>
+                <option value="2">Ecriture</option>
+            </select>
             
         <input type="submit" value="Ajouter" />
         </form>
@@ -46,6 +51,8 @@
     <div id="transfer" style="display: <?php if (isset($erreur_transfer_email)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Transférer la propriété</h3>
         <form action="" method="post" class="center-col">
+            <input hidden name="transfer" value="1" />
+
             <input name="transfer_email" id="transfer_email" type="email" placeholder="Adresse Email" value="<?= $transfer_email ?>" />
 
             <?php if(isset($erreur_transfer_email)) { ?>
@@ -55,7 +62,10 @@
             <label for="transfer_garder_acces">Garder accès au portfolio</label>
             <input name="transfer_garder_acces" id="transfer_garder_acces" type="checkbox" />
 
-            SELECT - POUR TYPE acces
+            <select name="transfer_garder_acces_niveau">
+                <option selected value="1">Lecture</option>
+                <option value="2">Ecriture</option>
+            </select>
             
             <input type="submit" value="Transférer la propriété" />
         </form>

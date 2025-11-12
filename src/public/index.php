@@ -30,6 +30,7 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
         $router->post("/parametres", create_handler('actions/parametres_portfolio.php'));
 
         $router->get("/membres", create_render_handle("membres_portfolio.php", ["title"=>"Membres du portfolio"]));
+        $router->post("/membres", create_handler("actions/membres_portfolio.php"));
     }, ['CheckPortfolioOwner']);
 }, ['AuthMiddleware', 'CheckPortfolioAccess']);
 
