@@ -13,5 +13,9 @@
     Transactions du portfolio <?= $portfolio["nom"] ?>
     <br>
     
+    <a href="#" data-open="#ajout-transaction">Ajouter une transaction</a>
+
+    <div id="ajout-transaction" class="popup" style="display: none" data-load="/portfolio/<?= $portfolio_id ?>/ajout-transaction"></div>
+
     <a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 </div>

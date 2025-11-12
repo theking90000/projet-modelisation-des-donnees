@@ -9,8 +9,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (!element) return;
 
-      element.style.display =
-        element.style.display === "block" ? "none" : "block";
+      const load = element.getAttribute("data-load");
+
+      if (load && element.style.display === "none") {
+        fetch(load)
+          .then((res) => res.text())
+          .then((html) => {
+            element.innerHTML = html;
+            element.style.display = "block";
+          });
+      } else {
+        element.style.display =
+          element.style.display === "block" ? "none" : "block";
+      }
     });
   });
 
