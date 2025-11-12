@@ -45,3 +45,14 @@ body {
   top: 4px;
   right: 4px;
 }
+
+.ext-select {
+  z-index: 10;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: white;
+  border: 1px solid black;
+  min-width: 400px;
+}
