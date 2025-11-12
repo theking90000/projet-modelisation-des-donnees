@@ -92,10 +92,16 @@ class WithoutAuthMiddleware extends AuthMiddleware {
 }
 
 class CheckPortfolioAccess {
+    private int $niveau;
+
+    function __construct(int $niveau = 1) {
+        $this->niveau = $niveau;
+    }
+
     public function handle($params) {
         $portfolio_id = intval($params["portfolio_id"]);
 
-        $stmt = Database::instance()->execute("SELECT 1 FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ?", [Auth::user(), $portfolio_id]);
+        $stmt = Database::instance()->execute("SELECT 1 FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ? AND Membre_Portfolio.niveau_acces >= ?", [Auth::user(), $portfolio_id, $this->niveau]);
 
         $access = $stmt->rowCount() > 0;
 
@@ -109,20 +115,14 @@ class CheckPortfolioAccess {
     }
 }
 
-class CheckPortfolioOwner {
-    public function handle($params) {
-        $portfolio_id = intval($params["portfolio_id"]);
+class CheckPortfolioWrite extends CheckPortfolioAccess {
+    function __construct () {
+        parent::__construct(2);
+    }
+}
 
-        $stmt = Database::instance()->execute("SELECT 1 FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ? And Membre_Portfolio.niveau_acces >= 3", [Auth::user(), $portfolio_id]);
-
-        $access = $stmt->rowCount() > 0;
-
-        if(!$access) {
-            http_response_code(401);
-            header("Location: /");
-            die();
-        }
-
-        return true;
+class CheckPortfolioOwner extends CheckPortfolioAccess {
+    function __construct () {
+        parent::__construct(3);
     }
 }

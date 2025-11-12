@@ -11,6 +11,7 @@ class Database extends PDO
         parent::__construct('mysql:dbname='.DB_NAME.';host='.DB_HOST.';port='.DB_PORT, DB_USER, DB_PASSWORD);
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $this->setAttribute( PDO::ATTR_EMULATE_PREPARES, false);
         //$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('DBStatement', array($this)));
     }
 
@@ -32,6 +33,9 @@ class Database extends PDO
     function execute(string $sql, array $params = []): PDOStatement {
         try {
             $stmt = $this->prepare($sql);
+            $params = array_filter($params, function($value) {
+                return !is_null($value);
+            });
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {

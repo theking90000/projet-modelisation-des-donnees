@@ -27,8 +27,13 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
 
     $router->get("/transactions", create_render_handle("transactions_portfolio.php", ["title"=>"Transactions du portfolio"]));
 
-    $router->get("/ajout-transaction", create_handler("actions/ajout_transactions_portfolio.php"));
-    $router->post("/ajout-transaction", create_handler("actions/ajout_transactions_portfolio.php"));
+    $router->group("", function ($router) {
+        $router->get("/ajout-transaction", create_handler("actions/ajout_transactions_portfolio.php"));
+        $router->post("/ajout-transaction", create_handler("actions/ajout_transactions_portfolio.php"));
+
+        $router->get('/instruments', create_handler("actions/instruments_portfolio.php"));
+        $router->post('/instruments', create_handler("actions/instruments_portfolio.php"));
+    }); 
 
     $router->group("", function ($router) {
         $router->get("/parametres", create_render_handle("parametres_portfolio.php", ["title"=>"Paramètres du portfolio"]));

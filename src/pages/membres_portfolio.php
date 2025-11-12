@@ -28,7 +28,7 @@
 
     <a href="#" data-open="#transfer">Transférer propriété</a>
 
-    <div id="ajout-membre" class="popup" style="display: <?php if (isset($erreur_ajout_membre_email)) { echo "block"; } else { echo "none"; }  ?>;">
+    <div id="ajout-membre" class="popup" data-popup="1" style="display: <?php if (isset($erreur_ajout_membre_email)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Ajouter un membre</h3>
         <form action="" method="post" class="center-col">
             <input hidden name="ajout_membre" value="1" />
@@ -48,7 +48,7 @@
         </form>
     </div>
 
-    <div id="transfer" class="popup" style="display: <?php if (isset($erreur_transfer_email)) { echo "block"; } else { echo "none"; }  ?>;">
+    <div id="transfer" class="popup" data-popup="1" style="display: <?php if (isset($erreur_transfer_email)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Transférer la propriété</h3>
         <form action="" method="post" class="center-col">
             <input hidden name="transfer" value="1" />

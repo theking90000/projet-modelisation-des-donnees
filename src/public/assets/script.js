@@ -16,7 +16,11 @@ function open(element) {
 }
 
 function close(el) {
-  element.style.display = "none";
+  if (el.hasAttribute("data-popup-remove-on-close")) {
+    el.remove();
+    return;
+  }
+  el.style.display = "none";
 }
 
 let id = 0; /** Compteur d'élements détectés */
@@ -48,13 +52,13 @@ function detect() {
   });
 
   // Détecter tous les popups
-  forElements(".popup", (popup) => {
+  forElements("[data-popup]", (popup) => {
     popup.addEventListener("click", (e) => {
       if (e.target !== popup) return;
 
       // Click dans le coin supérieur droit
       if (popup.offsetWidth - e.offsetX <= 60 && e.offsetY <= 25) {
-        popup.style.display = "none";
+        close(e.target);
       }
     });
   });
@@ -78,6 +82,8 @@ function detect() {
         const select = document.createElement("div");
         select.classList.add("ext-select");
         select.setAttribute("data-for-id", element.getAttribute("data-id"));
+        select.setAttribute("data-popup", "1");
+        select.setAttribute("data-popup-remove-on-close", "1");
 
         document.body.appendChild(select);
 
@@ -91,10 +97,46 @@ function detect() {
     } catch (e) {
       console.error(e);
     }
-    // element.addEventListener('click')
   });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   detect();
+});
+
+function execute_callback(id, value, label = "") {
+  const element = document.querySelector(`[data-id="${id}"]`);
+
+  if (!element) return;
+
+  if (element.hasAttribute("data-ext-select")) {
+    element.innerHTML = label || value;
+    const input = document.querySelector(`input[data-for-id="${id}"]`);
+    if (input) input.value = value;
+
+    const select = document.querySelector(`.ext-select[data-for-id="${id}"]`);
+    if (select) close(select);
+  }
+}
+
+function createDebouncer(callback, time = 500) {
+  let timeout;
+
+  return function () {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      callback.apply(this, arguments);
+    }, time);
+  };
+}
+
+const search_instrument = createDebouncer(function (element, endpoint) {
+  const value = element.value;
+
+  fetch(`${endpoint}&ajax=1&recherche=${value}`)
+    .then((res) => res.text())
+    .then((html) => {
+      document.querySelector("#search_instrument").innerHTML = html;
+    });
 });
