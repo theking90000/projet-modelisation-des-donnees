@@ -131,15 +131,7 @@ function createDebouncer(callback, time = 500) {
   };
 }
 
-let pageOverride;
-
-function search_instrument_setpage(page) {
-  pageOverride = page;
-  return false;
-}
-
 function search_instrument(element, page, endpoint) {
-  page = pageOverride || page;
   const value = element.value;
 
   fetch(`${endpoint}&ajax=1&page=${page}&recherche=${value}`)
@@ -149,7 +141,10 @@ function search_instrument(element, page, endpoint) {
     });
 }
 
-const search_instrument_debounce = createDebouncer(function () {
-  pageOverride = 0;
-  search_instrument.apply(this, arguments);
+const search_instrument_debounce = createDebouncer(function (
+  element,
+  _page,
+  endpoint
+) {
+  search_instrument(element, 0, endpoint);
 });

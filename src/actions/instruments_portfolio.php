@@ -54,8 +54,8 @@
             </tbody>
         </table> 
         <div>
-            <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_instrument_setpage(<?= $page-1?>); search_instrument(document.querySelector('#search_instrument_value'), <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
-            <?php if ($hasNextPage) { ?> <a href="#" onclick="search_instrument_setpage(<?= $page+1?>); search_instrument(document.querySelector('#search_instrument_value'), <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
+            <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
+            <?php if ($hasNextPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
         </div><?php
     }
 
