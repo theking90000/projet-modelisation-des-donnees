@@ -5,6 +5,16 @@
             $erreur_quantite = "La quantité doit être un nombre";
         }
 
+        $taxes = $_POST["taxes"];
+        if (!empty($taxes) && !preg_match('/^-?\d+(\.\d+)?$/', $taxes)) {
+            $erreur_taxes = "La taxe doit être un nombre";
+        }
+
+        $frais = $_POST["frais"];
+        if (!empty($frais) && !preg_match('/^-?\d+(\.\d+)?$/', $frais)) {
+            $erreur_frais = "Les frais doit être un nombre";
+        }
+
         $instrument = $_POST["instrument"];
         
         if(empty($instrument)) {
@@ -31,7 +41,7 @@
                 $instrument_id = $instr['isin'];
             }
 
-            if(!isset($erreur_instrument) && !isset($erreur_quantite)) {
+            if(!isset($erreur_instrument) && !isset($erreur_quantite) && !isset($erreur_frais) && !isset($erreur_taxes)) {
                 // TODO: Récuperer les informations sur
                 // 1) Valeur devises
                 // 2) Valeur titre à l'instant T
@@ -73,6 +83,18 @@
         <option <?= $type === "achat" ? "selected" : "" ?> value="achat">Achat</option>
         <option <?= $type === "vente" ? "selected" : "" ?> value="vente">Vente</option>
     </select>
+
+    <input name="taxe" id="taxe" placeholder="Taxes" value="<?= @$taxes ?>" />
+
+    <?php if(isset($erreur_taxes)) { ?>
+        <span style="color: red;"><?= $erreur_taxes ?></span>
+    <?php } ?>
+
+    <input name="frais" id="frais" placeholder="Frais courtage" value="<?= @$frais ?>" />
+
+    <?php if(isset($erreur_frais)) { ?>
+        <span style="color: red;"><?= $erreur_frais ?></span>
+    <?php } ?>
     
     <input type="submit" value="Ajouter" />
 </form>
