@@ -131,12 +131,25 @@ function createDebouncer(callback, time = 500) {
   };
 }
 
-const search_instrument = createDebouncer(function (element, endpoint) {
+let pageOverride;
+
+function search_instrument_setpage(page) {
+  pageOverride = page;
+  return false;
+}
+
+function search_instrument(element, page, endpoint) {
+  page = pageOverride || page;
   const value = element.value;
 
-  fetch(`${endpoint}&ajax=1&recherche=${value}`)
+  fetch(`${endpoint}&ajax=1&page=${page}&recherche=${value}`)
     .then((res) => res.text())
     .then((html) => {
       document.querySelector("#search_instrument").innerHTML = html;
     });
+}
+
+const search_instrument_debounce = createDebouncer(function () {
+  pageOverride = 0;
+  search_instrument.apply(this, arguments);
 });
