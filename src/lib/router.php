@@ -160,7 +160,7 @@ class Router {
         http_response_code(404);
         
         if(is_callable($this->notFoundHandler)) {
-            return call_user_func_array($this->notFoundHandler, []);
+            return call_user_func($this->notFoundHandler, []);
         } else {
             echo "404 - Page Not Found";
         }
@@ -170,7 +170,7 @@ class Router {
         http_response_code(500);
         
         if(is_callable($this->errorHandler)) {
-            return call_user_func_array($this->errorHandler, [$e]);
+            return call_user_func($this->errorHandler, [$e]);
         } else {
             echo "500 - An error occurred";
         }

@@ -12,13 +12,19 @@ function render_page(string $pageFile, array $data = []) {
     return render_page_unsafe($pagePath, $data);
 }
 
-function render_page_unsafe(string $pagePath, array $data = []): void
+function render_page_unsafe(string $pagePath, array $data = []): void {
+    render_page_fn(function (array $data) use ($pagePath) {
+        extract($data, EXTR_SKIP);
+
+        require $pagePath;
+    }, $data);
+}
+
+function render_page_fn(callable $fn, array $data = []): void
 {
     foreach ($data as $key => $value) {
         $data[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
-
-    extract($data, EXTR_SKIP);
 
     $title = $data['title'] ?? 'Finance App';
 
@@ -32,7 +38,7 @@ function render_page_unsafe(string $pagePath, array $data = []): void
     <link rel="stylesheet" href="/assets/style.css?<?= random_int(0, PHP_INT_MAX)?>">
 </head>
 <body>
-    <?php try { require $pagePath; } catch (Exception $e) {var_dump($e);}?>
+    <?php try { call_user_func($fn, $data); } catch (Exception $e) {var_dump($e); echo "Une erreur est survenue";}?>
 
     <script src="/assets/script.js?<?= random_int(0, PHP_INT_MAX)?>"></script>
 </body>
