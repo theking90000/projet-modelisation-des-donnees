@@ -58,3 +58,16 @@ body {
   min-width: 400px;
   padding: 10px;
 }
+
+[data-ext-select] {
+  border: 1px solid black;
+  padding: 1px 8px;
+}
+
+[data-ext-select]::after {
+  content: url(images/square-arrow-out-up-right.svg);
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
