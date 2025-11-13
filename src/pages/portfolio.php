@@ -5,10 +5,17 @@
 ?>
 
 <div class="center center-col h-screen">
-    Portfolio <?= $portfolio["nom"] ?>
+    <strong>Portfolio <?= $portfolio["nom"] ?></strong>
     <br>
 
     <a href="/portfolio/<?= $portfolio_id ?>/transactions">Voir transactions</a>
+
+    <br>
+    <span>Gérer les données</span>
+    <a href="/portfolio/<?= $portfolio_id ?>/instruments">Voir les instruments financiers</a>
+    <a href="/portfolio/<?= $portfolio_id ?>/entreprises">Voir les entreprises</a>
+    <a href="/portfolio/<?= $portfolio_id ?>/pays">Voir les pays</a>
+    <br>
 
     <?php if($portfolio['niveau_acces'] >= 3) { ?>
     <a href="/portfolio/<?= $portfolio_id ?>/parametres">Paramètres</a>

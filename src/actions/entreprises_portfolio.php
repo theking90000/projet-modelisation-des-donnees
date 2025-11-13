@@ -210,5 +210,6 @@
 <?php } ?>
 
 <?php if (isset($is_template)) { ?>
+<a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 </div>
 <?php } ?>

@@ -163,4 +163,5 @@
 
 <?php if (isset($is_template)) { ?>
 </div>
+<a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 <?php } ?>
