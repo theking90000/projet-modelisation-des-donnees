@@ -90,6 +90,11 @@ function detect() {
       element.parentElement.appendChild(input);
 
       element.addEventListener("click", (e) => {
+        const existing = document.querySelector(
+          `.ext-select[data-for-id="${element.getAttribute("data-id")}"]`
+        );
+        if (existing) close(existing);
+
         const callback = element.getAttribute("data-id");
         const url = element.getAttribute("data-ext-select");
 
