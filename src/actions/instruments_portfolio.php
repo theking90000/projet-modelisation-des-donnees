@@ -142,7 +142,7 @@
 
 <a href="#" data-open="#ajout-instrument">Ajouter un instrument financier</a>
 
-<div class="instruments">
+<div class="search-result">
     <div id="search_instrument">
         <?php search_instrument($page, $recherche, $portfolio_id) ?>
     </div>

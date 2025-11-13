@@ -37,14 +37,17 @@ body {
   height: 70%;
   background-color: white;
   padding: 10px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 .popup::before,
 .ext-select:before {
-  content: "Fermer";
+  content: url(images/x.svg);
   position: absolute;
   top: 4px;
   right: 4px;
+  cursor: pointer;
 }
 
 .ext-select {
@@ -57,11 +60,14 @@ body {
   border: 1px solid black;
   min-width: 400px;
   padding: 10px;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 [data-ext-select] {
   border: 1px solid black;
   padding: 1px 8px;
+  cursor: pointer;
 }
 
 [data-ext-select]::after {
@@ -70,4 +76,11 @@ body {
   height: 20px;
   vertical-align: middle;
   margin-left: 10px;
+}
+
+.search-result table,
+.search-result tr {
+  border-collapse: collapse;
+  border: 1px solid;
+  cursor: pointer;
 }

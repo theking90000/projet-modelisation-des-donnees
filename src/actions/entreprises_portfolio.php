@@ -68,7 +68,7 @@
                 Database::instance()->commit();
             
                 echo "<!-- CLOSE -->";
-                echo json_encode([$entreprise_id, $ajout_entreprise_nom]);
+                echo json_encode([$entreprise_id, $ajout_nom]);
                 die();
             }
         } catch (Exception $e) {
@@ -152,7 +152,7 @@
 
 <a href="#" data-open="#ajout-entreprise">Ajouter une entreprise</a>
 
-<div>
+<div class="search-result">
     <div id="search-entreprise">
         <?php search_entreprise($page, $recherche, $portfolio_id) ?>
     </div>
