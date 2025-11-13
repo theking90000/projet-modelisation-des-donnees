@@ -109,7 +109,7 @@
             <table>
                 <tbody> 
             <?php while($instrument = $stmt->fetch()) { ?>
-                    <tr <?php if (isset($callback)) { ?>onclick="execute_callback('<?= $callback ?>', '<?= $instrument['isin'] ?>', '<?= $instrument['isin'] ?>')"<?php } ?> >
+                    <tr <?php if (isset($callback)) { ?>onclick="execute_callback('<?= $callback ?>', '<?= addslashes($instrument['isin']) ?>', '<?= $instrument['isin'] ?>')"<?php } ?> >
                         <td><?= $instrument["symbole"] ?></td>
                         <td><?= $instrument["nom"] ?></td> 
                         <td><?= $instrument["isin"] ?> </td>
@@ -118,8 +118,8 @@
                 </tbody>
             </table> 
             <div>
-                <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
-                <?php if ($hasNextPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
+                <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_ajax('#search_instrument_value', '#search_instrument', <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
+                <?php if ($hasNextPage) { ?> <a href="#" onclick="search_ajax('#search_instrument_value', '#search_instrument', <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
             </div><?php
         }
     }
@@ -138,7 +138,7 @@
 
 <h3>Rechercher un Instrument Financier</h3>
 
-<input placeholder="Rechercher" id="search_instrument_value" value="<?= @$_GET["recherche"] ?>" oninput="search_instrument_debounce(this, <?= $page ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>');" />
+<input placeholder="Rechercher" id="search_instrument_value" value="<?= @$_GET["recherche"] ?>" oninput="search_ajax_debounce(this,'#search_instrument', <?= $page ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>');" />
 
 <a href="#" data-open="#ajout-instrument">Ajouter un instrument financier</a>
 

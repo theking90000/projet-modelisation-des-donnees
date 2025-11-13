@@ -170,22 +170,26 @@ function createDebouncer(callback, time = 500) {
   };
 }
 
-function search_instrument(element, page, endpoint) {
-  const value = element.value;
+function search_ajax(input, element, page, endpoint) {
+  input = typeof input === "string" ? document.querySelector(input) : input;
+  element =
+    typeof element === "string" ? document.querySelector(element) : element;
+  const value = input.value;
 
   fetch(`${endpoint}&ajax=1&page=${page}&recherche=${value}`)
     .then((res) => res.text())
     .then((html) => {
-      document.querySelector("#search_instrument").innerHTML = html;
+      element.innerHTML = html;
     });
 }
 
-const search_instrument_debounce = createDebouncer(function (
+const search_ajax_debounce = createDebouncer(function (
+  input,
   element,
   _page,
   endpoint
 ) {
-  search_instrument(element, 0, endpoint);
+  search_ajax(input, element, 0, endpoint);
 });
 
 function submit_form(form, callback) {

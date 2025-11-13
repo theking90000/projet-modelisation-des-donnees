@@ -33,6 +33,9 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
 
         $router->get('/instruments', create_handler("actions/instruments_portfolio.php"));
         $router->post('/instruments', create_handler("actions/instruments_portfolio.php"));
+
+        $router->get('/entreprises', create_handler("actions/entreprises_portfolio.php"));
+        $router->post('/entreprises', create_handler("actions/entreprises_portfolio.php"));
     }); 
 
     $router->group("", function ($router) {
