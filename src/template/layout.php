@@ -1,6 +1,18 @@
 <?php
 
-function render_page(string $pageFile, array $data = []): void
+function render_page(string $pageFile, array $data = []) {
+    $pagePath = __DIR__ . "/../pages/$pageFile";
+    
+    if (!preg_match('/^[a-z0-9_-]+\.php$/i', $pageFile) || !file_exists($pagePath)) {
+        http_response_code(404);
+        echo "Page not found";
+        die();
+    }
+
+    return render_page_unsafe($pagePath, $data);
+}
+
+function render_page_unsafe(string $pagePath, array $data = []): void
 {
     foreach ($data as $key => $value) {
         $data[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -9,13 +21,6 @@ function render_page(string $pageFile, array $data = []): void
     extract($data, EXTR_SKIP);
 
     $title = $data['title'] ?? 'Finance App';
-    $pagePath = __DIR__ . "/../pages/$pageFile";
-    
-    if (!preg_match('/^[a-z0-9_-]+\.php$/i', $pageFile) || !file_exists($pagePath)) {
-        http_response_code(404);
-        echo "Page not found";
-        die();
-    }
 
     ?>
 <!DOCTYPE html>
@@ -27,7 +32,7 @@ function render_page(string $pageFile, array $data = []): void
     <link rel="stylesheet" href="/assets/style.css?<?= random_int(0, PHP_INT_MAX)?>">
 </head>
 <body>
-    <?php require $pagePath; ?>
+    <?php try { require $pagePath; } catch (Exception $e) {var_dump($e);}?>
 
     <script src="/assets/script.js?<?= random_int(0, PHP_INT_MAX)?>"></script>
 </body>

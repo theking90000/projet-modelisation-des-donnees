@@ -1,4 +1,16 @@
 <?php
+    $callback = isset($_GET['callback_id']) ? $_GET["callback_id"] : null;
+
+    // Si appelé sans $callback => Réafficher le layout
+    if (!isset($callback) && !isset($is_template)) {
+        require_once __DIR__ . "/../template/layout.php";
+        
+        render_page_unsafe(__FILE__, ["is_template"=>1, "portfolio_id"=>$portfolio_id]);
+        die();
+    }
+
+    $ajout_type = "action"; // par défault;
+
     if($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             Database::instance()->beginTransaction();
@@ -57,8 +69,6 @@
         }
     } 
 
-    $callback = $_GET["callback_id"];
-
     if (isset($_GET["page"])) {
         $page = intval($_GET["page"]);
     } else {
@@ -67,49 +77,51 @@
 
     $recherche = $_GET["recherche"];
     
-    function search_instrument($page, $recherche, $portfolio_id, $perPage=10) {
-        $callback = $_GET["callback_id"];
+    if (!function_exists('search_instrument')) {
+        function search_instrument($page, $recherche, $portfolio_id, $perPage=10) {
+            $callback = $_GET["callback_id"];
 
-        // var_dump($_GET);
-        if(isset($recherche)) {
-            $recherche = strtolower($_GET["recherche"]);
-            $sql_recherche = "WHERE LOWER(nom) LIKE CONCAT('%', :recherche,'%')";
-        } else {
-            $recherche = null;
-            $sql_recherche = "";
-        }
+            // var_dump($_GET);
+            if(isset($recherche)) {
+                $recherche = strtolower($_GET["recherche"]);
+                $sql_recherche = "WHERE LOWER(nom) LIKE CONCAT('%', :recherche,'%')";
+            } else {
+                $recherche = null;
+                $sql_recherche = "";
+            }
+            
+            $stmt = Database::instance()->prepare("SELECT Instrument_Financier.* FROM Instrument_Financier ".$sql_recherche. " LIMIT :limit OFFSET :offset");
+            $stmt2 = Database::instance()->prepare("SELECT COUNT(*) AS count FROM Instrument_Financier ".$sql_recherche. "");
         
-        $stmt = Database::instance()->prepare("SELECT Instrument_Financier.* FROM Instrument_Financier ".$sql_recherche. " LIMIT :limit OFFSET :offset");
-        $stmt2 = Database::instance()->prepare("SELECT COUNT(*) AS count FROM Instrument_Financier ".$sql_recherche. "");
-    
-        if(isset($recherche)) {
-            $stmt->bindValue(":recherche", $recherche);
-            $stmt2->bindValue(":recherche", $recherche);
+            if(isset($recherche)) {
+                $stmt->bindValue(":recherche", $recherche);
+                $stmt2->bindValue(":recherche", $recherche);
+            }
+
+            $stmt->bindValue(":limit", $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(":offset", $perPage*$page, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $stmt2->execute();
+            $count = $stmt2->fetch()['count'];
+            $hasNextPage = ($page+1)*$perPage < $count;
+            $hasPreviousPage = $page > 0; ?>
+            <table>
+                <tbody> 
+            <?php while($instrument = $stmt->fetch()) { ?>
+                    <tr <?php if (isset($callback)) { ?>onclick="execute_callback('<?= $callback ?>', '<?= $instrument['isin'] ?>', '<?= $instrument['isin'] ?>')"<?php } ?> >
+                        <td><?= $instrument["symbole"] ?></td>
+                        <td><?= $instrument["nom"] ?></td> 
+                        <td><?= $instrument["isin"] ?> </td>
+                    </tr>
+            <?php } ?> 
+                </tbody>
+            </table> 
+            <div>
+                <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
+                <?php if ($hasNextPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
+            </div><?php
         }
-
-        $stmt->bindValue(":limit", $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(":offset", $perPage*$page, PDO::PARAM_INT);
-
-        $stmt->execute();
-        $stmt2->execute();
-        $count = $stmt2->fetch()['count'];
-        $hasNextPage = ($page+1)*$perPage < $count;
-        $hasPreviousPage = $page > 0; ?>
-        <table>
-            <tbody> 
-        <?php while($instrument = $stmt->fetch()) { ?>
-                <tr <?php if (isset($callback)) { ?>onclick="execute_callback('<?= $callback ?>', '<?= $instrument['isin'] ?>', '<?= $instrument['isin'] ?>')"<?php } ?> >
-                    <td><?= $instrument["symbole"] ?></td>
-                    <td><?= $instrument["nom"] ?></td> 
-                    <td><?= $instrument["isin"] ?> </td>
-                </tr>
-        <?php } ?> 
-            </tbody>
-        </table> 
-        <div>
-            <?php if ($hasPreviousPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page-1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;" >Page précédente</a> <?php } ?>
-            <?php if ($hasNextPage) { ?> <a href="#" onclick="search_instrument(document.querySelector('#search_instrument_value'), <?= $page+1 ?>, '/portfolio/<?= $portfolio_id ?>/instruments?<?php if (isset($callback)) { ?>callback_id=<?= $callback ?><?php } ?>'); return false;">Page suivante</a> <?php } ?>
-        </div><?php
     }
 
     if (isset($_GET["ajax"])) {
@@ -117,6 +129,10 @@
         die();
     }
 ?>
+
+<?php if (isset($is_template)) { ?>
+<div class="center center-col h-screen">
+<?php } ?>
 
 <?php if (!isset($_POST["ajout_instrument"])) { ?>
 
@@ -171,5 +187,9 @@
     </form>
 
 <?php if (!isset($_POST["ajout_instrument"])) { ?>
+</div>
+<?php } ?>
+
+<?php if (isset($is_template)) { ?>
 </div>
 <?php } ?>
