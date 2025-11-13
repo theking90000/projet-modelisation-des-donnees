@@ -39,7 +39,8 @@ body {
   padding: 10px;
 }
 
-.popup::before {
+.popup::before,
+.ext-select:before {
   content: "Fermer";
   position: absolute;
   top: 4px;
@@ -55,4 +56,5 @@ body {
   background-color: white;
   border: 1px solid black;
   min-width: 400px;
+  padding: 10px;
 }

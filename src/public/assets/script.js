@@ -16,20 +16,31 @@ function open(element) {
 }
 
 function close(el) {
-  if (el.hasAttribute("data-popup-remove-on-close")) {
+  const remove = el.hasAttribute("data-popup-remove-on-close");
+
+  const id = el.getAttribute("data-id");
+  if (id) {
+    document.querySelectorAll(`[data-parent-id="${id}"]`).forEach((el) => {
+      if (remove) el.remove();
+      else el.style.display = "none";
+    });
+  }
+
+  if (remove) {
     el.remove();
     return;
   }
+
   el.style.display = "none";
 }
 const closePopup = close;
 
 let id = 0; /** Compteur d'élements détectés */
-function forElements(selector, callback) {
+function forElements(selector, callback, name = "data-id") {
   document.querySelectorAll(selector).forEach((element) => {
     try {
-      if (element.hasAttribute("data-id")) return;
-      element.setAttribute("data-id", ++id);
+      if (element.hasAttribute(name)) return;
+      element.setAttribute(name, ++id);
 
       callback(element);
     } catch (e) {
@@ -87,6 +98,10 @@ function detect() {
         select.setAttribute("data-for-id", element.getAttribute("data-id"));
         select.setAttribute("data-popup", "1");
         select.setAttribute("data-popup-remove-on-close", "1");
+        const parent = element.parentElement.closest("[data-id]");
+        if (parent != null) {
+          select.setAttribute("data-parent-id", parent.getAttribute("data-id"));
+        }
 
         document.body.appendChild(select);
 
@@ -101,6 +116,27 @@ function detect() {
       console.error(e);
     }
   });
+
+  forElements(
+    "[data-portal]",
+    (element) => {
+      const portal = document.querySelector(
+        element.getAttribute("data-portal")
+      );
+
+      const parent = element.parentElement.closest("[data-id]");
+      if (parent != null) {
+        element.setAttribute("data-parent-id", parent.getAttribute("data-id"));
+        /*element.setAttribute(
+          "data-popup-remove-on-close",
+          parent.getAttribute("data-popup-remove-on-close")
+        );*/
+      }
+
+      portal.appendChild(element);
+    },
+    "data-portal-id"
+  );
 }
 
 document.addEventListener("DOMContentLoaded", function () {
