@@ -72,6 +72,7 @@
                 die();
             }
         } catch (Exception $e) {
+            $erreur_ajout = "Une erreur est survenue lors de l'ajout de l'entreprise";
             Database::instance()->rollBack();
         }
     } 
@@ -198,6 +199,10 @@
         <?php } ?>
         
         <input type="submit" value="Enregistrer" />
+
+        <?php if(isset($erreur_ajout)) { ?>
+            <span style="color: red;"><?= $erreur_ajout ?></span>
+        <?php } ?>
     </form>
 
 <?php if (!isset($_POST["ajout_instrument"])) { ?>
