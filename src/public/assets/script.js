@@ -142,6 +142,30 @@ function detect() {
     },
     "data-portal-id"
   );
+
+  forElements("[data-if]", (element) => {
+    const target = document.querySelector(element.getAttribute("data-if"));
+    if (!target) return;
+
+    function check() {
+      let value = element.getAttribute("data-if-value");
+      if (!value) value = [];
+      else value = value.split("|");
+
+      if (value.includes(target.value)) {
+        element.style.display = "block";
+      } else {
+        element.style.display = "none";
+      }
+    }
+
+    check();
+
+    target.addEventListener("input", (e) => {
+      console.log(e.target.value);
+      check();
+    });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function () {

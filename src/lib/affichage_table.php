@@ -199,6 +199,25 @@ abstract class AffichageTable {
         });
     }
 
+    protected function print_if($name, array $value, $data, callable $fn) {
+        echo "<div data-if=\"#";
+        echo addslashes($name);
+        echo "\" data-if-value=\"";
+        echo addslashes(implode("|", $value));
+        echo "\" style=\"display: ";
+        // TODO: more way of comparison
+        if (isset($data[$name]) && in_array($data[$name]['value'], $value)) {
+            echo "block";
+        } else {
+            echo "none";
+        }
+        echo ";\">\n";
+
+        $fn();
+
+        echo "\n</div>\n";
+    }
+
     protected function print_ext_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data) {
         $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $select, $row_id, $row_label) {
             $id = !is_string($value) ? $row_id($value) : '';

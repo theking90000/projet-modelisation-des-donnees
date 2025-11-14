@@ -126,11 +126,12 @@ class AffichageInstruments extends AffichageTable {
 
         $this->print_select("type", ["action", "etf", "obligation", "devise"],["Action", "ETF", "Obligation", "Devise"], $data);
 
-
-        $this->print_ext_select("entreprise", "Selectionner entreprise", "/portfolio"."/".$this->args["portfolio_id"]."/entreprises",
-        function ($v) { return $v["code_pays"].$v["numero"]; },
-        function ($v) { return $v["nom"]; },
-        $data);
+        $this->print_if("type", ["action"], $data, function () use ($data) {
+            $this->print_ext_select("entreprise", "Selectionner entreprise", "/portfolio"."/".$this->args["portfolio_id"]."/entreprises",
+            function ($v) { return $v["code_pays"].$v["numero"]; },
+            function ($v) { return $v["nom"]; },
+            $data);
+        });
     }
 }
 
