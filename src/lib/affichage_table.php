@@ -171,7 +171,7 @@ abstract class AffichageTable {
 
     protected function print_input($name, $placeholder, $data) {
         $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder) {
-            echo "<input name=\"$name\" id=\"$name\" placeholder=\"$placeholder\" value=\"";
+            echo "<input name=\"$name\" id=\"$name-$this->render_id\" placeholder=\"$placeholder\" value=\"";
             echo htmlspecialchars(addslashes($value));
             echo "\" >\n";
         });
@@ -179,7 +179,7 @@ abstract class AffichageTable {
 
     protected function print_select($name, $in, $display, $data) {
         $this->print_input_fn($name, $data, function ($value) use ($name, $in, $display) {
-            echo "<select id=\"$name\" name=\"$name\">\n";
+            echo "<select id=\"$name-$this->render_id\" name=\"$name\">\n";
             for ($i = 0; $i < count($in); $i++) {
                 $option = $in[$i];
                 $displayText = $display[$i];
@@ -202,6 +202,7 @@ abstract class AffichageTable {
     protected function print_if($name, array $value, $data, callable $fn) {
         echo "<div data-if=\"#";
         echo addslashes($name);
+        echo '-'.$this->render_id;
         echo "\" data-if-value=\"";
         echo addslashes(implode("|", $value));
         echo "\" style=\"display: ";
