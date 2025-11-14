@@ -1,2 +1,3 @@
 .DS_Store
 src/lib/db_password.php
+src/phpmyadmin.php
