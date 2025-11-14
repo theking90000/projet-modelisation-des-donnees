@@ -129,7 +129,7 @@ class AffichageEntreprises extends AffichageTable {
 
         $this->print_input("numero", "Numero", $data);
 
-        $this->print_select("pays", "Selectionner pays", "/portfolio"."/".$this->args["portfolio_id"]."/pays",
+        $this->print_ext_select("pays", "Selectionner pays", "/portfolio"."/".$this->args["portfolio_id"]."/pays",
         function ($v) { return $v["code"]; },
         function ($v) { return $v["nom"]; },
         $data);

@@ -127,6 +127,16 @@ abstract class AffichageTable {
         });
     }
 
+    public function check_select($out, $data, $name, $in, $default) : array {
+        return $this->check_transform($out, $data, $name, function ($v) use ($in, $default) {
+            if(in_array($v, $in)) {
+                return [null, $v];
+            }
+            
+            return [null, $default];
+        });
+    }
+
     public function check_transform($out, $data, $name, callable $fn) : array {
         $res = $fn($data[$name]);
         $out[$name] = [
@@ -167,7 +177,29 @@ abstract class AffichageTable {
         });
     }
 
-    protected function print_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data) {
+    protected function print_select($name, $in, $display, $data) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $in, $display) {
+            echo "<select id=\"$name\" name=\"$name\">\n";
+            for ($i = 0; $i < count($in); $i++) {
+                $option = $in[$i];
+                $displayText = $display[$i];
+                echo "<option value=\"";
+                echo addslashes($option);
+                echo "\" ";
+
+                if($value === $option) {
+                    echo "selected";
+                }
+
+                echo ">";
+                echo htmlspecialchars($displayText);
+                echo "</option>\n";
+            }
+            echo "\n</select>\n";
+        });
+    }
+
+    protected function print_ext_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data) {
         $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $select, $row_id, $row_label) {
             $id = !is_string($value) ? $row_id($value) : '';
             $label = !is_string($value) ? $row_label($value) : $placeholder;
