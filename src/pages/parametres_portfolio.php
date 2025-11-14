@@ -13,7 +13,7 @@
     <div id="modifier-nom" class="popup" data-popup="1" style="display: <?php if (isset($erreur_nom)) { echo "block"; } else { echo "none"; }  ?>;">
         <h3>Modifier le nom du portfolio</h3>
         <form action="" method="post" class="center-col">
-            <input name="nom" id="nom" placeholder="Nouveau nom" value="<?= $nom ?>" />
+            <input name="nom" id="nom" placeholder="Nouveau nom" value="<?= @$nom ?>" />
 
             <?php if(isset($erreur_nom)) { ?>
                 <span style="color: red;"><?= $erreur_nom ?></span>
