@@ -136,6 +136,9 @@ class AffichageEntreprises extends AffichageTable {
     }
 }
 
-$affichage = new AffichageEntreprises(["portfolio_id"=>$portfolio_id, "title"=>"Entreprises"]);
+$acces = acces_portfolio($portfolio_id);
+
+$affichage = new AffichageEntreprises(["portfolio_id"=>$portfolio_id, "title"=>"Entreprises"], 10,
+                                      $acces>=2, $acces>=2, $acces>=2);
 
 $affichage->render();

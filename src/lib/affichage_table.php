@@ -6,7 +6,7 @@ abstract class AffichageTable {
     private string $render_id;
 
     private int $perPage;
-
+    private bool $allowUpdate, $allowCreate, $allowDelete;
     public array $args;
 
     private string|null $callback;
@@ -18,9 +18,13 @@ abstract class AffichageTable {
     private int $page;
     private string|null $addError = null;
     
-    function __construct(array $args, int $perPage = 10) {
+    function __construct(array $args, int $perPage = 10, bool $allowUpdate=false, bool $allowCreate=false, bool $allowDelete = false) {
         $this->args = $args;
         $this->perPage = $perPage;
+        $this->allowCreate = $allowCreate;
+        $this->allowUpdate = $allowUpdate;
+        $this->allowDelete = $allowDelete;
+
         $this->render_id = isset($_GET["rid"]) ? htmlspecialchars(addslashes($_GET['rid'])) :  uniqid();
         $this->callback = isset($_GET["callback_id"]) ? $_GET["callback_id"] : null;
         // Flag "ajax" pour retourner uniquement les lignes.
@@ -71,10 +75,14 @@ abstract class AffichageTable {
         }
 
         if ($this->onlyForm) {
-            $this->printForm();
+            if ($this->allowCreate) {
+                $this->printForm();
+            }
         } else {
             $this->printHead();
-            $this->printForm();
+            if ($this->allowCreate) {
+                $this->printForm();
+            }
         }
 
         if($with_template) {
@@ -86,20 +94,22 @@ abstract class AffichageTable {
     
  
     private function handlePost() {
-        try {
-            Database::instance()->beginTransaction();
+        if($this->allowCreate && $_POST["ajout"]) {
+            try {
+                Database::instance()->beginTransaction();
 
-            $this->data = $this->parse($_POST);
+                $this->data = $this->parse($_POST);
 
-            if(!$this->has_errors($this->data)) {
-                $this->added = $this->insert($this->data);
-                $this->data = [];
+                if(!$this->has_errors($this->data)) {
+                    $this->added = $this->insert($this->data);
+                    $this->data = [];
+                }
+
+                Database::instance()->commit();
+            } catch (Exception $e) {
+                $this->addError = "Une erreur est survenue".$e->getMessage();
+                Database::instance()->rollBack();
             }
-
-            Database::instance()->commit();
-        } catch (Exception $e) {
-            $this->addError = "Une erreur est survenue".$e->getMessage();
-            Database::instance()->rollBack();
         }
     }
 
@@ -442,11 +452,13 @@ abstract class AffichageTable {
         echo addslashes($this->current_url());
         echo "');\" />\n";
 
-        echo "<a href=\"#\" data-open=\"#ajout-";
-        echo $this->render_id;
-        echo "\">";
-        echo $names[1];
-        echo "</a>\n";
+        if ($this->allowCreate) {
+            echo "<a href=\"#\" data-open=\"#ajout-";
+            echo $this->render_id;
+            echo "\">";
+            echo $names[1];
+            echo "</a>\n";
+        }
 
         echo "<div class=\"search-result\">\n";
         echo "<div id=\"results-";

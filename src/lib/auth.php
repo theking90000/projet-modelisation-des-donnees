@@ -91,6 +91,21 @@ class WithoutAuthMiddleware extends AuthMiddleware {
     }
 }
 
+/**
+ * Retourne le niveau d'accès au portfolio ou 0 si pas d'accès
+ * Remarque : est appelée souvent par requête:
+ * on pourrait rajouter un cache.
+ */
+function acces_portfolio($portfolio_id) : int {
+   $stmt = Database::instance()->execute("SELECT Membre_Portfolio.niveau_acces FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ?", [Auth::user(), $portfolio_id]);
+
+
+    if($stmt->rowCount() == 0)
+        return 0;
+
+    return $stmt->fetch()["niveau_acces"];
+}
+
 class CheckPortfolioAccess {
     private int $niveau;
 
@@ -101,11 +116,7 @@ class CheckPortfolioAccess {
     public function handle($params) {
         $portfolio_id = intval($params["portfolio_id"]);
 
-        $stmt = Database::instance()->execute("SELECT 1 FROM Portfolio JOIN Membre_Portfolio ON Portfolio.id = Membre_Portfolio.id_portfolio JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Utilisateur.email = ? AND Portfolio.id = ? AND Membre_Portfolio.niveau_acces >= ?", [Auth::user(), $portfolio_id, $this->niveau]);
-
-        $access = $stmt->rowCount() > 0;
-
-        if(!$access) {
+        if(acces_portfolio($portfolio_id) < $this->niveau) {
             http_response_code(401);
             header("Location: /");
             die();

@@ -99,6 +99,9 @@ class AffichagePays extends AffichageTable {
     }
 }
 
-$affichage = new AffichagePays(["portfolio_id"=>$portfolio_id, "title"=>"Pays"]);
+$acces = acces_portfolio($portfolio_id);
+
+$affichage = new AffichagePays(["portfolio_id"=>$portfolio_id, "title"=>"Pays"],
+                                10,$acces>=2, $acces>=2, $acces>=2);
 
 $affichage->render();

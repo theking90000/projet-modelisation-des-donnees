@@ -144,7 +144,10 @@ class AffichageTransaction extends AffichageTable {
     }
 }
 
-$affichage = new AffichageTransaction(["portfolio_id"=>$portfolio_id, "title"=>"Entreprises"]);
+$acces = acces_portfolio($portfolio_id);
+
+$affichage = new AffichageTransaction(["portfolio_id"=>$portfolio_id, "title"=>"Entreprises"], 10,
+                                      $acces>=2, $acces>=2, $acces>=2);
 
 $affichage->render();
 ?>
