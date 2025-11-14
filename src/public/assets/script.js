@@ -172,7 +172,18 @@ document.addEventListener("DOMContentLoaded", function () {
   detect();
 });
 
+var callbackTable = {};
+
+function add_callback(id, fn) {
+  callbackTable[id] = fn;
+}
+
 function execute_callback(id, value, label = "") {
+  if (callbackTable[id]) {
+    callbackTable[id](value, label);
+    return;
+  }
+
   const element = document.querySelector(`[data-id="${id}"]`);
 
   if (!element) return;

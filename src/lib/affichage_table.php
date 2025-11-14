@@ -10,7 +10,7 @@ abstract class AffichageTable {
     public array $args;
 
     private string|null $callback;
-    private bool $onlyResults, $onlyForm;
+    private bool $onlyResults, $onlyForm, $noPopup;
     private array|null $data;
 
     private array|null $added = null;
@@ -26,7 +26,8 @@ abstract class AffichageTable {
         // Flag "ajax" pour retourner uniquement les lignes.
         $this->onlyResults = isset($_GET["ajax"]);
         // Flag "ajout" pour retourner uniquement le formulaire
-        $this->onlyForm = isset($_POST["ajout"]) && isset($_POST["callback"]);
+        $this->onlyForm = (isset($_POST["ajout"]) && isset($_GET["callback_id"])) || (isset($_GET["form"]));
+        $this->noPopup = isset($_GET["nopopup"]);
 
         $this->page = isset($_GET['page']) ? intval($_GET['page']) : 0;
 
@@ -191,7 +192,7 @@ abstract class AffichageTable {
                     echo "selected";
                 }
 
-                echo ">";
+                echo " >";
                 echo htmlspecialchars($displayText);
                 echo "</option>\n";
             }
@@ -356,17 +357,19 @@ abstract class AffichageTable {
     }
 
     private function printForm() {
-        echo "<div id=\"ajout-";
-        echo $this->render_id;
-        echo "\" data-portal=\"body\" class=\"popup\" data-popup=\"1\" style=\"display: ";
+        if(!$this->noPopup) {
+            echo "<div id=\"ajout-";
+            echo $this->render_id;
+            echo "\" data-portal=\"body\" class=\"popup\" data-popup=\"1\" style=\"display: ";
 
-        if ($this->has_errors($this->data)) {
-            echo "block";
-        } else {
-            echo "none";
+            if ($this->has_errors($this->data)) {
+                echo "block";
+            } else {
+                echo "none";
+            }
+
+            echo ";\" >\n";
         }
-
-        echo ";\" >\n";
 
         $names = $this->get_names();
 
@@ -381,9 +384,12 @@ abstract class AffichageTable {
         if (isset($this->callback)) {
             echo "onsubmit=\"submit_form(this,";
             echo "(html) => { if(html.includes('<!--'+' CLOSE '+'-->')) {";
-            echo "closePopup(this.parentElement); execute_callback(";
-            echo $this->callback;
-            echo ", ...JSON.parse(html.slice(14))); }";
+            if (!$this->noPopup) {
+                echo "closePopup(this.parentElement);";
+            }
+            echo "execute_callback('";
+            echo addslashes($this->callback);
+            echo "', ...JSON.parse(html.slice(14))); }";
             echo "else { this.parentElement.innerHTML = html;} detect(); }); return false;\" ";
         }
 
@@ -401,7 +407,10 @@ abstract class AffichageTable {
             $this->print_error(["error"=>$this->addError]);
         }
 
-        echo "</div>\n";
+        echo "</form>\n";
+        if(!$this->noPopup) {
+            echo "</div>\n";
+        }
     }
 
     private function printHead () {

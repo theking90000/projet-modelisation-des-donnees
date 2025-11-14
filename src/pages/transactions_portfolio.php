@@ -9,13 +9,19 @@
     $transactions = $stmt->fetchAll();
 ?>
 
+<script>
+    add_callback("-1", (value, label) => {
+        console.log('vv', value);
+    });
+</script>
+
 <div class="center center-col h-screen">
     Transactions du portfolio <?= $portfolio["nom"] ?>
     <br>
     
     <a href="#" data-open="#ajout-transaction">Ajouter une transaction</a>
 
-    <div id="ajout-transaction" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?= $portfolio_id ?>/ajout-transaction"></div>
+    <div id="ajout-transaction" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?= $portfolio_id ?>/ajout-transaction?callback_id=-1&form=1&nopopup=1"></div>
 
     <a href="/portfolio/<?= $portfolio_id ?>">Retour</a>
 </div>
