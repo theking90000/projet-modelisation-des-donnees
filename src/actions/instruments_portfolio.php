@@ -5,8 +5,17 @@ class AffichageInstruments extends AffichageTable {
     protected function parse(array $data): array {
         $out = [];
 
+        $out = $this->check($out, $data, "isin", function ($v) {
+            if(empty($v)) return "Le ISIN est requis";
+            if(strlen($v) !== 12) return "Le isin doit faire 12 caractères";
+        });
+
         $out = $this->check($out, $data, "nom", function ($v) {
             if(empty($v)) return "Le nom est requis";
+        });
+
+        $out = $this->check($out, $data, "symbole", function ($v) {
+            if(empty($v)) return "Le symbole est requis";
         });
 
         $out = $this->check_select($out, $data, "type", ["action", "etf", "obligation", "devise"], "action");
@@ -83,14 +92,18 @@ class AffichageInstruments extends AffichageTable {
 
     protected function insert(array $data): array {
         $row = [
-            "numero"=>$data["numero"]["value"], 
-            "code_pays"=>$data["pays"]["value"]["code"], 
+            "isin"=>$data["isin"]["value"], 
+            "symbole"=>$data["symbole"]["value"],
             "nom"=>$data["nom"]["value"],
-            "secteur"=>$data["secteur"]["value"]
+            "type"=>$data["type"]["value"],
+
+            "numero_entreprise"=>$data["entreprise"]["value"]["numero"] ?? null,
+            "pays_entreprise"=>$data["entreprise"]["value"]["code_pays"] ?? null,
         ];
 
-        Database::instance()->execute("INSERT INTO Entreprise (numero, code_pays, nom, secteur) VALUES (:numero, :code_pays, :nom, :secteur);",
-                $row);
+        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise) VALUES (?, ?, ?, ?, ?, ?);");
+
+        $stmt->execute(array_values($row));
                 
 
         return $row;
@@ -122,6 +135,10 @@ class AffichageInstruments extends AffichageTable {
     }
 
     protected function form(array $data) {
+        $this->print_input("isin", "ISIN", $data);
+
+        $this->print_input("symbole", "Symbole", $data);
+
         $this->print_input("nom", "Nom", $data);
 
         $this->print_select("type", ["action", "etf", "obligation", "devise"],["Action", "ETF", "Obligation", "Devise"], $data);

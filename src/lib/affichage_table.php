@@ -98,7 +98,7 @@ abstract class AffichageTable {
 
             Database::instance()->commit();
         } catch (Exception $e) {
-            $this->addError = "Une erreur est survenue";//.$e->getMessage();
+            $this->addError = "Une erreur est survenue".$e->getMessage();
             Database::instance()->rollBack();
         }
     }
@@ -117,6 +117,14 @@ abstract class AffichageTable {
         
         if(isset($this->callback)) {
             $url = $url. 'callback_id='.htmlspecialchars($this->callback);
+        }
+
+        if($this->noPopup) {
+            $url = $url.'&nopopup=1';
+        }
+
+        if(isset($_GET["form"])) {
+            $url=$url.'&form=1';
         }
 
         return $url;
