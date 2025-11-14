@@ -112,7 +112,7 @@ abstract class AffichageTable {
     }
 
     private function current_url(): string {
-        $url = $this->get_url().'?rid='.$this->render_id.'&';
+        $url = $this->get_url().'?';
         
         if(isset($this->callback)) {
             $url = $url. 'callback_id='.htmlspecialchars($this->callback);
@@ -122,9 +122,16 @@ abstract class AffichageTable {
     }
 
     public function check($out, $data, $name, callable $fn) : array {
+        return $this->check_transform($out, $data, $name, function ($v) use ($fn) {
+            return [$fn($v), $v];
+        });
+    }
+
+    public function check_transform($out, $data, $name, callable $fn) : array {
+        $res = $fn($data[$name]);
         $out[$name] = [
-            "value" => $data[$name],
-            "error" => $fn($data[$name])
+            "value" => $res[1],
+            "error" => $res[0],
         ];
         return $out;
     }
@@ -138,21 +145,45 @@ abstract class AffichageTable {
         }
     }
 
-    protected function print_input($name, $placeholder, $data) {
+    protected function print_input_fn($name, $data, callable $fn) {
         if (!isset($data[$name])||!isset($data[$name]["value"])) {
             $value = '';
         } else {
             $value = $data[$name]["value"];
         }
-        
 
-        echo "<input name=\"$name\" id=\"$name\" placeholder=\"$placeholder\" value=\"";
-        echo htmlspecialchars(addslashes($value));
-        echo "\" >\n";
+        $fn($value);
 
         if (isset($data[$name])) {
             $this->print_error($data[$name]);
         }
+    }
+
+    protected function print_input($name, $placeholder, $data) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder) {
+            echo "<input name=\"$name\" id=\"$name\" placeholder=\"$placeholder\" value=\"";
+            echo htmlspecialchars(addslashes($value));
+            echo "\" >\n";
+        });
+    }
+
+    protected function print_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $select, $row_id, $row_label) {
+            $id = !is_string($value) ? $row_id($value) : '';
+            $label = !is_string($value) ? $row_label($value) : $placeholder;
+            
+            echo "<div data-name=\"$name\" data-value=\"";
+            echo addslashes($id);
+            echo "\" placeholder=\"$placeholder\" value=\"";
+            echo htmlspecialchars(addslashes($id));
+            echo "\" data-ext-select=\"";
+            echo addslashes($select);
+            echo "\" >";
+
+            echo htmlspecialchars($label);
+
+            echo "</div>\n";
+        });
     }
 
     /**
@@ -260,7 +291,7 @@ abstract class AffichageTable {
             echo $page;
             echo ", '";
             
-            echo addslashes($this->current_url());
+            echo addslashes($this->current_url().'&rid='.$this->render_id.'&');
             echo "'); return false;\" >";
 
             echo $text;
