@@ -18,6 +18,10 @@ $router->get('/logout', create_handler('actions/logout.php'));
 
 $router->notFound(create_render_handle("404.php", ["title"=>"Finance App - Erreur 404"]));
 
+$router->get("/donnees", create_handler("actions/cours_journaliers.php"));
+
+$router->get("/cours/{isin}", create_render_handle("cours.php", ["title"=>"Cours"]));
+
 $router->group("", function($router) {
   $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
 }, ['AuthMiddleware']);
