@@ -55,27 +55,35 @@ foreach ($instruments as $instrument) {
         }
 
         // Récupération, chaque jour, des données boursières de la veille.
-        $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime('-1 day'), new DateTime('-1 day'));
+        // Si l'instrument n'a aucun historique (ou que celui-ci est petit), récupérer plus de données.
+        $history_size = $database->execute("SELECT COUNT(isin) as count FROM Cours WHERE isin=? AND date BETWEEN ? AND ?",
+            [0 => $isin, 1 => (new DateTime("-14 day"))->format("Y-m-d"), 2 => (new DateTime("-1 day"))->format("Y-m-d")])->fetch();
+        if ($history_size["count"] < 7) {
+            $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime('-14 days'), new DateTime('-1 day'));
+        } else {
+            $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime('-1 day'), new DateTime('-1 day'));
+        }
 
         if (empty($history)) {
             error_log("Aucun historique pour: " . $isin);
             continue;
         }
 
-        $quote = $history[0];
+        foreach ($history as $quote) {
 
-        $stmt = "INSERT INTO Cours (isin, date, heure, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $values = [$isin,
-            $quote->getDate()->format('Y-m-d'),
-            // Nous n'avons pas besoin de l'heure, la retirer de la base de donnée?
-            $quote->getDate()->format('H:i:s'),
-            $quote->getOpen(),
-            $quote->getClose(),
-            $quote->getHigh(),
-            $quote->getLow(),
-            $quote->getVolume()];
+            $stmt = "INSERT INTO Cours (isin, date, heure, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $values = [$isin,
+                $quote->getDate()->format('Y-m-d'),
+                // Nous n'avons pas besoin de l'heure, la retirer de la base de donnée?
+                $quote->getDate()->format('H:i:s'),
+                $quote->getOpen(),
+                $quote->getClose(),
+                $quote->getHigh(),
+                $quote->getLow(),
+                $quote->getVolume()];
 
-        $stmt = $database->execute($stmt, $values);
+            $stmt = $database->execute($stmt, $values);
+        }
 
     } catch (GuzzleException|ApiException|PDOException $e) {
         error_log("Erreur: " . $e->getMessage());
