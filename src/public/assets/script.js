@@ -16,6 +16,8 @@ function open(element) {
 }
 
 function close(el) {
+  const redirectOnClose = el.getAttribute("data-redirect-on-close");
+
   const remove = el.hasAttribute("data-popup-remove-on-close");
 
   const id = el.getAttribute("data-id");
@@ -24,6 +26,11 @@ function close(el) {
       if (remove) el.remove();
       else el.style.display = "none";
     });
+  }
+
+  if (redirectOnClose) {
+    window.location.href = redirectOnClose;
+    return;
   }
 
   if (remove) {

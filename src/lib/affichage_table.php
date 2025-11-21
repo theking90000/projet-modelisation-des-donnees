@@ -52,6 +52,12 @@ abstract class AffichageTable {
     }
 
     public function render() {
+        if($this->update_id && $this->added) {
+            // Redirect? si succès;
+            header("Location: ". $this->current_url(true));
+            die();
+        }
+
         // Si callback est défini, alors la page est intégrée sur une autre
         // via javascript, ne pas retourner le template
         // et quand on sélectionne une ligne, appeler execute_callback() en JS.
@@ -81,18 +87,14 @@ abstract class AffichageTable {
             echo "<div class=\"center center-col h-screen\">";
         }
 
-        if ($this->onlyForm) {
+        if ($this->onlyForm || $this->update_id) {
             if ($this->update_id) {
                 $this->printForm(true);
-            } 
-            if ($this->allowCreate) {
+            } else if ($this->allowCreate) {
                 $this->printForm();
             }
         } else {
             $this->printHead();
-            if ($this->update_id) {
-                $this->printForm(true);
-            } 
             if ($this->allowCreate) {
                 $this->printForm();
             }
@@ -460,7 +462,15 @@ abstract class AffichageTable {
                 echo "none";
             }
 
-            echo ";\" >\n";
+            echo ";\" ";
+
+            if($update){
+                echo "data-redirect-on-close=\"";
+                echo $this->current_url(true);
+                echo "\"";
+            }
+
+            echo ">\n";
         }
 
         $names = $this->get_names();
