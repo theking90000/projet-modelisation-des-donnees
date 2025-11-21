@@ -12,7 +12,10 @@ abstract class AffichageTable {
     private string|null $callback;
     private bool $onlyResults, $onlyForm, $noPopup;
     private array|null $data;
+    private string|null $update_id;
 
+    // for update
+    private array|null $entity = null;
     private array|null $added = null;
 
     private int $page;
@@ -33,12 +36,16 @@ abstract class AffichageTable {
         $this->onlyForm = (isset($_POST["ajout"]) && isset($_GET["callback_id"])) || (isset($_GET["form"]));
         $this->noPopup = isset($_GET["nopopup"]);
 
+        $this->update_id = isset($_GET["update"]) && $this->allowUpdate ? $_GET["update"] : null;
+
         $this->page = isset($_GET['page']) ? intval($_GET['page']) : 0;
 
         if ($this->page < 0) $this->page = 0;
 
         if ($_SERVER['REQUEST_METHOD'] === "POST") {
             $this->handlePost();
+        } else if ($this->update_id) {
+            $this->handleUpdate();
         } else {
             $this->data = [];
         }
@@ -75,11 +82,17 @@ abstract class AffichageTable {
         }
 
         if ($this->onlyForm) {
+            if ($this->update_id) {
+                $this->printForm(true);
+            } 
             if ($this->allowCreate) {
                 $this->printForm();
             }
         } else {
             $this->printHead();
+            if ($this->update_id) {
+                $this->printForm(true);
+            } 
             if ($this->allowCreate) {
                 $this->printForm();
             }
@@ -94,23 +107,45 @@ abstract class AffichageTable {
         }
     }
 
-    
+    private function handleUpdate() {
+        if($this->allowUpdate) {
+            $this->entity = $this->get($this->update_id);
+            if(!$this->entity) {
+                // Afficher une page d'erreur
+                throw new Exception("Identifiant inconnu");
+            }
+
+            $this->data = $this->parse($this->entity);
+        }
+    }
  
     private function handlePost() {
         if($this->allowCreate && $_POST["ajout"]) {
             try {
                 Database::instance()->beginTransaction();
 
+                if($this->allowUpdate && $this->update_id) {
+                    $this->entity = $this->get($this->update_id);
+                    if(!$this->entity) {
+                        throw new Exception("Identifiant inconnu");
+                    }
+                }
+
                 $this->data = $this->parse($_POST);
 
                 if(!$this->has_errors($this->data)) {
-                    $this->added = $this->insert($this->data);
-                    $this->data = [];
+                    if($this->entity) {
+                        $this->update($this->update_id, $this->data);
+                        $this->entity = $this->added = $this->get($this->update_id);
+                    } else {
+                        $this->data = [];
+                        $this->added = $this->insert($this->data);
+                    }
                 }
 
                 Database::instance()->commit();
             } catch (Exception $e) {
-                $this->addError = "Une erreur est survenue".$e->getMessage();
+                $this->addError = "Une erreur est survenue : ".$e->getMessage();
                 Database::instance()->rollBack();
             }
         }
@@ -125,11 +160,11 @@ abstract class AffichageTable {
         return !!$this->addError;
     }
 
-    private function current_url(): string {
+    private function current_url(bool $noUpdate = false): string {
         $url = $this->get_url().'?';
         
         if(isset($this->callback)) {
-            $url = $url. 'callback_id='.htmlspecialchars($this->callback);
+            $url = $url. 'callback_id='.urlencode($this->callback);
         }
 
         if($this->noPopup) {
@@ -138,6 +173,10 @@ abstract class AffichageTable {
 
         if(isset($_GET["form"])) {
             $url=$url.'&form=1';
+        }
+
+        if($this->update_id && !$noUpdate) {
+            $url=$url.'&update='.urlencode($this->update_id);
         }
 
         return $url;
@@ -328,6 +367,21 @@ abstract class AffichageTable {
      */
     protected abstract function get_url() : string;
 
+    /**
+     * Récuperer une entité par son id
+     * retourne NULL si n'existe pas
+     */
+    protected function get(string $id): array {
+        throw new Exception("get(): n'est pas implémenté");
+    }
+
+    /**
+     * Modifier une entité
+     */
+    protected function update(string $id, array $data) {
+        throw new Exception("update() n'est pas implémenté");
+    }
+
     private function printResults() {
         $count = $this->count($_GET);
         $stmt = $this->search($_GET, $this->perPage, $this->perPage*$this->page);
@@ -355,6 +409,17 @@ abstract class AffichageTable {
 
             echo " >\n";
             $this->render_row($row);
+
+            if(!isset($this->callback) && $this->allowUpdate) {
+                echo "<td><a href=\"";
+                echo $this->current_url(true).'&update='. urlencode($this->row_id($row));
+                echo "\">";
+                
+                echo "Modifier";
+
+                echo "</a></td>\n";
+            }
+
             echo "\n<tr>";
         }
         echo "\n</tbody></table>\n";
@@ -383,13 +448,13 @@ abstract class AffichageTable {
         if ($hasNextPage) $nav($this->page + 1, "Page suivante");
     }
 
-    private function printForm() {
+    private function printForm(bool $update = false) {
         if(!$this->noPopup) {
             echo "<div id=\"ajout-";
             echo $this->render_id;
             echo "\" data-portal=\"body\" class=\"popup\" data-popup=\"1\" style=\"display: ";
 
-            if ($this->has_errors($this->data)) {
+            if ($this->has_errors($this->data) || $update) {
                 echo "block";
             } else {
                 echo "none";
@@ -401,7 +466,11 @@ abstract class AffichageTable {
         $names = $this->get_names();
 
         echo "<h3>";
-        echo htmlspecialchars($names[1]);
+        if ($update) {
+            echo "Modifier " . htmlspecialchars($this->row_label($this->entity));
+        } else {
+            echo htmlspecialchars($names[1]);
+        }
         echo "</h3>\n";
 
         echo "<form action=\"";

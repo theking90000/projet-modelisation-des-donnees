@@ -97,6 +97,19 @@ class AffichagePays extends AffichageTable {
 
         $this->print_input("nom", "Nom pays", $data);
     }
+
+    protected function get(string $id): array {
+        return Database::instance()
+            ->execute("SELECT code, nom FROM Pays WHERE code = ?", [$id])
+            ->fetch();
+    }
+    
+    protected function update(string $id, array $data) {
+        return Database::instance()
+            ->execute("UPDATE Pays SET nom = :nom WHERE code = :code", [
+                "code"=>$data["code"]["value"], 
+            "nom"=>$data["nom"]["value"]]);
+    }
 }
 
 $acces = acces_portfolio($portfolio_id);
