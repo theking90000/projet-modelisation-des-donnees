@@ -188,6 +188,12 @@ abstract class AffichageTable {
         }
     }
 
+    protected function print_label($name, $label) {
+        echo "<label for=\"".$name.$this->render_id."\">";;
+        echo $label;
+        echo "</label>\n";
+    }
+
     protected function print_input($name, $placeholder, $data) {
         $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder) {
             echo "<input name=\"$name\" id=\"$name-$this->render_id\" placeholder=\"$placeholder\" value=\"";

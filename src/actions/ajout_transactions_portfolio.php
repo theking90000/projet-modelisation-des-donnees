@@ -135,11 +135,15 @@ class AffichageTransaction extends AffichageTable {
         function ($v) { return $v["nom"]; },
         $data);
             
+        $this->print_label("quantite", "Quantité :");
         $this->print_input("quantite", "Quantité", $data);
 
+        $this->print_label("type", "Type :");
         $this->print_select("type", ["achat", "vente"],["Achat", "Vente"], $data);
 
+        $this->print_label("taxes", "Taxes :");
         $this->print_input("taxes", "Taxes", $data);
+        $this->print_label("frais", "Frais :");
         $this->print_input("frais", "Frais transactions", $data);
     }
 }
