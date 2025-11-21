@@ -21,7 +21,7 @@ CREATE TABLE Instrument_Financier
     nom VARCHAR(50),
     `type` VARCHAR(10),
     symbole VARCHAR(20),
-    taux DECIMAL,
+    taux DECIMAL(18, 9),
     date_emission DATE,
     date_echeance DATE,
     couple_devise VARCHAR(15),
@@ -70,10 +70,10 @@ CREATE TABLE Cours
     isin CHAR(12),
     `date` DATE,
     heure TIME,
-    valeur_ouverture DECIMAL,
-    valeur_fermeture DECIMAL,
-    valeur_maximale DECIMAL,
-    valeur_minimale DECIMAL,
+    valeur_ouverture DECIMAL(18, 9),
+    valeur_fermeture DECIMAL(18, 9),
+    valeur_maximale DECIMAL(18, 9),
+    valeur_minimale DECIMAL(18, 9),
     volume INT,
     PRIMARY KEY(isin, `date`, heure)
 );
@@ -96,11 +96,11 @@ CREATE TABLE `Transaction`
     `type` CHAR(5),
     `date` DATE,
     heure TIME,
-    quantite DECIMAL,
-    valeur_devise_portfolio DECIMAL,
-    valeur_devise_instrument DECIMAL,
-    frais DECIMAL,
-    taxes DECIMAL,
+    quantite DECIMAL(18, 9),
+    valeur_devise_portfolio DECIMAL(18, 9),
+    valeur_devise_instrument DECIMAL(18, 9),
+    frais DECIMAL(18, 9),
+    taxes DECIMAL(18, 9),
     PRIMARY KEY (id, id_portfolio)
 );
 
