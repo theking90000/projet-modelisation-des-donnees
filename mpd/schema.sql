@@ -48,9 +48,9 @@ CREATE TABLE Pays
 CREATE TABLE Bourse
 (
     id VARCHAR(255) PRIMARY KEY,
-    nom VARCHAR(50),
+    nom VARCHAR(255),
     ville VARCHAR(50),
-    fuseau_horaire VARCHAR(10),
+    fuseau_horaire VARCHAR(50),
     heure_ouverture TIME,
     heure_fermeture TIME,
     code_pays CHAR(2)

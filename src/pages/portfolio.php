@@ -14,6 +14,7 @@
     <span>Gérer les données</span>
     <a href="/portfolio/<?= $portfolio_id ?>/instruments">Voir les instruments financiers</a>
     <a href="/portfolio/<?= $portfolio_id ?>/entreprises">Voir les entreprises</a>
+    <a href="/portfolio/<?= $portfolio_id ?>/bourses">Voir les bourses</a>
     <a href="/portfolio/<?= $portfolio_id ?>/pays">Voir les pays</a>
     <br>
 
