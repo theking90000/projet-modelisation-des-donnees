@@ -70,7 +70,7 @@ class AffichageInstruments extends AffichageTable {
     }
 
     private function sql_recherche(array $searchParams): array {
-        $recherche = $searchParams['recherche'];
+        $recherche = isset($searchParams['recherche']) ? $searchParams['recherche'] : null;
 
         if(isset($recherche)) {
             return ["WHERE LOWER(Instrument_Financier.nom) LIKE CONCAT('%', :recherche,'%')", strtolower($_GET["recherche"])];
