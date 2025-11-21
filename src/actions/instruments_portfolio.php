@@ -46,24 +46,26 @@ class AffichageInstruments extends AffichageTable {
                 }
             });
 
-            $out = $this->check_transform($out, $data, "bourse", function ($v) {
+            $out = $this->check_transform($out, $data, "devise_echange", function ($v) {
                 if(empty($v)) {
-                    return ["Une bourse d'échange est requise.", null];
+                    return ["Une devise d'échange est requise.", null];
                 }
 
                 $id_bourse = $v;
 
-                $stmt = Database::instance()->execute("SELECT id, nom, ville FROM Bourse WHERE id = ?", [$id_bourse]);
+                $stmt = Database::instance()->execute("SELECT code, nom, symbole FROM Devise WHERE id = ?", [$id_bourse]);
 
                 $bourse = $stmt->fetch();
 
                 if(!$bourse) {
-                    return ["Bourse inconnue.", null];
+                    return ["Devise inconnue.", null];
                 } else {
                     return [null, $bourse];
                 }
             });
         }
+
+
         return $out;
     }
 
@@ -117,10 +119,11 @@ class AffichageInstruments extends AffichageTable {
 
             "numero_entreprise"=>$data["entreprise"]["value"]["numero"] ?? null,
             "pays_entreprise"=>$data["entreprise"]["value"]["code_pays"] ?? null,
-            "id_bourse"=>$data["bourse"]["value"]["id"] ?? null
+            "id_bourse"=>$data["bourse"]["value"]["id"] ?? null,
+            "code_devise"=>$data["devise"]["value"]["code"] ?? null
         ];
 
-        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
         $stmt->execute(array_values($row));
                 
@@ -174,6 +177,11 @@ class AffichageInstruments extends AffichageTable {
             function ($v) { return $v["id"]; },
             $data);
         });
+
+        $this->print_ext_select("devise_echange", "Devise d'échange", "/portfolio"."/".$this->args["portfolio_id"]."/devises",
+            function ($v) { return $v["code"].'('.$v["symbole"].')'; },
+            function ($v) { return $v["code"]; },
+            $data);
     }
 }
 
