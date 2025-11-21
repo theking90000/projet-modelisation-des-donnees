@@ -43,11 +43,17 @@ class AffichageTransaction extends AffichageTable {
             }
         });
         
+        $out = $this->check($out, $data, "date", function ($v) {
+            if (!isset($v)) {
+                return "La date doit être définie";
+            }
+        });
+
         return $out;
     }
 
     private function sql_recherche(array $searchParams): array {
-        $recherche = $searchParams['recherche'];
+        $recherche = isset($searchParams['recherche']) ? $searchParams['recherche'] : null;
 
         if(isset($recherche)) {
             return ["WHERE LOWER(Instrument_Financier.nom) LIKE CONCAT('%', :recherche,'%')", strtolower($_GET["recherche"])];
@@ -88,20 +94,32 @@ class AffichageTransaction extends AffichageTable {
     }
 
     protected function insert(array $data): array {
-        /*$row = [
-            "numero"=>$data["numero"]["value"], 
-            "code_pays"=>$data["pays"]["value"]["code"], 
-            "nom"=>$data["nom"]["value"],
-            "secteur"=>$data["secteur"]["value"]
-        ];*/
+        if(!isset($this->args["portfolio_id"]))
+            throw new Exception("Manque id portfolio");
 
-        throw new Exception("Pas implementé");
+        $row = [
+            "id_portfolio"=>$this->args["portfolio_id"],
+            "isin"=>$data["instrument"]["value"]["isin"],
+
+            "email_utilisateur"=>Auth::user(),
+
+            "type"=>$data["type"]["value"],
+            "date"=>$data["date"]["value"],
+
+            "quantite"=>$data["quantite"]["value"],
+
+            "taxes"=>$data["taxes"]["value"],
+            "frais"=>$data["frais"]["value"],
+        ];
+
+        var_dump($row);
+        Database::instance()->execute("INSERT INTO `Transaction` (id_portfolio, isin, email_utilisateur,`type`, `date`, quantite, taxes, frais) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array_values($row));
 
       //  Database::instance()->execute("INSERT INTO Entreprise (numero, code_pays, nom, secteur) VALUES (:numero, :code_pays, :nom, :secteur);",
    //             $row);
                 
 
-      //  return $row;
+        return $row;
     }
 
     protected function render_row(array $row) {
@@ -140,6 +158,9 @@ class AffichageTransaction extends AffichageTable {
 
         $this->print_label("type", "Type :");
         $this->print_select("type", ["achat", "vente"],["Achat", "Vente"], $data);
+
+        $this->print_label("date", "Date :");
+        $this->print_input("date", "Date", $data);
 
         $this->print_label("taxes", "Taxes :");
         $this->print_input("taxes", "Taxes", $data);
