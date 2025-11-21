@@ -45,6 +45,24 @@ class AffichageInstruments extends AffichageTable {
                     return [null, $entreprise];
                 }
             });
+
+            $out = $this->check_transform($out, $data, "bourse", function ($v) {
+                if(empty($v)) {
+                    return ["Une bourse d'échange est requise.", null];
+                }
+
+                $id_bourse = $v;
+
+                $stmt = Database::instance()->execute("SELECT id, nom, ville FROM Bourse WHERE id = ?", [$id_bourse]);
+
+                $bourse = $stmt->fetch();
+
+                if(!$bourse) {
+                    return ["Bourse inconnue.", null];
+                } else {
+                    return [null, $bourse];
+                }
+            });
         }
         return $out;
     }
@@ -99,9 +117,10 @@ class AffichageInstruments extends AffichageTable {
 
             "numero_entreprise"=>$data["entreprise"]["value"]["numero"] ?? null,
             "pays_entreprise"=>$data["entreprise"]["value"]["code_pays"] ?? null,
+            "id_bourse"=>$data["bourse"]["value"]["id"] ?? null
         ];
 
-        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise) VALUES (?, ?, ?, ?, ?, ?);");
+        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse) VALUES (?, ?, ?, ?, ?, ?, ?);");
 
         $stmt->execute(array_values($row));
                 
@@ -148,6 +167,11 @@ class AffichageInstruments extends AffichageTable {
             $this->print_ext_select("entreprise", "Selectionner entreprise", "/portfolio"."/".$this->args["portfolio_id"]."/entreprises",
             function ($v) { return $v["code_pays"].$v["numero"]; },
             function ($v) { return $v["nom"]; },
+            $data);
+
+            $this->print_ext_select("bourse", "Selectionner une bourse", "/portfolio"."/".$this->args["portfolio_id"]."/bourses",
+            function ($v) { return $v["id"]."(".$v["ville"].")"; },
+            function ($v) { return $v["id"]; },
             $data);
         });
     }
