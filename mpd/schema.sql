@@ -69,7 +69,6 @@ CREATE TABLE Cours
 (
     isin CHAR(12),
     `date` DATE,
-    heure TIME,
     valeur_ouverture DECIMAL(18, 9),
     valeur_fermeture DECIMAL(18, 9),
     valeur_maximale DECIMAL(18, 9),
