@@ -12,7 +12,23 @@ $client = ApiClientFactory::createApiClient();
 
 $database = Database::instance();
 
-$stmt = "SELECT DISTINCT isin, symbole, nom FROM Instrument_Financier";
+// Table servant comme Cache pour l'api YahooFinance.
+// Si l'api ne peut pas trouver un des instruments financier, on sauvegarde ce fait
+// par l'ajout d'une ligne liant l'isin avec un symbole 'MISS' pour éviter de refaire
+// la rechercher sur un instrument en sachant que la recherche est déterministe.
+// Si l'api retourne un résultat, sauvegarder le symbole qui sera alors utilisé pour
+// faire les requêtes api pour récupérer l'historique.
+$database->execute("CREATE TABLE IF NOT EXISTS YahooFinanceCache (isin CHAR(12) PRIMARY KEY REFERENCES Instrument_Financier.isin, symbol VARCHAR(50))");
+
+// On regarde ici plusieurs choses:
+// - Si l'instrument financier a déjà eu un fetch d'historique
+//      Si non, 'date' sera NULL
+//      Si oui, 'date' sera la dernière date de l'historique présente dans la table Cours
+// - Si la recherche api a déjà été effectuée pour l'instrument.
+//      Si oui on aura comme expliqué dessus 'MISS' ou le symbole.
+//      Sinon, on a NULL.
+$stmt = "SELECT DISTINCT Instrument_Financier.isin, symbole, nom, MAX(Cours.date) as date, YahooFinanceCache.symbol as yahoo_symbol FROM Instrument_Financier LEFT JOIN YahooFinanceCache ON YahooFinanceCache.isin = Instrument_Financier.isin LEFT JOIN Cours ON Cours.isin=Instrument_Financier.isin GROUP BY Instrument_Financier.isin";
+
 $stmt = $database->execute($stmt);
 
 $instruments = $stmt->fetchAll();
@@ -21,21 +37,25 @@ foreach ($instruments as $instrument) {
     $isin = $instrument['isin'];
     $symbole = $instrument['symbole'];
     $nom = $instrument['nom'];
+    $date = $instrument['date'];
 
-    try {
+    $today = date("Y-m-d", (new DateTime("-1 day"))->getTimestamp());
 
-        // Cette librairie a besoin d'avoir le symbole pour pouvoir consulter l'historique de l'instrument.
-        // En plus de cela, Yahoo Finance peut ne pas trouver un instrument depuis son isin. Mais il peut le trouver en
-        // utilisant son nom.
+    if (!$date) {
+        $date = date("Y-m-d", $today." - 365 days");
+    }
 
-        // On effectue alors une recherche sur le code isin, le symbole et le nom.
-        // Le premier qui offre un résultat est conservé et ce résultat de recherche est utilisé après.
+    if ($today <= $date) {
+        continue;
+    }
 
-        // Nous pourrions éviter cette recherche en effectuant la recherche au moment où l'utilisateur encode un nouvel
-        // instrument. L'utilisateur fait alors une "recherche" pour ajouter son instrument, qu'il peut ensuite
-        // sélectionner dans une liste. De cette manière, les données encodées sont forcément cohérentes. Cette étape
-        // ne serait alors plus nécéssaire.
-
+    if (!$instrument['yahoo_symbol']) {
+        // On effectue la recherche de telle manière que si:
+        // - l'isin ne retourne pas de résultat on recherche avec le symbole
+        // - le symbole ne retourne pas de résultat on recherche comme dernière
+        //   mesure le nom
+        // Si on a aucun résultat, le symbole devient 'MISS'
+        // Dans tout les cas, on sauvegarde ça dans la table YahooFinanceCache
         foreach ([$isin, $symbole, $nom] as $search) {
             if ($search === null) {
                 continue;
@@ -48,34 +68,34 @@ foreach ($instruments as $instrument) {
                 break;
             }
         }
-
-        if (empty($result)) {
-            error_log("Aucun résultat pour: " . $isin);
-            continue;
-        }
-
-        // Récupération, chaque jour, des données boursières de la veille.
-        // Si l'instrument n'a aucun historique (ou que celui-ci est petit), récupérer plus de données.
-        $history_size = $database->execute("SELECT COUNT(isin) as count FROM Cours WHERE isin=? AND date BETWEEN ? AND ?",
-            [0 => $isin, 1 => (new DateTime("-14 day"))->format("Y-m-d"), 2 => (new DateTime("-1 day"))->format("Y-m-d")])->fetch();
-        if ($history_size["count"] < 7) {
-            $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime('-14 days'), new DateTime('-1 day'));
+        if (!empty($result)) {
+            $instrument['yahoo_symbol'] = "MISS";
         } else {
-            $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime('-1 day'), new DateTime('-1 day'));
+            $instrument['yahoo_symbol'] = $result[0]->getSymbol();
         }
+        $database->execute("INSERT INTO YahooFinanceCache (isin, symbol) VALUES (?, ?)", [$isin, $instrument['yahoo_symbol']]);
+    }
 
+    if ($instrument['yahoo_symbol'] == "MISS") {
+        continue;
+    }
+
+    try {
+
+        $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime($date), new DateTime('-1 day'));
+
+        // Ne devrait théoriquement pas arriver
         if (empty($history)) {
             error_log("Aucun historique pour: " . $isin);
             continue;
         }
 
+        // "Pour chaque jour de l'historique, on l'insère dans BDD"
         foreach ($history as $quote) {
 
-            $stmt = "INSERT INTO Cours (isin, date, heure, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = "INSERT INTO Cours (isin, date, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $values = [$isin,
                 $quote->getDate()->format('Y-m-d'),
-                // Nous n'avons pas besoin de l'heure, la retirer de la base de donnée?
-                $quote->getDate()->format('H:i:s'),
                 $quote->getOpen(),
                 $quote->getClose(),
                 $quote->getHigh(),
