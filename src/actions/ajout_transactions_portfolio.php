@@ -112,7 +112,6 @@ class AffichageTransaction extends AffichageTable {
             "frais"=>$data["frais"]["value"],
         ];
 
-        var_dump($row);
         Database::instance()->execute("INSERT INTO `Transaction` (id_portfolio, isin, email_utilisateur,`type`, `date`, quantite, taxes, frais) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array_values($row));
 
       //  Database::instance()->execute("INSERT INTO Entreprise (numero, code_pays, nom, secteur) VALUES (:numero, :code_pays, :nom, :secteur);",

@@ -140,8 +140,8 @@ abstract class AffichageTable {
                         $this->update($this->update_id, $this->data);
                         $this->entity = $this->added = $this->get($this->update_id);
                     } else {
-                        $this->data = [];
                         $this->added = $this->insert($this->data);
+                        $this->data = [];
                     }
                 }
 
