@@ -16,6 +16,7 @@
     <a href="/portfolio/<?= $portfolio_id ?>/entreprises">Voir les entreprises</a>
     <a href="/portfolio/<?= $portfolio_id ?>/bourses">Voir les bourses</a>
     <a href="/portfolio/<?= $portfolio_id ?>/pays">Voir les pays</a>
+     <a href="/portfolio/<?= $portfolio_id ?>/devises">Voir les devises</a>
     <br>
 
     <?php if($portfolio['niveau_acces'] >= 3) { ?>
