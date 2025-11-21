@@ -86,6 +86,9 @@ abstract class AffichageTable {
         }
 
         if($with_template) {
+            if(isset($this->args["portfolio_id"])) {
+                echo "<a href=\"/portfolio/".$this->args["portfolio_id"]."\">Retour</a>\n";
+            }
             echo "</div>\n";
             //echo "<a href=\"/portfolio/$portfolio_id\">Retour</a>\n";
         }
