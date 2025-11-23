@@ -1,7 +1,19 @@
 <?php
-    $stmt = Database::instance()->execute("SELECT Portfolio.id, Portfolio.nom, Membre_Portfolio.niveau_acces  FROM Portfolio JOIN Membre_Portfolio ON Membre_Portfolio.id_portfolio = Portfolio.id JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Portfolio.id = ? AND Utilisateur.email = ?", [$portfolio_id, Auth::user()]);
+    /* Récuperer les informations du portfolio,
+       de l'utilisateur (niveau accès),
+       devise du portfolio */
+    $stmt = Database::instance()->execute("
+    SELECT p.id, p.nom, mp.niveau_acces,
+           d.symbole AS devise
+    FROM Portfolio p
+    JOIN Membre_Portfolio mp ON mp.id_portfolio = p.id 
+    JOIN Utilisateur u ON u.email = mp.email
+    JOIN Devise d ON d.code = p.code_devise
+    WHERE p.id = ? AND u.email = ?", [$portfolio_id, Auth::user()]);
     
     $portfolio = $stmt->fetch();
+
+    $devise = $portfolio['devise'];
 
     /* Instruments Financier ayant le plus de variations */
     $instruments = Database::instance()->execute("
@@ -39,12 +51,12 @@ JOIN Instrument_Financier ins ON ins.isin = t.isin
 LEFT JOIN Cours ajd ON ins.isin = ajd.isin
 LEFT JOIN Cours hier ON ins.isin = hier.isin
 WHERE 
-	t.id_portfolio  = 1
+	t.id_portfolio  = ?
 	AND ajd.date = (SELECT MAX(c.date) FROM Cours c WHERE c.isin = ajd.isin)
 	AND hier.date = (SELECT MAX(c.date) FROM Cours c WHERE c.isin = hier.isin AND c.date < ajd.date)
 GROUP BY t.isin, ajd.date, hier.date
 ORDER BY pChange DESC) AS t
-LIMIT 3");
+LIMIT 3", [$portfolio_id]);
 ?>
 
 <?= print_portfolio_header($portfolio_id, $portfolio["nom"]) ?>
