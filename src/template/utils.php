@@ -34,6 +34,10 @@ function print_portfolio_header($id, $nom) {
     return print_header($nom, print_add_transaction($id) . create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg")));
 }
 
+function print_portfolio_header_back($id, $nom) {
+    return print_header($nom, create_button("Retour", "/portfolio/$id", image("arrow-left.svg")));
+}
+
 function with_color($elem, $positive, $value) {
     $str = "<$elem class=\"";
     if($positive) {

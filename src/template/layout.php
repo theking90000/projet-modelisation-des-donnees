@@ -24,6 +24,12 @@ function render_page_unsafe(string $pagePath, array $data = []): void {
 
 function render_page_fn(callable $fn, array $data = []): void
 {
+    template_head();
+    try { call_user_func($fn, $data); } catch (Exception $e) {var_dump($e); echo "Une erreur est survenue";}
+    template_tail();
+}
+
+function template_head(array $data = []) {
     foreach ($data as $key => $value) {
         $data[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
@@ -44,10 +50,11 @@ function render_page_fn(callable $fn, array $data = []): void
     <script src="/assets/script.js?<?= random_int(0, PHP_INT_MAX)?>"></script>
 </head>
 <body>
-    <div class="layout">
-            <?php try { call_user_func($fn, $data); } catch (Exception $e) {var_dump($e); echo "Une erreur est survenue";}?>
+    <div class="layout"></div>
+<?php }
+
+function template_tail() { ?>
     </div>
 </body>
 </html>
-<?php
-}
+<?php }
