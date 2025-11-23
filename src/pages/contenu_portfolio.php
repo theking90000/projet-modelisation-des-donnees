@@ -143,7 +143,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
         </div>
         <div class="row">
             <div>
-                <input placeholder="Rechercher" id="contenu-filter" type="search" value="" oninput="search_ajax_debounce(this, '#contenu-portfolio', 0, '/portfolio/2/contenu?table=1');" />
+                <input placeholder="Rechercher" id="contenu-filter" type="search" value="" oninput="search_ajax_debounce(this, '#contenu-portfolio', 0, '/portfolio/<?= $portfolio_id ?>/contenu?table=1');" />
 
             </div>
         </div>
