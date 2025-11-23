@@ -33,3 +33,17 @@ function image ($name, $w=20, $h=20): string {
 function print_portfolio_header($id, $nom) {
     return print_header($nom, print_add_transaction($id) . create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg")));
 }
+
+function with_color($elem, $positive, $value) {
+    $str = "<$elem class=\"";
+    if($positive) {
+        $str .= "success\"> +";
+    } else {
+        $str .= "danger\"> -";
+    }
+    return $str.htmlspecialchars($value). "</$elem>\n";
+}
+
+function with_color_val($elem, $value) {
+    return with_color($elem, $value >= 0, abs($value));
+}

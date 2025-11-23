@@ -275,3 +275,11 @@ h3 {
   background-color: #635bff;
   color: #ffffff;
 }
+
+td.success {
+  color: var(--success-color);
+}
+
+td.danger {
+  color: var(--error-color);
+}
