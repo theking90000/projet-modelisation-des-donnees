@@ -11,7 +11,7 @@
 
 <script>
     add_callback("-1", (value, label) => {
-        console.log('vv', value);
+        close(document.querySelector("#ajout-transaction"));
     });
 </script>
 
@@ -20,6 +20,8 @@
     <br>
     
     <a href="#" data-open="#ajout-transaction">Ajouter une transaction</a>
+
+    <?php var_dump($transactions) ?>
 
     <div id="ajout-transaction" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?= $portfolio_id ?>/ajout-transaction?callback_id=-1&form=1&nopopup=1"></div>
 

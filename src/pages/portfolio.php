@@ -2,13 +2,52 @@
     $stmt = Database::instance()->execute("SELECT Portfolio.id, Portfolio.nom, Membre_Portfolio.niveau_acces  FROM Portfolio JOIN Membre_Portfolio ON Membre_Portfolio.id_portfolio = Portfolio.id JOIN Utilisateur ON Utilisateur.email = Membre_Portfolio.email WHERE Portfolio.id = ? AND Utilisateur.email = ?", [$portfolio_id, Auth::user()]);
     
     $portfolio = $stmt->fetch();
+
+    $titres = Database::instance()->execute("
+    ")
 ?>
+
+<?= print_portfolio_header($portfolio_id, $portfolio["nom"]) ?>
+
+<div class="portfolio-main">
+    <div class="graph">
+        Ici, Graphique
+    </div>
+
+    <div class="section">
+        <div class="row">
+            <h3>Instruments Financier ayant le plus de variations</h3>
+
+            <?= create_button("Contenu du porfolio", "/portfolio/$portfolio_id/contenu" ,image("arrow-right.svg")) ?>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Instrument financier</th>
+                    <th>Valeur</th>
+                    <th>Prix moyen (ACHAT)</th>
+                    <th>Prix actuel</th>
+                    <th><strong>% Change day</strong></th>
+                    <th><strong>Profit</strong></th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
 
 <div class="center center-col h-screen">
     <strong>Portfolio <?= $portfolio["nom"] ?></strong>
     <br>
 
     <a href="/portfolio/<?= $portfolio_id ?>/transactions">Voir transactions</a>
+
+    <div class="">
+       
+    </div>
 
     <br>
     <span>Gérer les données</span>
