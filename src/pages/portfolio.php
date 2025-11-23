@@ -8,9 +8,19 @@
 
 <?= print_portfolio_header($portfolio_id, $portfolio["nom"]) ?>
 
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+<script src="/assets/graph.js" defer></script>
+
 <div class="portfolio-main">
-    <div class="graph">
-        Ici, Graphique
+    <div class="graph" style="display: flex; flex-direction:column; align-items: center; justify-content: center; padding: 24px 0 24px 0;">
+        <canvas id="graph" data="<?= $portfolio_id ?>" data-type="portfolio" currency="€" label="<?= $portfolio["nom"]?>" width="600" height="300" style="max-width: 900px; max-height:600px;"></canvas>
+        <div style="display: flex; flex-direction: row">
+            <button id="week">1 Semaine</button>
+            <button id="month">1 Mois</button>
+        </div>
     </div>
 
     <div class="section">
