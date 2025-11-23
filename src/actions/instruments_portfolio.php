@@ -46,24 +46,38 @@ class AffichageInstruments extends AffichageTable {
                 }
             });
 
-            $out = $this->check_transform($out, $data, "devise_echange", function ($v) {
+            $out = $this->check_transform($out, $data, "bourse", function ($v) {
                 if(empty($v)) {
-                    return ["Une devise d'échange est requise.", null];
+                    return ["Une bourse d'échange est requise.", null];
                 }
 
-                $id_bourse = $v;
-
-                $stmt = Database::instance()->execute("SELECT code, nom, symbole FROM Devise WHERE id = ?", [$id_bourse]);
+                $stmt = Database::instance()->execute("SELECT id, ville FROM Bourse WHERE id = ?", [$v]);
 
                 $bourse = $stmt->fetch();
 
                 if(!$bourse) {
-                    return ["Devise inconnue.", null];
+                    return ["Bourse inconnue.", null];
                 } else {
                     return [null, $bourse];
                 }
             });
         }
+
+        $out = $this->check_transform($out, $data, "devise_echange", function ($v) {
+                if(empty($v)) {
+                    return ["Une devise d'échange est requise.", null];
+                }
+
+                $stmt = Database::instance()->execute("SELECT code, nom, symbole FROM Devise WHERE code = ?", [$v]);
+
+                $devise = $stmt->fetch();
+
+                if(!$devise) {
+                    return ["Devise inconnue.", null];
+                } else {
+                    return [null, $devise];
+                }
+            });
 
 
         return $out;
@@ -173,14 +187,14 @@ class AffichageInstruments extends AffichageTable {
             $data);
 
             $this->print_ext_select("bourse", "Selectionner une bourse", "/portfolio"."/".$this->args["portfolio_id"]."/bourses",
-            function ($v) { return $v["id"]."(".$v["ville"].")"; },
             function ($v) { return $v["id"]; },
+            function ($v) { return $v["id"]."(".$v["ville"].")"; },
             $data);
         });
 
         $this->print_ext_select("devise_echange", "Devise d'échange", "/portfolio"."/".$this->args["portfolio_id"]."/devises",
-            function ($v) { return $v["code"].'('.$v["symbole"].')'; },
             function ($v) { return $v["code"]; },
+            function ($v) { return $v["code"].'('.$v["symbole"].')'; },
             $data);
     }
 }
