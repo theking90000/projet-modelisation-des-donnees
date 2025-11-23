@@ -17,7 +17,7 @@
 
     if(isset($_GET["table"])) {
         $cols = [
-            "nom"=>"Nom",
+            "nom"=>"Instrument financier",
             "valeur"=>"Valeur",
             "prix_moyen_achat"=>"Prix Moyen (achat)",
             "prix_actuel"=> "Prix Actuel",
@@ -26,10 +26,12 @@
         ];
         $recherche = $_GET["recherche"] ?? "";
         $page = intval($_GET["page"] ?? 0);
-        $limit = 20;
+        $limit = intval($_GET["perPage"] ?? 20);
         $offset = $page*$limit;
         $orderBy = $_GET["sort"] ?? "valeur";
         $orderByType = $_GET["sortType"] ?? "desc";
+
+        $hideSort = isset($_GET["hideSort"]);
 
         if(!array_key_exists($orderBy, $cols)
             || ($orderByType != 'desc' && $orderByType != 'asc' )) {
@@ -84,25 +86,30 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
 
         echo "<table class=\"data-table\">\n<thead>\n<tr>\n";
         foreach ($cols as $k => $v) {
-            echo "<td style=\"cursor: pointer;\" onclick=\"";
-            echo 'search_ajax(\'#contenu-filter\', \'#contenu-portfolio\', 0, \'/portfolio/';
-            echo $portfolio_id.'/contenu?table=1&sort=';
-            echo urlencode($k) . '&sortType=';
-            if($orderByType == "desc" && $orderBy == $k) {
-                echo "asc";
-            } else {
-                echo "desc";
+            echo "<th ";
+            if (!$hideSort) {
+                echo "style=\"cursor: pointer;\" onclick=\"";
+                echo 'search_ajax(\'#contenu-filter\', \'#contenu-portfolio\', 0, \'/portfolio/';
+                echo $portfolio_id.'/contenu?table=1&sort=';
+                echo urlencode($k) . '&sortType=';
+                if($orderByType == "desc" && $orderBy == $k) {
+                    echo "asc";
+                } else {
+                    echo "desc";
+                }
+                echo '\');';
             }
-            echo '\');';
             echo "\">";
             echo htmlspecialchars($v);
-            if ($orderBy == $k && $orderByType == "desc") {
-                echo "&#9660;&nbsp;";
+                if(!$hideSort) {
+                if ($orderBy == $k && $orderByType == "desc") {
+                    echo "&#9660;&nbsp;";
+                }
+                if ($orderBy == $k && $orderByType == "asc") {
+                    echo "&#9650;&nbsp;";
+                }
             }
-            if ($orderBy == $k && $orderByType == "asc") {
-                echo "&#9650;&nbsp;";
-            }
-            echo "</td>\n";
+            echo "</th>\n";
         }
         echo "</tr>\n</thead>\n<tbody>\n";
 

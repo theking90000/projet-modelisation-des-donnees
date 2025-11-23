@@ -173,6 +173,17 @@ function detect() {
       check();
     });
   });
+
+  forElements("[data-lazy]", (element) => {
+    const url = element.getAttribute("data-lazy");
+
+    fetch(url)
+      .then((res) => res.text())
+      .then((html) => {
+        element.innerHTML = html;
+        detect();
+      });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
