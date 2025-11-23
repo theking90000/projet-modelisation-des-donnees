@@ -3,8 +3,7 @@
     
     $portfolio = $stmt->fetch();
 
-    $titres = Database::instance()->execute("
-    ")
+    //$titres = Database::instance()->execute("")
 ?>
 
 <?= print_portfolio_header($portfolio_id, $portfolio["nom"]) ?>
