@@ -42,7 +42,7 @@ foreach ($instruments as $instrument) {
     $today = date("Y-m-d", (new DateTime("-1 day"))->getTimestamp());
 
     if (!$date) {
-        $date = date("Y-m-d", $today." - 365 days");
+        $date = date("Y-m-d", (new DateTime($today." - 365 days"))->getTimestamp());
     }
 
     if ($today <= $date) {
@@ -61,14 +61,14 @@ foreach ($instruments as $instrument) {
                 continue;
             }
 
-            $result = $client->search($search, 1);
+            $result = $client->search($search, limit: 1);
 
             // Le premier résultat de recherche est celui sélectionné.
             if (!empty($result)) {
                 break;
             }
         }
-        if (!empty($result)) {
+        if (empty($result)) {
             $instrument['yahoo_symbol'] = "MISS";
         } else {
             $instrument['yahoo_symbol'] = $result[0]->getSymbol();
@@ -82,7 +82,7 @@ foreach ($instruments as $instrument) {
 
     try {
 
-        $history = $client->getHistoricalQuoteData($result[0]->getSymbol(), ApiClient::INTERVAL_1_DAY, new DateTime($date), new DateTime('-1 day'));
+        $history = $client->getHistoricalQuoteData($instrument['yahoo_symbol'], ApiClient::INTERVAL_1_DAY, new DateTime($date), new DateTime('-1 day'));
 
         // Ne devrait théoriquement pas arriver
         if (empty($history)) {
@@ -93,7 +93,7 @@ foreach ($instruments as $instrument) {
         // "Pour chaque jour de l'historique, on l'insère dans BDD"
         foreach ($history as $quote) {
 
-            $stmt = "INSERT INTO Cours (isin, date, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = "INSERT INTO Cours (isin, date, valeur_ouverture, valeur_fermeture, valeur_maximale, valeur_minimale, volume) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $values = [$isin,
                 $quote->getDate()->format('Y-m-d'),
                 $quote->getOpen(),
