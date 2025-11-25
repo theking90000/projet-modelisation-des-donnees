@@ -129,39 +129,41 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
 
         echo "</tbody>\n</table>\n";
 
-        $count = Database::instance()->execute("
-            SELECT COUNT(*) as total FROM (
-                SELECT t.isin FROM Transaction t
-                    JOIN Instrument_Financier ins ON ins.isin = t.isin
-                    WHERE t.id_portfolio = ? AND ins.nom LIKE CONCAT('%', ?, '%')
-                    GROUP BY t.isin
-                    HAVING SUM(CASE 
-                        WHEN t.type = 'achat' THEN t.quantite
-                        WHEN t.type = 'vente' THEN -t.quantite 
-                        ELSE 0
-                    END) > 0
-            ) as f
-        ",[$portfolio_id, $recherche])->fetch()["total"];
+        if(!isset($_GET["noPagination"])) {
+            $count = Database::instance()->execute("
+                SELECT COUNT(*) as total FROM (
+                    SELECT t.isin FROM Transaction t
+                        JOIN Instrument_Financier ins ON ins.isin = t.isin
+                        WHERE t.id_portfolio = ? AND ins.nom LIKE CONCAT('%', ?, '%')
+                        GROUP BY t.isin
+                        HAVING SUM(CASE 
+                            WHEN t.type = 'achat' THEN t.quantite
+                            WHEN t.type = 'vente' THEN -t.quantite 
+                            ELSE 0
+                        END) > 0
+                ) as f
+            ",[$portfolio_id, $recherche])->fetch()["total"];
 
-        // Count total;
-        $nav = function ($page, $text, $id) use($orderBy, $orderByType,$recherche) {
-            echo "<a href=\"#\" onclick=\"search_ajax('#contenu-filter', '#contenu-portfolio', ";
-            
-            echo $page;
-            echo ", '";
-            
-            echo "/portfolio/$id/contenu?table=1";
-            echo "&sortType=$orderByType&sort=$orderBy&recherche=". htmlspecialchars($recherche);
-            echo "'); return false;\" >";
+            // Count total;
+            $nav = function ($page, $text, $id) use($orderBy, $orderByType,$recherche) {
+                echo "<a href=\"#\" onclick=\"search_ajax('#contenu-filter', '#contenu-portfolio', ";
+                
+                echo $page;
+                echo ", '";
+                
+                echo "/portfolio/$id/contenu?table=1";
+                echo "&sortType=$orderByType&sort=$orderBy&recherche=". htmlspecialchars($recherche);
+                echo "'); return false;\" >";
 
-            echo $text;
+                echo $text;
 
-            echo "</a>\n";
-        };
+                echo "</a>\n";
+            };
 
-        if ($page>0) $nav($page-1, "Page précédente",$portfolio_id);
-        if ($page*$limit<$count) $nav($page + 1, "Page suivante",$portfolio_id);
-
+            if ($page>0) $nav($page-1, "Page précédente",$portfolio_id);
+            if ($page*$limit<$count) $nav($page + 1, "Page suivante",$portfolio_id);
+        }
+    
         die();
     }
 

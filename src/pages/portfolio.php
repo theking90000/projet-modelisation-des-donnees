@@ -30,7 +30,7 @@
             <?= create_button("Contenu du porfolio", "/portfolio/$portfolio_id/contenu" ,image("arrow-right.svg")) ?>
         </div>
 
-        <div data-lazy="/portfolio/<?= $portfolio_id ?>/contenu?table=1&page=0&perPage=3&sort=p_change&hideSort=1"></div>
+        <div data-lazy="/portfolio/<?= $portfolio_id ?>/contenu?table=1&page=0&perPage=3&sort=p_change&hideSort=1&noPagination=1"></div>
         
     </div>
 </div>
