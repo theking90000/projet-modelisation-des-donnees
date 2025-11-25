@@ -119,6 +119,9 @@ body {
 
 .header h2 {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 a.button {
@@ -282,4 +285,11 @@ td.success {
 
 td.danger {
   color: var(--error-color);
+}
+
+a.icon {
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }

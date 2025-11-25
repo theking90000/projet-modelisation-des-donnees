@@ -1,8 +1,12 @@
 <?php 
-function print_header($nom, $actions="") : string {
+function print_header($nom, $actions="", $icon="house.svg", $back="/") : string {
     return '
     <div class="header">
-        <h2>' . htmlspecialchars($nom) . '</h2>
+        <h2>
+        <a href="'.$back.'" class="icon">
+            <img src="/assets/images/'.$icon.'">
+        </a>
+        ' . htmlspecialchars($nom) . '</h2>
         <div>' . $actions . '</div>
     </div>
     ';
@@ -30,8 +34,8 @@ function image ($name, $w=20, $h=20): string {
     return '<img src="/assets/images/'. urlencode($name) . '" width="'.$w.'" height="'.$h.'" />';
 }
 
-function print_portfolio_header($id, $nom) {
-    return print_header($nom, print_add_transaction($id) . create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg")));
+function print_portfolio_header($id, $nom, $back="/") {
+    return print_header($nom, print_add_transaction($id) . create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg")), "arrow-left.svg", $back);
 }
 
 function with_color($elem, $positive, $value) {
