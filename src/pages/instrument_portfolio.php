@@ -9,11 +9,14 @@
             ins.type,
 
             e.nom as nom_entreprise,
+            b.id AS id_bourse,
+            b.nom AS nom_bourse,
             CONCAT(e.code_pays, e.numero) as id_entreprise
         FROM Instrument_Financier ins
             JOIN Portfolio p ON p.id = ?
             JOIN Devise dp ON dp.code = p.code_devise
             LEFT JOIN Entreprise e ON e.numero = ins.numero_entreprise AND e.code_pays = ins.pays_entreprise
+            LEFT JOIN Bourse b ON b.id = ins.id_bourse
         WHERE 
             isin = ?;
     ", [$portfolio_id, $instrument_id]);
@@ -109,7 +112,11 @@
                         echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
                         echo '">';
                         echo $ins["nom_entreprise"];
-                        echo "</a>)</em>"; 
+                        echo "</a> - cotée à la bourse <em><a href=\"/portfolio/";
+                        echo $portfolio_id . "/bourse/".$ins["id_bourse"] ;
+                        echo "\">";
+                        echo $ins["nom_bourse"];
+                        echo "</a>)</em>";
                     } ?>
                 </div>
                 <sub><?= $ins["isin"] ?></sub>
