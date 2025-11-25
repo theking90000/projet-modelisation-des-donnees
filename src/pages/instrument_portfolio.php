@@ -3,11 +3,17 @@
         SELECT 
             ins.isin, 
             ins.nom,
+            ins.symbole,
             p.nom as nom_portfolio,
-            dp.symbole as devise_portfolio
+            dp.symbole as devise_portfolio,
+            ins.type,
+
+            e.nom as nom_entreprise,
+            CONCAT(e.code_pays, e.numero) as id_entreprise
         FROM Instrument_Financier ins
             JOIN Portfolio p ON p.id = ?
             JOIN Devise dp ON dp.code = p.code_devise
+            LEFT JOIN Entreprise e ON e.numero = ins.numero_entreprise AND e.code_pays = ins.pays_entreprise
         WHERE 
             isin = ?;
     ", [$portfolio_id, $instrument_id]);
@@ -93,9 +99,25 @@
 <div class="portfolio-main">
     <div class="section">
         <div class="m-col header-search">
-            <span><h3><?= $ins["nom"] ?></h3><sub><?= $ins["isin"] ?></sub></span>
-            
+            <span>
+                <div style="display:flex; align-items:center;">
+                    <h3><?= $ins["symbole"]?></h3> 
+                    <div style="margin: 0 8px;"> <?= $ins["nom"] ?> </div>
+                    <?php if($ins["type"] === "action") {
+                        echo '<em>(<a href="/portfolio/';
+                        echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
+                        echo '">';
+                        echo $ins["nom_entreprise"];
+                        echo "</a>)</em>"; 
+                    } ?>
+                </div>
+                <sub><?= $ins["isin"] ?></sub>
+            </span>
         </div>
+
+        <br>
+        <div>Afficher les infos sur la performance ici</div> 
+
         <div class="portfolio-main">
             <div class="graph">
                  Ici, Graphique
