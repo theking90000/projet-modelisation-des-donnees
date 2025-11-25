@@ -81,8 +81,7 @@ foreach ($instruments as $instrument) {
     }
 
     try {
-
-        $history = $client->getHistoricalQuoteData($instrument['yahoo_symbol'], ApiClient::INTERVAL_1_DAY, new DateTime($date), new DateTime('-1 day'));
+        $history = $client->getHistoricalQuoteData($instrument['yahoo_symbol'], ApiClient::INTERVAL_1_DAY, new DateTime($date. " +1 day"), new DateTime('-1 day'));
 
         // Ne devrait théoriquement pas arriver
         if (empty($history)) {
