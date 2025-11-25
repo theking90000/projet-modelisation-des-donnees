@@ -243,7 +243,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
     template_head(["title"=>"Contenu du portfolio"]);
 ?>
 
-<?= print_portfolio_header_back($portfolio_id, $portfolio["nom"]) ?>
+<?= print_portfolio_header($portfolio_id, $portfolio["nom"], "/portfolio/$portfolio_id") ?>
 
 <div class="portfolio-main">
     <div class="section">
