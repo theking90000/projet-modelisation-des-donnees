@@ -114,7 +114,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             isin, 
             nom,
             ROUND(stock_qte * prix_ajd, 2) AS valeur,
-            ROUND(prix_ajd, 2) AS valeur_unitaire,
+            ROUND(prix_ajd, 2) AS prix_actuel,
             ROUND(stock_investi / stock_qte, 2) AS prix_moyen_achat,
             ROUND(((prix_ajd - prix_hier) / NULLIF(prix_hier, 0)) * 100, 2) AS p_change,
             ROUND((stock_qte * prix_ajd) - stock_investi - total_frais - total_taxes, 2) AS profit
