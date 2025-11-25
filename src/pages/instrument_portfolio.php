@@ -71,6 +71,7 @@
             FROM Transaction t
                 LEFT JOIN Utilisateur u ON u.email = t.email_utilisateur
             WHERE t.id_portfolio = ? AND t.isin = ? ". (!empty($recherche) ? "AND t.date >= ? " : '') ."
+            ORDER BY $orderBy $orderByType
             LIMIT $limit OFFSET $offset 
             ";
 
