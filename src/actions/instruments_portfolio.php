@@ -214,7 +214,8 @@ class AffichageInstruments extends AffichageTable {
         $row["isin"] = $id;
 
         return Database::instance()
-            ->execute("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise WHERE isin = :isin", $row);
+            ->prepare("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise WHERE isin = :isin")
+            ->execute($row);
     }
 }
 
