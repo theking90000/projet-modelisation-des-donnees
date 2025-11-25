@@ -128,6 +128,40 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
         }
 
         echo "</tbody>\n</table>\n";
+
+        $count = Database::instance()->execute("
+            SELECT COUNT(*) as total FROM (
+                SELECT t.isin FROM Transaction t
+                    JOIN Instrument_Financier ins ON ins.isin = t.isin
+                    WHERE t.id_portfolio = ? AND ins.nom LIKE CONCAT('%', ?, '%')
+                    GROUP BY t.isin
+                    HAVING SUM(CASE 
+                        WHEN t.type = 'achat' THEN t.quantite
+                        WHEN t.type = 'vente' THEN -t.quantite 
+                        ELSE 0
+                    END) > 0
+            ) as f
+        ",[$portfolio_id, $recherche])->fetch()["total"];
+
+        // Count total;
+        $nav = function ($page, $text, $id) use($orderBy, $orderByType,$recherche) {
+            echo "<a href=\"#\" onclick=\"search_ajax('#contenu-filter', '#contenu-portfolio', ";
+            
+            echo $page;
+            echo ", '";
+            
+            echo "/portfolio/$id/contenu?table=1";
+            echo "&sortType=$orderByType&sort=$orderBy&recherche=". htmlspecialchars($recherche);
+            echo "'); return false;\" >";
+
+            echo $text;
+
+            echo "</a>\n";
+        };
+
+        if ($page>0) $nav($page-1, "Page précédente",$portfolio_id);
+        if ($page*$limit<$count) $nav($page + 1, "Page suivante",$portfolio_id);
+
         die();
     }
 
@@ -138,16 +172,11 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
 
 <div class="portfolio-main">
     <div class="section">
-        <div class="row">
+        <div class="m-col header-search">
             <h3>Instruments Financier</h3>
-        </div>
-        <div class="row">
-            <div>
                 <input placeholder="Rechercher" id="contenu-filter" type="search" value="" oninput="search_ajax_debounce(this, '#contenu-portfolio', 0, '/portfolio/<?= $portfolio_id ?>/contenu?table=1');" />
 
-            </div>
         </div>
-
         <div id="contenu-portfolio">
             
         </div>
