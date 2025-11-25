@@ -115,7 +115,7 @@
                         echo "</a> - cotée à la bourse <em><a href=\"/portfolio/";
                         echo $portfolio_id . "/bourse/".$ins["id_bourse"] ;
                         echo "\">";
-                        echo $ins["nom_bourse"];
+                        echo $ins["id_bourse"];
                         echo "</a>)</em>";
                     } ?>
                 </div>
