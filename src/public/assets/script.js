@@ -197,6 +197,7 @@ function add_callback(id, fn) {
 }
 
 function execute_callback(id, value, label = "") {
+  console.log("execute_callback", id);
   if (callbackTable[id]) {
     callbackTable[id](value, label);
     return;
@@ -204,7 +205,15 @@ function execute_callback(id, value, label = "") {
 
   const element = document.querySelector(`[data-id="${id}"]`);
 
-  if (!element) return;
+  if (!element) {
+    const closeEl = document.querySelector(`[data-close-on-callback="${id}"]`);
+    if (closeEl) close(closeEl);
+
+    if (document.querySelector(`[data-reload-on-callback="${id}"]`))
+      window.location.reload();
+
+    return;
+  }
 
   if (element.hasAttribute("data-ext-select")) {
     element.innerHTML = label || value;

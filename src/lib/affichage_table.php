@@ -55,8 +55,13 @@ abstract class AffichageTable {
 
     public function render() {
         if($this->update_id && $this->added) {
+            if(isset($this->callback)) {
+                echo "<!-- CLOSE -->";
+                echo json_encode([$this->row_id($this->added), $this->row_label($this->added)]);
+            } else {
             // Redirect? si succès;
-            header("Location: ". $this->current_url(true));
+                header("Location: ". $this->current_url(true));
+            }
             die();
         }
 

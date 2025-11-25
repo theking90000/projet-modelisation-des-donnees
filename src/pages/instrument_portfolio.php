@@ -114,7 +114,12 @@
                 </div>
                 <sub><?= $ins["isin"] ?></sub>
             </span>
+
+        <a href="#" class="button" data-open="#edit-instrument">Editer</a>
+   
         </div>
+
+         <div id="edit-instrument" data-reload-on-callback="edit-ins" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?=  $portfolio_id ?>/instruments?callback_id=edit-ins&form=1&nopopup=1&update=<?= $instrument_id ?>"></div>
 
         <br>
         <div>Afficher les infos sur la performance ici</div> 

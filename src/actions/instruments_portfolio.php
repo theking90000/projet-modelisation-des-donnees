@@ -124,8 +124,8 @@ class AffichageInstruments extends AffichageTable {
         return $stmt;
     }
 
-    protected function insert(array $data): array {
-        $row = [
+    private function to_row(array $data): array {
+        return [
             "isin"=>$data["isin"]["value"], 
             "symbole"=>$data["symbole"]["value"],
             "nom"=>$data["nom"]["value"],
@@ -134,8 +134,12 @@ class AffichageInstruments extends AffichageTable {
             "numero_entreprise"=>$data["entreprise"]["value"]["numero"] ?? null,
             "pays_entreprise"=>$data["entreprise"]["value"]["code_pays"] ?? null,
             "id_bourse"=>$data["bourse"]["value"]["id"] ?? null,
-            "code_devise"=>$data["devise"]["value"]["code"] ?? null
+            "code_devise"=>$data["devise_echange"]["value"]["code"] ?? null
         ];
+    }
+
+    protected function insert(array $data): array {
+        $row = $this->to_row($data);
 
         $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
@@ -196,6 +200,21 @@ class AffichageInstruments extends AffichageTable {
             function ($v) { return $v["code"]; },
             function ($v) { return $v["code"].'('.$v["symbole"].')'; },
             $data);
+    }
+
+    protected function get(string $id): array {
+        return Database::instance()
+            ->execute("SELECT isin, symbole, nom, type, CONCAT(pays_entreprise, numero_entreprise) as entreprise, id_bourse AS bourse, code_devise AS devise_echange FROM Instrument_Financier WHERE isin = ?", [$id])
+            ->fetch();
+    }
+    
+    protected function update(string $id, array $data) {
+        $row = $this->to_row($data);
+
+        $row["isin"] = $id;
+
+        return Database::instance()
+            ->execute("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise WHERE isin = :isin", $row);
     }
 }
 
