@@ -178,7 +178,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             }
             echo "</th>\n";
         }
-        echo "</tr>\n</thead>\n<tbody>\n";
+        echo "<th></th></tr>\n</thead>\n<tbody>\n";
 
         while($row = $stmt->fetch()) {
             echo "<tr>";
@@ -192,7 +192,12 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
                     echo "<td>". htmlspecialchars($row[$k]) ."</td>\n";
                 }
             }
-            echo "</tr>\n";
+
+            echo "<td><a class='button' href=\"/portfolio/";
+            echo $portfolio_id. "/instrument/". $row["isin"];
+            echo "\">Voir</a>";
+
+            echo "</td></tr>\n";
         }
 
         echo "</tbody>\n</table>\n";
