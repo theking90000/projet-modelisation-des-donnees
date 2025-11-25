@@ -40,6 +40,13 @@
 
         // TODO: améliorer la performance de cette requête en mettant en cache `MAX(c.date)`
         // Via un JOIN OU WITH
+       
+       /* 
+        |----------------------------------------------------------|
+        | Requete Originale (lente, > 1s pour 3 actifs)            |
+        |                                                          |
+        |----------------------------------------------------------|
+
         $stmt = Database::instance()->execute("
             SELECT t.isin, t.nom, ROUND(t.quantite*ajd_val, 2) AS valeur, 
 ROUND(t.prix_achat/t.quantite, 2) AS prix_moyen_achat, ROUND(ajd_val, 2) AS prix_actuel,
@@ -85,6 +92,65 @@ WHERE t.nom LIKE CONCAT('%', ?, '%')
 ORDER BY $orderBy $orderByType
 LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
 
+*/
+
+/*
+        |----------------------------------------------------------|
+        | Version optimisée avec CTE ("With"), tables              |
+        | "Virtuelles"                                             |
+        |----------------------------------------------------------|
+
+        - Une Table pour les actifs contenu de le portfolio (au moins une transaction existante)
+           On ne regarde pas la quantité
+
+        - Une table pour classer les Cours de bourse par ordre décroissant de date.
+          et récupérer "aujourd'hui" et "hier" rapidement
+
+        - Ensuite on Join sur les dates avec rang=1 (ajd) et rang=2 (hier)
+*/
+
+        $stmt = Database::instance()->execute("
+        SELECT 
+            isin, 
+            nom,
+            ROUND(stock_qte * prix_ajd, 2) AS valeur,
+            ROUND(prix_ajd, 2) AS valeur_unitaire,
+            ROUND(stock_investi / stock_qte, 2) AS prix_moyen_achat,
+            ROUND(((prix_ajd - prix_hier) / NULLIF(prix_hier, 0)) * 100, 2) AS p_change,
+            ROUND((stock_qte * prix_ajd) - stock_investi - total_frais - total_taxes, 2) AS profit
+        FROM (WITH Actifs AS (
+            SELECT DISTINCT isin 
+            FROM Transaction 
+            WHERE id_portfolio = ?
+        ),
+        ClassementCours AS (
+            SELECT 
+                c.isin, 
+                c.valeur_fermeture, 
+                c.date,
+                ROW_NUMBER() OVER(PARTITION BY c.isin ORDER BY c.date DESC) as rang
+            FROM Cours c
+            INNER JOIN Actifs a ON c.isin = a.isin
+            WHERE c.date >= DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+        )
+        SELECT 
+            t.isin, 
+            ins.nom,
+            ajd.valeur_fermeture AS prix_ajd,
+            hier.valeur_fermeture AS prix_hier,
+            SUM(CASE WHEN t.type = 'achat' THEN t.quantite ELSE -t.quantite END) AS stock_qte,
+            SUM(CASE WHEN t.type ='achat' THEN t.valeur_devise_portfolio ELSE -t.valeur_devise_portfolio END) as stock_investi,
+            SUM(t.frais) AS total_frais,
+            SUM(t.taxes) AS total_taxes
+        FROM Transaction t
+            JOIN Instrument_Financier ins ON ins.isin = t.isin
+            LEFT JOIN ClassementCours ajd ON t.isin = ajd.isin AND ajd.rang = 1
+            LEFT JOIN ClassementCours hier ON t.isin = hier.isin AND hier.rang = 2
+        WHERE t.id_portfolio = ? AND ins.nom LIKE CONCAT('%', ?, '%')
+        GROUP BY t.isin, ins.nom, ajd.valeur_fermeture, hier.valeur_fermeture, ajd.date
+        HAVING stock_qte > 0) s
+        ", [$portfolio_id, $portfolio_id, $recherche]);
+
         echo "<table class=\"data-table\">\n<thead>\n<tr>\n";
         foreach ($cols as $k => $v) {
             echo "<th ";
@@ -118,7 +184,8 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             echo "<tr>";
             foreach ($cols as $k => $v) {
                 if ($k == "p_change") {
-                    echo with_color("td", $row["inc"], $row["p_change"]);
+                    echo with_color_val("td", $row["p_change"]);
+                   // echo with_color("td", $row["inc"], $row["p_change"]);
                 } else if ($k == "profit") {
                     echo with_color_val("td", $row["profit"]);
                 } else {
