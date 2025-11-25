@@ -79,6 +79,7 @@ WHERE
 	AND ajd.date = (SELECT MAX(c.date) FROM Cours c WHERE c.isin = ajd.isin)
 	AND hier.date = (SELECT MAX(c.date) FROM Cours c WHERE c.isin = hier.isin AND c.date < ajd.date)
 GROUP BY t.isin, ajd.date, hier.date
+HAVING quantite > 0
 ORDER BY pChange DESC) AS t
 WHERE t.nom LIKE CONCAT('%', ?, '%')
 ORDER BY $orderBy $orderByType
@@ -161,7 +162,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             };
 
             if ($page>0) $nav($page-1, "Page précédente",$portfolio_id);
-            if ($page*$limit<$count) $nav($page + 1, "Page suivante",$portfolio_id);
+            if (($page+1)*$limit<$count) $nav($page + 1, "Page suivante",$portfolio_id);
         }
     
         die();
