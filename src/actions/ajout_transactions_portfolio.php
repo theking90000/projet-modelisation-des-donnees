@@ -29,7 +29,10 @@ class AffichageTransaction extends AffichageTable {
 
         $out = $this->check_transform($out, $data, "instrument", function ($v) {
             if(empty($v)) {
-                return ["Un instrument financier est requis.", null];
+                if (!isset($_GET['instrument'])) {
+                    return ["Un instrument financier est requis.", null];
+                }
+                $v = $_GET['instrument'];
             }
 
             $stmt = Database::instance()->execute("SELECT Instrument_Financier.* FROM Instrument_Financier WHERE isin = ?", [$v]);

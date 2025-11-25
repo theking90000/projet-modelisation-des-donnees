@@ -47,7 +47,9 @@ abstract class AffichageTable {
         } else if ($this->update_id) {
             $this->handleUpdate();
         } else {
-            $this->data = [];
+            //$this->data = [];
+            $this->data = $this->parse([]);
+            $this->data = $this->remove_errors($this->data);
         }
     }
 
@@ -160,6 +162,15 @@ abstract class AffichageTable {
             }
         }
         return !!$this->addError;
+    }
+
+    private function remove_errors(array $data) {
+        foreach ($data as $key => &$field) {
+            if (is_array($field) && isset($field['error'])) {
+                unset($field['error']);
+            }
+        }
+        return $data;
     }
 
     private function current_url(bool $noUpdate = false): string {

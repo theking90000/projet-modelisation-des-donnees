@@ -15,6 +15,12 @@ function print_header($nom, $actions="", $icon="house.svg", $back="/") : string 
 }
 
 function print_add_transaction($portfolio_id) : string {
+    $path_only = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    if (preg_match('~instrument/([^/]+)~', $path_only, $matches)) {
+        $isin = $matches[1];
+    }
+
     return '
     <script>
         add_callback("-1", (value, label) => {
@@ -24,7 +30,9 @@ function print_add_transaction($portfolio_id) : string {
     </script>
 
     <a href="#" class="button" data-open="#ajout-transaction">Ajouter une transaction</a>
-    <div id="ajout-transaction" class="popup" data-popup="1" style="display: none" data-load="/portfolio/' . htmlspecialchars($portfolio_id) . '/ajout-transaction?callback_id=-1&form=1&nopopup=1"></div>
+    <div id="ajout-transaction" class="popup" data-popup="1" style="display: none" data-load="/portfolio/' . htmlspecialchars($portfolio_id) . '/ajout-transaction?callback_id=-1&form=1&nopopup=1'.
+    (isset($isin)?'&instrument='.htmlspecialchars($isin) : '')
+    .'"></div>
     ';
 }
 
