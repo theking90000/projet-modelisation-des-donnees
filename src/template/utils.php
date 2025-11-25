@@ -1,5 +1,7 @@
 <?php 
 function print_header($nom, $actions="", $icon="house.svg", $back="/") : string {
+    if(isset($_GET["noLayout"])) return "";
+
     return '
     <div class="header">
         <h2>
