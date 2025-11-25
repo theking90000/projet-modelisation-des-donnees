@@ -191,7 +191,7 @@ function create_render_handle($file, $params = []) {
     $handler = function ($p2) use ($file, $params) {
         require_once __DIR__ . '/../template/layout.php';
         $params = array_merge($params, $p2);
-        render_page($file, $params);
+        render_page($file, $params, !isset($_GET["noLayout"]));
     };
 
     return $handler;

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/utils.php';
 
-function render_page(string $pageFile, array $data = []) {
+function render_page(string $pageFile, array $data = [], bool $layout=true) {
     $pagePath = __DIR__ . "/../pages/$pageFile";
     
     if (!preg_match('/^[a-z0-9_-]+\.php$/i', $pageFile) || !file_exists($pagePath)) {
@@ -11,22 +11,22 @@ function render_page(string $pageFile, array $data = []) {
         die();
     }
 
-    return render_page_unsafe($pagePath, $data);
+    return render_page_unsafe($pagePath, $data, $layout);
 }
 
-function render_page_unsafe(string $pagePath, array $data = []): void {
+function render_page_unsafe(string $pagePath, array $data = [], $layout=true): void {
     render_page_fn(function (array $data) use ($pagePath) {
         extract($data, EXTR_SKIP);
 
         require $pagePath;
-    }, $data);
+    }, $data, $layout);
 }
 
-function render_page_fn(callable $fn, array $data = []): void
+function render_page_fn(callable $fn, array $data = [], $layout=true): void
 {
-    template_head();
+    if($layout) template_head();
     try { call_user_func($fn, $data); } catch (Exception $e) {var_dump($e); echo "Une erreur est survenue";}
-    template_tail();
+    if($layout) template_tail();
 }
 
 function template_head(array $data = []) {
