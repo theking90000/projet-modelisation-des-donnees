@@ -33,6 +33,8 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
 
     $router->get("/instrument/{instrument_id}", create_render_handle("instrument_portfolio.php", ["title"=>"Instrument Portfolio"]));
 
+    $router->get("/entreprise/{entreprise_id}", create_render_handle("entreprise_portfolio.php", ["title"=> "Entreprises"]));
+
     $router->get("/contenu", create_handler("pages/contenu_portfolio.php"));
 
     $router->group("", function ($router) {

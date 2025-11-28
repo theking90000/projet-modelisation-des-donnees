@@ -109,6 +109,23 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
         - Ensuite on Join sur les dates avec rang=1 (ajd) et rang=2 (hier)
 */
 
+        $entreprise = isset($_GET["entreprise"]) ? $_GET["entreprise"] : null;
+        $bourse = isset($_GET["bourse"]) ? $_GET["bourse"] : null;
+
+        $filter_cours = "INNER JOIN Actifs a ON c.isin = a.isin";
+        $h = "HAVING stock_qte > 0";
+        $w = "";
+
+        if($entreprise && strlen($entreprise) >= 3) {
+            $code_pays = substr($entreprise, 0, 2);
+            $numero = substr($entreprise, 2);
+            $filter_cours = "
+            INNER JOIN Instrument_Financier i ON i.isin = c.isin AND i.numero_entreprise = ? AND i.pays_entreprise = ?
+            ";
+            $h='';
+            $w = "AND ins.numero_entreprise = ? AND ins.pays_entreprise = ?";
+        }
+
         $stmt = Database::instance()->execute("
         SELECT 
             isin, 
@@ -130,7 +147,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
                 c.date,
                 ROW_NUMBER() OVER(PARTITION BY c.isin ORDER BY c.date DESC) as rang
             FROM Cours c
-            INNER JOIN Actifs a ON c.isin = a.isin
+            ".$filter_cours."
             WHERE c.date >= DATE_SUB(CURDATE(), INTERVAL 15 DAY)
         )
         SELECT 
@@ -138,18 +155,20 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             ins.nom,
             ajd.valeur_fermeture AS prix_ajd,
             hier.valeur_fermeture AS prix_hier,
-            SUM(CASE WHEN t.type = 'achat' THEN t.quantite ELSE -t.quantite END) AS stock_qte,
-            SUM(CASE WHEN t.type ='achat' THEN t.valeur_devise_portfolio ELSE -t.valeur_devise_portfolio END) as stock_investi,
-            SUM(t.frais) AS total_frais,
-            SUM(t.taxes) AS total_taxes
-        FROM Transaction t
-            JOIN Instrument_Financier ins ON ins.isin = t.isin
+            SUM(CASE WHEN t.type = 'achat' THEN t.quantite WHEN t.type = 'vente' THEN -t.quantite ELSE 0 END) AS stock_qte,
+            SUM(CASE WHEN t.type ='achat' THEN t.valeur_devise_portfolio WHEN t.type = 'vente' THEN -t.valeur_devise_portfolio ELSE 0 END) as stock_investi,
+            SUM(COALESCE(t.frais, 0)) AS total_frais,
+            SUM(COALESCE(t.taxes, 0)) AS total_taxes
+        FROM Instrument_Financier ins
+            LEFT JOIN Transaction t ON ins.isin = t.isin AND t.id_portfolio = ?
             LEFT JOIN ClassementCours ajd ON t.isin = ajd.isin AND ajd.rang = 1
             LEFT JOIN ClassementCours hier ON t.isin = hier.isin AND hier.rang = 2
-        WHERE t.id_portfolio = ? AND ins.nom LIKE CONCAT('%', ?, '%')
+        WHERE ins.nom LIKE CONCAT('%', ?, '%') ".$w."
         GROUP BY t.isin, ins.nom, ajd.valeur_fermeture, hier.valeur_fermeture, ajd.date
-        HAVING stock_qte > 0) s
-        ", [$portfolio_id, $portfolio_id, $recherche]);
+        ".$h.") s
+        ORDER BY $orderBy $orderByType
+        LIMIT $limit OFFSET $offset
+        ", [ $portfolio_id, isset($numero) ? $numero : null, isset($code_pays) ? $code_pays :null, $portfolio_id, $recherche, isset($numero) ? $numero : null, isset($code_pays) ? $code_pays :null]);
 
         echo "<table class=\"data-table\">\n<thead>\n<tr>\n";
         foreach ($cols as $k => $v) {
@@ -163,6 +182,9 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
                     echo "asc";
                 } else {
                     echo "desc";
+                }
+                if($entreprise) {
+                    echo "&entreprise=".htmlspecialchars($entreprise);
                 }
                 echo '\');';
             }
@@ -218,7 +240,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
             ",[$portfolio_id, $recherche])->fetch()["total"];
 
             // Count total;
-            $nav = function ($page, $text, $id) use($orderBy, $orderByType,$recherche) {
+            $nav = function ($page, $text, $id) use($orderBy, $orderByType,$recherche, $entreprise) {
                 echo "<a href=\"#\" onclick=\"search_ajax('#contenu-filter', '#contenu-portfolio', ";
                 
                 echo $page;
@@ -226,6 +248,9 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
                 
                 echo "/portfolio/$id/contenu?table=1";
                 echo "&sortType=$orderByType&sort=$orderBy&recherche=". htmlspecialchars($recherche);
+                if($entreprise) {
+                    echo "&entreprise=".htmlspecialchars($entreprise);
+                }
                 echo "'); return false;\" >";
 
                 echo $text;
@@ -257,7 +282,7 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
         </div>
 
         <script>
-            search_ajax("#contenu-filter", "#contenu-portfolio", 0, "/portfolio/<?= $portfolio_id ?>/contenu?table=1    ")
+            search_ajax("#contenu-filter", "#contenu-portfolio", 0, "/portfolio/<?= $portfolio_id ?>/contenu?table=1")
         </script>
     </div>
 </div>

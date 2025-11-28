@@ -33,9 +33,9 @@ class Database extends PDO
     function execute(string $sql, array $params = []): PDOStatement {
         try {
             $stmt = $this->prepare($sql);
-            $params = array_filter($params, function($value) {
+            $params = array_values(array_filter($params, function($value) {
                 return !is_null($value);
-            });
+            }));
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
