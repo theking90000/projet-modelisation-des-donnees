@@ -249,7 +249,7 @@ abstract class AffichageTable {
     }
 
     protected function print_label($name, $label) {
-        echo "<label for=\"".$name.$this->render_id."\">";;
+        echo "<label for=\"".$name."-".$this->render_id."\">";;
         echo $label;
         echo "</label>\n";
     }
@@ -313,7 +313,7 @@ abstract class AffichageTable {
             $id = !is_string($value) ? $row_id($value) : '';
             $label = !is_string($value) ? $row_label($value) : $placeholder;
             
-            echo "<div data-name=\"$name\" data-value=\"";
+            echo "<button type=\"button\" data-name=\"$name\" data-value=\"";
             echo addslashes($id);
             echo "\" placeholder=\"$placeholder\" value=\"";
             echo htmlspecialchars(addslashes($id));
@@ -323,7 +323,7 @@ abstract class AffichageTable {
 
             echo htmlspecialchars($label);
 
-            echo "</div>\n";
+            echo "</button>\n";
         });
     }
 
@@ -545,7 +545,7 @@ abstract class AffichageTable {
         echo "<h3>". $names[0] . "</h3>\n";
 
         // TODO: autoriser plus de customisation via une méthode abstract;
-        echo "<input placeholder=\"Rechercher\" id=\"filter-";
+        echo "<input placeholder=\"Rechercher\" type=\"search\" id=\"filter-";
         echo $this->render_id;
         echo "\" value=\"";
         if (isset($_GET["recherche"])) {
