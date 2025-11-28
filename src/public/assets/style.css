@@ -373,3 +373,79 @@ span {
 .header-search > input[type="date"] {
   width: 200px;
 }
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e6e8eb;
+  color: #1a1f36;
+  max-width: 800px;
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Les Éléments de Données (Chaque ligne devenue une "brique") */
+.card > div {
+  padding: 12px;
+  background-color: #f7fafc; /* Fond gris très clair pour chaque stat */
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between; /* Pousse la valeur à droite, le label à gauche */
+  align-items: center;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.carc > div:hover {
+  border-color: #d9dce1;
+  background-color: #ffffff;
+}
+.card > div:nth-child(2) {
+  grid-column: 1 / -1; /* Prend toute la largeur */
+  background: transparent;
+  border: none;
+  padding: 0 0 16px 0;
+  color: #64748b; /* Gris texte secondaire */
+  font-size: 13px;
+  border-bottom: 1px solid #e6e8eb; /* Ligne de séparation */
+  border-radius: 0;
+  margin-bottom: 8px;
+  justify-content: flex-start; /* Aligné à gauche */
+}
+
+.card > div:first-child {
+  grid-column: 1 / -1;
+  background: transparent;
+  padding: 0;
+  color: #635bff; /* Violet Fintech */
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card a {
+  grid-column: 1 / -1;
+  display: inline-block;
+  text-align: center;
+  margin-top: 16px;
+  padding: 12px;
+  background-color: transparent;
+  color: #635bff;
+  border: 1px dashed #635bff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.card a:hover {
+  background-color: #635bff;
+  color: #ffffff;
+  border-style: solid;
+}

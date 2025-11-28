@@ -168,8 +168,8 @@
                  Ici, Graphique
             </div>
 
-             <div class="section">
-                <div class="">
+             <div class="section center">
+                <div class="card">
                     <?php if($ins["type"] === "action") {
                         echo "<div>Devise d'échange : ".htmlspecialchars($ins["devise"]). " (" . htmlspecialchars($ins["code_devise"]) . ") </div>";
                     } ?>
