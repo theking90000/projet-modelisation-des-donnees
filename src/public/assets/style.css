@@ -279,11 +279,13 @@ h3 {
   color: #ffffff;
 }
 
-.success {
+.success,
+td.success {
   color: var(--success-color);
 }
 
-.danger {
+.danger,
+td.danger {
   color: var(--error-color);
 }
 
