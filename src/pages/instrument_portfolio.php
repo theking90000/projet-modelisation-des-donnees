@@ -4,6 +4,8 @@
             ins.isin, 
             ins.nom,
             ins.symbole,
+            di.code as code_devise,
+            di.symbole as devise,
             p.nom as nom_portfolio,
             dp.symbole as devise_portfolio,
             ins.type,
@@ -13,6 +15,7 @@
             b.nom AS nom_bourse,
             CONCAT(e.code_pays, e.numero) as id_entreprise
         FROM Instrument_Financier ins
+            LEFT JOIN Devise di ON di.code = ins.code_devise
             JOIN Portfolio p ON p.id = ?
             JOIN Devise dp ON dp.code = p.code_devise
             LEFT JOIN Entreprise e ON e.numero = ins.numero_entreprise AND e.code_pays = ins.pays_entreprise
@@ -28,6 +31,14 @@
         die();
     }
 
+    $formatter = new IntlDateFormatter(
+                        'fr_FR', 
+                        IntlDateFormatter::FULL,
+                        IntlDateFormatter::SHORT);
+    // EEEE = Nom du Jour, MMMM = Nom du mois
+    $formatter->setPattern("EEEE d MMMM yyyy 'à' HH'h'mm");
+    $formatter->setTimeZone("Europe/Brussels");
+
     if (isset($_GET["table"])) {
         require_once __DIR__ . "/../lib/affichage_table2.php";
 
@@ -36,14 +47,6 @@
             "#transactions-".$ins["isin"],
             "#date-filter"
         );
-
-        $formatter = new IntlDateFormatter(
-                        'fr_FR', 
-                        IntlDateFormatter::FULL,
-                        IntlDateFormatter::SHORT);
-        // EEEE = Nom du Jour, MMMM = Nom du mois
-        $formatter->setPattern("EEEE d MMMM yyyy 'à' HH'h'mm");
-        $formatter->setTimeZone("Europe/Brussels");
 
 
         $tbl->addColumn("date", "Date", [
@@ -95,6 +98,36 @@
         die();
     }
 
+    
+    $formatter->setPattern("EEEE d MMMM yyyy");
+    $formatter->setTimeZone("Europe/Brussels");
+
+    //
+    $cours = Database::instance()
+        ->execute("
+        WITH ValeurCours AS (
+            SELECT 
+                c.*,
+                ROW_NUMBER() OVER(PARTITION BY c.isin ORDER BY c.date DESC) as rang
+            FROM Cours c
+            WHERE 
+                c.isin = ?
+                AND c.date >= DATE_SUB(CURDATE(), INTERVAL 15 DAY)
+            ORDER BY c.date DESC
+        )
+        SELECT 
+            c.date,
+            ROUND(c.valeur_maximale, 2) as valeur_maximale,
+            ROUND(c.valeur_minimale, 2) as valeur_minimale,
+            ROUND(c.valeur_ouverture, 2) as valeur_ouverture,
+            ROUND(c.valeur_fermeture, 2) as valeur_fermeture,
+            c.volume,
+            ROUND(((c.valeur_fermeture - c_prev.valeur_fermeture) / NULLIF(c_prev.valeur_fermeture, 0)) * 100, 2) AS p_change
+        FROM ValeurCours c
+        LEFT JOIN ValeurCours c_prev ON c_prev.rang = c.rang + 1
+        LIMIT 1
+        ", [$ins["isin"]])
+        ->fetch();
 
 ?>
 
@@ -129,7 +162,6 @@
          <div id="edit-instrument" data-reload-on-callback="edit-ins" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?=  $portfolio_id ?>/instruments?callback_id=edit-ins&form=1&nopopup=1&update=<?= $instrument_id ?>"></div>
 
         <br>
-        <div>Afficher les infos sur la performance ici</div> 
 
         <div class="portfolio-main">
             <div class="graph">
@@ -137,10 +169,29 @@
             </div>
 
              <div class="section">
+                <div class="">
+                    <?php if($ins["type"] === "action") {
+                        echo "<div>Devise d'échange : ".htmlspecialchars($ins["devise"]). " (" . htmlspecialchars($ins["code_devise"]) . ") </div>";
+                    } ?>
+
+                    <div>Dernier cours enregistré: <?= ucfirst($formatter->format(new DateTime($cours["date"], new DateTimeZone('Europe/Brussels')))); ?></div>
+
+                    <div>Valeur maximale : <?= $cours["valeur_maximale"] ?> <?= $ins["devise"] ?></div>
+                    <div>Valeur minimale : <?= $cours["valeur_minimale"] ?> <?= $ins["devise"] ?></div>
+                    <div>Ouverture : <?= $cours["valeur_ouverture"] ?> <?= $ins["devise"] ?></div>
+                    <div>Clôture : <?= $cours["valeur_fermeture"] ?> <?= $ins["devise"] ?></div>
+                    <div>Volume : <?= $cours["volume"] ?></div>
+                    <div>%Change day : <?= with_color_val("span", $cours["p_change"], '%') ?></div>
+                    
+                    <a href="/portfolio/<?= $portfolio_id ?>/cours/<?= $ins["isin"] ?>">Voir le cours</a>
+                </div>
+             </div> 
+
+             <div class="section">
                 <div class="row header-search">
                     <h3>Transactions réalisées sur l'instrument financier</h3>
                     <label for="date-filer">Après le:</label>
-                    <input placeholder="Rechercher" id="date-filter" type="date" name="date" value="" oninput="search_ajax_debounce(this, '#contenu-portfolio', 0, '/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1');" />
+                    <input placeholder="Rechercher" id="date-filter" type="date" name="date" value="" oninput="search_ajax_debounce(this, '#transactions-<?= $isin ?>', 0, '/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1');" />
                 </div>
 
                 <div id="transactions-<?=$instrument_id ?>" data-lazy="/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1&noLayout=1"></div>

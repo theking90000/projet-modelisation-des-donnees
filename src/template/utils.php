@@ -52,16 +52,16 @@ function print_portfolio_header_back($id, $nom) {
     return print_header($nom, create_button("Retour", "/portfolio/$id", image("arrow-left.svg")));
 }
 
-function with_color($elem, $positive, $value) {
+function with_color($elem, $positive, $value, $suffix) {
     $str = "<$elem class=\"";
     if($positive) {
         $str .= "success\"> +";
     } else {
         $str .= "danger\"> -";
     }
-    return $str.htmlspecialchars($value). "</$elem>\n";
+    return $str.htmlspecialchars($value).$suffix. "</$elem>\n";
 }
 
-function with_color_val($elem, $value) {
-    return with_color($elem, $value >= 0, abs($value));
+function with_color_val($elem, $value, $suffix='') {
+    return with_color($elem, $value >= 0, abs($value), $suffix);
 }
