@@ -254,11 +254,15 @@ abstract class AffichageTable {
         echo "</label>\n";
     }
 
-    protected function print_input($name, $placeholder, $data) {
-        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder) {
+    protected function print_input($name, $placeholder, $data, $allowUpdate=true) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $allowUpdate) {
             echo "<input name=\"$name\" id=\"$name-$this->render_id\" placeholder=\"$placeholder\" value=\"";
             echo htmlspecialchars($value);
-            echo "\" >\n";
+            echo "\" ";
+            if ($this->update_id && !$allowUpdate) {
+                echo "readonly ";
+            }
+            echo ">\n";
         });
     }
 
