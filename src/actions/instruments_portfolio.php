@@ -153,7 +153,7 @@ class AffichageInstruments extends AffichageTable {
         echo "<td>". htmlspecialchars($row["symbole"]) . "</td>\n";
         echo "<td>". htmlspecialchars($row["nom"]) . "</td>\n";
         echo "<td>". htmlspecialchars($row["isin"]) . "</td>\n";
-        echo "<td><a href='/cours/". $row["isin"] ."'>Voir le Cours</a></td>";
+      //  echo "<td><a href='/cours/". $row["isin"] ."'>Voir le Cours</a></td>";
     }
 
     protected function row_id(array $row) {

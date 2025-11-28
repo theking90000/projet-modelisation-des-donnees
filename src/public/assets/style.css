@@ -102,11 +102,27 @@ body {
   top: 0;
   bottom: 0;
   background-color: white;
-  border: 1px solid black;
   min-width: 400px;
   padding: 10px;
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  animation-delay: 0s;
+  animation: slideLeft 0.5s ease-out;
+
+  width: min(600px, 80vw);
+  max-width: 80vw;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(600px);
+  }
+  to {
+    transform: translateX(0px);
+  }
 }
 
 [data-ext-select] {
