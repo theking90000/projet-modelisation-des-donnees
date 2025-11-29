@@ -123,16 +123,41 @@ class AffichageEntreprises extends AffichageTable {
     }
 
     protected function form(array $data) {
-        $this->print_input("nom", "Nom", $data);
+        $this->print_input("nom", "Nom", $data,);
 
         $this->print_input("secteur", "Secteur", $data);
 
-        $this->print_input("numero", "Numero", $data);
+        $this->print_input("numero", "Numero", $data, false);
 
         $this->print_ext_select("pays", "Selectionner pays", "/portfolio"."/".$this->args["portfolio_id"]."/pays",
         function ($v) { return $v["code"]; },
         function ($v) { return $v["nom"]; },
-        $data);
+        $data, false);
+    }
+
+    protected function get(string $id): array {
+        if (strlen($id)<3) return null;
+        $code_pays = substr($id, 0, 2);
+        $numero = substr($id, 2);
+
+        return Database::instance()
+            ->execute("SELECT numero, code_pays as pays, nom, secteur FROM Entreprise WHERE code_pays = ? AND numero = ?", [$code_pays, $numero])
+            ->fetch();
+    }
+    
+    protected function update(string $id, array $data) {
+        
+         if (strlen($id)<3) throw new Exception("Invalid id");
+        $code_pays = substr($id, 0, 2);
+        $numero = substr($id, 2);
+        
+        Database::instance()
+            ->execute("UPDATE Entreprise SET nom = :nom, secteur = :secteur WHERE numero = :numero AND code_pays = :code_pays", 
+            ["numero"=>$numero, 
+            "code_pays"=>$code_pays, 
+            "nom"=>$data["nom"]["value"],
+            "secteur"=>$data["secteur"]["value"]
+        ]);
     }
 }
 

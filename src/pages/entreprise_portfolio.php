@@ -34,21 +34,11 @@
         <div class="m-col header-search">
             <span>
                 <div style="display:flex; align-items:center;">
-                    <h3><?= $ins["symbole"]?></h3> 
-                    <div style="margin: 0 8px;"> <?= $ins["nom"] ?> </div>
-                    <?php if($ins["type"] === "action") {
-                        echo '<em>(<a href="/portfolio/';
-                        echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
-                        echo '">';
-                        echo $ins["nom_entreprise"];
-                        echo "</a> - cotée à la bourse <em><a href=\"/portfolio/";
-                        echo $portfolio_id . "/bourse/".$ins["id_bourse"] ;
-                        echo "\">";
-                        echo $ins["id_bourse"];
-                        echo "</a>)</em>";
-                    } ?>
+                    <h3><?= $en["nom"] ?></h3> 
+                    <em style="margin: 0 8px;"><?= $en["secteur"] ?></em>
+                    
                 </div>
-                <sub><?= $ins["isin"] ?></sub>
+                <sub><a href="/portfolio/<?= $portfolio_id ?>/pays/<?=$en["code_pays"]?>"><?= $en["code_pays"]; ?></a><?= $en["numero"] ?></sub>
             </span>
 
         <a href="#" class="button" data-open="#edit-entreprise">Editer</a>

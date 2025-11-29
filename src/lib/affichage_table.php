@@ -308,8 +308,8 @@ abstract class AffichageTable {
         echo "\n</div>\n";
     }
 
-    protected function print_ext_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data) {
-        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $select, $row_id, $row_label) {
+    protected function print_ext_select($name, $placeholder, $select, callable $row_id, callable $row_label, $data, $allowUpdate=true) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $select, $row_id, $row_label, $allowUpdate) {
             $id = !is_string($value) ? $row_id($value) : '';
             $label = !is_string($value) ? $row_label($value) : $placeholder;
             
@@ -319,12 +319,16 @@ abstract class AffichageTable {
             echo htmlspecialchars(addslashes($id));
             echo "\" data-ext-select=\"";
             echo addslashes($select);
-            echo "\" >";
+            echo "\" ";
+            if (!$allowUpdate) {
+                echo "disabled";
+            }
+            echo" >";
 
             echo htmlspecialchars($label);
 
             echo "</button>\n";
-        });
+        },);
     }
 
     /**
