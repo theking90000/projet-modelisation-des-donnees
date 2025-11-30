@@ -254,13 +254,18 @@ abstract class AffichageTable {
         echo "</label>\n";
     }
 
-    protected function print_input($name, $placeholder, $data, $allowUpdate=true) {
-        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $allowUpdate) {
+    protected function print_input($name, $placeholder, $data, $type="string", $allowUpdate=true) {
+        $this->print_input_fn($name, $data, function ($value) use ($name, $placeholder, $allowUpdate, $type) {
             echo "<input name=\"$name\" id=\"$name-$this->render_id\" placeholder=\"$placeholder\" value=\"";
             echo htmlspecialchars($value);
             echo "\" ";
             if ($this->update_id && !$allowUpdate) {
                 echo "readonly ";
+            }
+            echo "autocomplete=\"off\" ";
+            echo "type=\"".htmlspecialchars($type)."\" ";
+            if ($type==="number") {
+                echo "step=\"any\"";
             }
             echo ">\n";
         });

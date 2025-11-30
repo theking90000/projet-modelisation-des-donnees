@@ -1,13 +1,22 @@
 <?php
 require_once __DIR__ . '/../lib/affichage_table.php';
 
+
 class AffichageTransaction extends AffichageTable {
+    public string $devisePortfolio;
+
     protected function parse(array $data): array {
         $out = [];
 
         $out = $this->check($out, $data, "quantite", function ($v) {
             if (!preg_match('/^-?\d+(\.\d+)?$/', $v)) {
                 return "La quantité doit être un nombre";
+            }
+        });
+
+        $out = $this->check($out, $data, "valeur_devise_portfolio", function ($v) {
+            if (!preg_match('/^-?\d+(\.\d+)?$/', $v)) {
+                return "La valeur doit être un nombre";
             }
         });
 
@@ -47,8 +56,14 @@ class AffichageTransaction extends AffichageTable {
         });
         
         $out = $this->check($out, $data, "date", function ($v) {
-            if (!isset($v)) {
+            if (!isset($v) || empty($v)) {
                 return "La date doit être définie";
+            }
+        });
+
+        $out = $this->check($out, $data, "heure", function ($v) {
+            if (!isset($v) || empty($v)) {
+                return "L'heure doit être définie";
             }
         });
 
@@ -108,14 +123,18 @@ class AffichageTransaction extends AffichageTable {
 
             "type"=>$data["type"]["value"],
             "date"=>$data["date"]["value"],
+            "heure"=>$data["heure"]["value"],
 
             "quantite"=>$data["quantite"]["value"],
+            "valeur_devise_portfolio"=>$data["valeur_devise_portfolio"]["value"],
 
             "taxes"=>$data["taxes"]["value"],
             "frais"=>$data["frais"]["value"],
         ];
 
-        Database::instance()->execute("INSERT INTO `Transaction` (id_portfolio, isin, email_utilisateur,`type`, `date`, quantite, taxes, frais) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", array_values($row));
+        // TODO: calculer "valeur_devise_instrument" avec le Yahoo finance API??
+
+        Database::instance()->execute("INSERT INTO `Transaction` (id_portfolio, isin, email_utilisateur,`type`, `date`, heure, quantite, valeur_devise_portfolio, taxes, frais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array_values($row));
 
       //  Database::instance()->execute("INSERT INTO Entreprise (numero, code_pays, nom, secteur) VALUES (:numero, :code_pays, :nom, :secteur);",
    //             $row);
@@ -150,24 +169,32 @@ class AffichageTransaction extends AffichageTable {
     }
 
     protected function form(array $data) {
+        $devise = htmlspecialchars($this->devisePortfolio);
+        
         $this->print_ext_select("instrument", "Selectionner instrument", "/portfolio"."/".$this->args["portfolio_id"]."/instruments",
         function ($v) { return $v["isin"]; },
         function ($v) { return $v["nom"]; },
         $data);
+
+        $this->print_label("type", "Type :");
+        $this->print_select("type", ["achat", "vente"],["Achat", "Vente"], $data);
             
         $this->print_label("quantite", "Quantité :");
         $this->print_input("quantite", "Quantité", $data);
 
-        $this->print_label("type", "Type :");
-        $this->print_select("type", ["achat", "vente"],["Achat", "Vente"], $data);
+        $this->print_label("valeur_devise_portfolio", "Valeur (".$devise.") au moment de la transaction:");
+        $this->print_input("valeur_devise_portfolio", "Valeur (".$devise.")", $data, "number");
 
         $this->print_label("date", "Date :");
-        $this->print_input("date", "Date", $data);
+        $this->print_input("date", "Date", $data, "date");
 
-        $this->print_label("taxes", "Taxes :");
-        $this->print_input("taxes", "Taxes", $data);
-        $this->print_label("frais", "Frais :");
-        $this->print_input("frais", "Frais transactions", $data);
+        $this->print_label("heure", "Heure :");
+        $this->print_input("heure", "Heure", $data, "time");
+
+        $this->print_label("taxes", "Taxes (".$devise.") :");
+        $this->print_input("taxes", "Taxes (".$devise.")", $data, "number");
+        $this->print_label("frais", "Frais transaction (".$devise.") :");
+        $this->print_input("frais", "Frais transactions (".$devise.")", $data, "number");
     }
 }
 
@@ -175,6 +202,10 @@ $acces = acces_portfolio($portfolio_id);
 
 $affichage = new AffichageTransaction(["portfolio_id"=>$portfolio_id, "title"=>"Entreprises"], 10,
                                       $acces>=2, $acces>=2, $acces>=2);
+
+$affichage->devisePortfolio = Database::instance()->execute(
+    "SELECT d.symbole FROM Portfolio p JOIN Devise d ON p.code_devise = d.code WHERE p.id = ?"
+, [$portfolio_id])->fetch()["symbole"];
 
 $affichage->render();
 ?>
