@@ -33,5 +33,16 @@
         <div data-lazy="/portfolio/<?= $portfolio_id ?>/contenu?table=1&page=0&perPage=3&sort=p_change&hideSort=1&noPagination=1"></div>
         
     </div>
+
+    <div class="section">
+        <div class="row">
+            <h3>Dernières transactions</h3>
+
+            <?= create_button("Transactions", "/portfolio/$portfolio_id/transactions" ,image("arrow-right.svg")) ?>
+        </div>
+
+        <div data-lazy="/portfolio/<?= $portfolio_id ?>/transactions?table=1&page=0&perPage=3&sort=date&hideSort=1&noPagination=1&noLayout=1"></div>
+        
+    </div>
 </div>
 
