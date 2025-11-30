@@ -170,7 +170,7 @@
 
              <div class="section center">
                 <div class="card">
-                    <?php if($ins["type"] === "action") {
+                    <?php if(/*$ins["type"] === "action"*/true) {
                         echo "<div>Devise d'échange : ".htmlspecialchars($ins["devise"]). " (" . htmlspecialchars($ins["code_devise"]) . ") </div>";
                     } ?>
 
