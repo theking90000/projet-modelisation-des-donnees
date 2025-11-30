@@ -186,9 +186,9 @@ LIMIT $limit OFFSET $offset", [$portfolio_id, $recherche]);
                 if($entreprise) {
                     echo "&entreprise=".htmlspecialchars($entreprise);
                 }
-                echo '\');';
+                echo '\');"';
             }
-            echo "\">";
+            echo ">";
             echo htmlspecialchars($v);
                 if(!$hideSort) {
                 if ($orderBy == $k && $orderByType == "desc") {

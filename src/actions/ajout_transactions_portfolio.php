@@ -111,7 +111,7 @@ class AffichageTransaction extends AffichageTable {
         return $stmt;
     }
 
-    protected function insert(array $data): array {
+    protected function to_row(array $data): array {
         if(!isset($this->args["portfolio_id"]))
             throw new Exception("Manque id portfolio");
 
@@ -131,8 +131,12 @@ class AffichageTransaction extends AffichageTable {
             "taxes"=>$data["taxes"]["value"],
             "frais"=>$data["frais"]["value"],
         ];
+        return $row;
+    }
 
+    protected function insert(array $data): array {
         // TODO: calculer "valeur_devise_instrument" avec le Yahoo finance API??
+        $row = $this->to_row($data);
 
         Database::instance()->execute("INSERT INTO `Transaction` (id_portfolio, isin, email_utilisateur,`type`, `date`, heure, quantite, valeur_devise_portfolio, taxes, frais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", array_values($row));
 
@@ -195,6 +199,26 @@ class AffichageTransaction extends AffichageTable {
         $this->print_input("taxes", "Taxes (".$devise.")", $data, "number");
         $this->print_label("frais", "Frais transaction (".$devise.") :");
         $this->print_input("frais", "Frais transactions (".$devise.")", $data, "number");
+    }
+
+    protected function get(string $id): array {
+        return Database::instance()
+            ->execute("SELECT isin AS instrument, type, quantite, valeur_devise_portfolio, 
+                        date, heure, taxes, frais
+             FROM `Transaction` WHERE id = ? AND id_portfolio = ?", [$id, $this->args["portfolio_id"]])
+            ->fetch();
+    }
+    
+    protected function update(string $id, array $data) {
+        $row = $this->to_row($data);
+
+        
+        $row["id_portfolio"] = $this->args["portfolio_id"];
+        $row["id"] = $id;
+
+        return Database::instance()
+            ->prepare("UPDATE `Transaction` SET `type` = :type, quantite = :quantite, valeur_devise_portfolio = :valeur_devise_portfolio, date = :date, heure = :heure, taxes = :taxes, frais = :frais, isin = :isin, email_utilisateur = :email_utilisateur WHERE id = :id AND id_portfolio = :id_portfolio")
+            ->execute($row);
     }
 }
 

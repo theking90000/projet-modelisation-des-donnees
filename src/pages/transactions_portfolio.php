@@ -39,7 +39,7 @@
                 }
             ])
             ->addColumn("nom_instrument", "Instrument", [
-                "renderer"=> function ($row) use ($formatter, $portfolio_id) {
+                "renderer"=> function ($row) use ($portfolio_id) {
                     return "<a href=\"/portfolio/".$portfolio_id. "/instrument/" . $row["isin"]
                     . "\">" . htmlspecialchars($row["nom_instrument"]) . "</a>";
                 }
@@ -47,7 +47,16 @@
             ->addColumn("nom_utilisateur", "Utilisateur")
             ->addColumn("type", "type")
             ->addColumn("quantite", "Quantité")
-            ->addColumn("valeur", "Valeur (".$portfolio['devise_portfolio'].")", ["type"=>"colored_number"]);
+            ->addColumn("valeur", "Valeur (".$portfolio['devise_portfolio'].")", ["type"=>"colored_number"])
+            ->addColumn("voir", "", [
+                "sortable"=>false,
+                "type"=> "custom",
+                "renderer"=> function ($row) use ($portfolio_id) {
+                    return "<a class='button' href=\"/portfolio/"
+                        . $portfolio_id. "/transaction/". $row["id"]
+                        . "\">Voir</a>";
+                }
+            ]);
 
         $tbl->setDefaultSort("date", "desc");
 
@@ -57,6 +66,7 @@
             $offset = $page * $limit;
             $sql = "
             SELECT 
+                t.id,
                 t.date,
                 t.heure,
                 CONCAT(u.nom, ' ', u.prenom) AS nom_utilisateur,
