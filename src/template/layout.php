@@ -48,6 +48,11 @@ function template_head(array $data = []) {
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@700&family=Inter:wght@400&family=Roboto:wght@400&display=swap" rel="stylesheet">
 
     <script src="/assets/script.js?<?= random_int(0, PHP_INT_MAX)?>"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+    <script src="/assets/graph.js?<?= random_int(0, PHP_INT_MAX)?>" defer></script>
 </head>
 <body>
     <div class="layout"></div>

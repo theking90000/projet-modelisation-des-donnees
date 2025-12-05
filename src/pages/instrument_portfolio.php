@@ -133,6 +133,12 @@
 
 <?= print_portfolio_header($portfolio_id, $ins["nom_portfolio"], "/portfolio/$portfolio_id") ?>
 
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+<script src="/assets/graph.js" defer></script>
+
 <div class="portfolio-main">
     <div class="section">
         <div class="m-col header-search">
@@ -164,8 +170,14 @@
         <br>
 
         <div class="portfolio-main">
-            <div class="graph">
-                 Ici, Graphique
+
+            <div class="graph" style="height:100%; min-height: 40vh; width:100%; display: flex; flex-direction: column; align-items: center; justify-content: center">
+                <canvas id="graph" data="<?= $ins["isin"] ?>" data-type="cours" currency="€" label="<?= $instrument["nom"]?>" type="candlestick" style="flex: 1; width: 100%; height: 100%;"></canvas>
+                <div style="display: flex; flex-direction: row; gap: 8px;">
+                    <button class="button" id="week">1 Semaine</button>
+                    <button class="button" id="month">1 Mois</button>
+                    <button class="button" id="year">1 Année</button>
+                </div>
             </div>
 
              <div class="section center">
@@ -182,8 +194,6 @@
                     <div>Clôture : <?= $cours["valeur_fermeture"] ?> <?= $ins["devise"] ?></div>
                     <div>Volume : <?= $cours["volume"] ?></div>
                     <div>%Change day : <?= with_color_val("span", $cours["p_change"], '%') ?></div>
-                    
-                    <a href="/portfolio/<?= $portfolio_id ?>/cours/<?= $ins["isin"] ?>">Voir le cours</a>
                 </div>
              </div> 
 
