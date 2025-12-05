@@ -12,9 +12,10 @@ $instrument = $database->execute("SELECT * FROM Instrument_Financier WHERE isin=
 <script src="/assets/graph.js" defer></script>
 
 <div class="graph" style="height:100vh; display: flex; flex-direction: column; align-items: center; justify-content: center">
-    <canvas id="graph" data="<?= $isin ?>" data-type="cours" currency="€" label="<?= $instrument["nom"]?>" width="600" height="300" style="max-width: 900px; max-height:600px;"></canvas>
-    <div style="display: flex; flex-direction: row">
-        <button id="week">1 Semaine</button>
-        <button id="month">1 Mois</button>
+    <canvas id="graph" data="<?= $isin ?>" data-type="cours" currency="€" label="<?= $instrument["nom"]?>" type="candlestick" width="600" height="300" style="max-width: 900px; max-height:600px;"></canvas>
+    <div style="display: flex; flex-direction: row; gap: 8px;">
+        <button class="button" id="week">1 Semaine</button>
+        <button class="button" id="month">1 Mois</button>
+        <button class="button" id="year">1 Année</button>
     </div>
 </div>

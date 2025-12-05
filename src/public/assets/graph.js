@@ -4,6 +4,7 @@ class Graph {
         this.canvas = canvas;
         this.currency = this.canvas.getAttribute("currency");
         this.label = this.canvas.getAttribute("label");
+        this.chartType = this.canvas.getAttribute("type");
         this.ctx = this.canvas.getContext("2d");
     }
 
@@ -26,53 +27,102 @@ class Graph {
         }
 
         if (this.chart === undefined) {
-            this.chart = new Chart(this.ctx, {
-            type: "candlestick",
-            data: {
-                datasets: [{
-                    label: this.label,
-                    data: this.data,
-                }]
-            },
-            options: {
-                parsing: false,
-                scales:
-                    {
-                        x: {
-                            type: "time", time:
+            switch (this.chartType) {
+                case "candlestick":
+                    this.chart = new Chart(this.ctx, {
+                        type: "candlestick",
+                        data: {
+                            datasets: [{
+                                label: this.label,
+                                data: this.data,
+                            }]
+                        },
+                        options: {
+                            parsing: false,
+                            scales:
                                 {
-                                    unit: "day"
+                                    x: {
+                                        type: "time", time:
+                                            {
+                                                unit: "day"
+                                            }
+                                    }
+                                    ,
+                                    y: {
+                                        ticks: {
+                                            callback: value => value.toFixed(2) + " " + this.currency
+                                        }
+                                    }
+                                    ,
                                 }
-                        }
-                        ,
-                        y: {
-                            ticks: {
-                                callback: value => value.toFixed(2) + " " + this.currency
+                            ,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: ctx => {
+                                            const ohlc = ctx.raw;
+                                            return [
+                                                `Ouverture: ${ohlc.o} ` + this.currency,
+                                                `Maximum: ${ohlc.h} ` + this.currency,
+                                                `Minimum: ${ohlc.l} ` + this.currency,
+                                                `Fermeture: ${ohlc.c} ` + this.currency,
+                                            ];
+                                        }
+                                    }
+                                }
                             }
                         }
-                        ,
-                    }
-                ,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => {
-                                const ohlc = ctx.raw;
-                                return [
-                                    `Ouverture: ${ohlc.o} ` + this.currency,
-                                    `Maximum: ${ohlc.h} ` + this.currency,
-                                    `Minimum: ${ohlc.l} ` + this.currency,
-                                    `Fermeture: ${ohlc.c} ` + this.currency,
-                                ];
+                    })
+                    ;
+                    break;
+                case "line":
+                    this.chart = new Chart(this.ctx, {
+                        type: "line",
+                        data: {
+                            datasets: [{
+                                label: this.label,
+                                data: this.data,
+                            }]
+                        },
+                        options: {
+                            parsing: false,
+                            scales:
+                                {
+                                    x: {
+                                        type: "time", time:
+                                            {
+                                                unit: "day"
+                                            }
+                                    }
+                                    ,
+                                    y: {
+                                        ticks: {
+                                            callback: value => value.toFixed(2) + " " + this.currency
+                                        }
+                                    }
+                                    ,
+                                }
+                            ,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: ctx => {
+                                            const val = ctx.raw;
+                                            return [
+                                                `Fermeture: ${val.y} ` + this.currency,
+                                            ];
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    })
+                    ;
+                    break;
+
             }
-        })
-        ;
+
         } else {
-            console.log("TEST");
             this.chart.data.datasets[0].data = this.data;
             this.chart.update();
         }
@@ -89,6 +139,7 @@ const canvas = document.getElementById("graph");
 
 const weekButton = document.getElementById("week");
 const monthButton = document.getElementById("month");
+const yearButton = document.getElementById("year");
 
 const graph = new Graph(canvas);
 
@@ -101,5 +152,9 @@ if (canvas !== undefined && canvas !== null) {
 
     monthButton.addEventListener("click", async () => {
         await graph.changeTimeRange("-1 month");
+    });
+
+    yearButton.addEventListener("click", async () => {
+        await graph.changeTimeRange("-1 year");
     });
 }
