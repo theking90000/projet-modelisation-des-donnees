@@ -103,7 +103,7 @@ class Router {
         );
         
         return [
-            'pattern' => '#^' . $compiled . '?$#',           #!!!! before '$#'
+            'pattern' => '#^' . $compiled . '/?$#i',     #!
             'params' => $params
         ];
     }

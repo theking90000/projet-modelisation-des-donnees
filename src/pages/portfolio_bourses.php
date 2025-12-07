@@ -11,9 +11,9 @@
     )->fetch();
 
     if(!$bourse) {
-        
-        render_page("404.php");
-        die();
+        echo "Bourse not found in db";
+        #render_page("404.php");
+        #die();
     }
 
     // 2. Fetch Instruments in this Portfolio from this Bourse
