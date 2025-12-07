@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(E_ERROR| E_PARSE);
+
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 require_once __DIR__ . '/../lib/router.php';
@@ -26,6 +28,8 @@ $router->get("/cours/{isin}", create_render_handle("cours.php"));
 
 $router->group("", function($router) {
   $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
+  
+  $router->post("/create-portfolio", create_handler("actions/create_portfolio.php"));  #!
 }, ['AuthMiddleware']);
 
 $router->group("/portfolio/{portfolio_id}", function ($router) {

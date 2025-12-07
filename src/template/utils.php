@@ -45,7 +45,17 @@ function image ($name, $w=20, $h=20): string {
 }
 
 function print_portfolio_header($id, $nom, $back="/") {
-    return print_header($nom, print_add_transaction($id) . create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg")), "arrow-left.svg", $back);
+    // Check access level: 1=Read, 2=Write, 3=Owner
+    $access = acces_portfolio($id);
+    
+    $actions = print_add_transaction($id);
+    
+    // Only show "Paramètres" if the user is the Owner (Level 3)
+    if ($access >= 3) {
+        $actions .= create_button("Paramètres", "/portfolio/$id/parametres", image("arrow-right.svg"));
+    }
+
+    return print_header($nom, $actions, "arrow-left.svg", $back);
 }
 
 function print_portfolio_header_back($id, $nom) {
