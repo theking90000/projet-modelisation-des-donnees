@@ -42,7 +42,7 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
 
     $router->get("/entreprise/{entreprise_id}", create_render_handle("entreprise_portfolio.php", ["title"=> "Entreprises"]));
 
-    $router->get("/bourse/{bourse_id}", create_render_handle("bourse_portfolio.php", ["title"=> "Détails Bourse"]));                                                                        #!
+    $router->get("/bourse/{bourse_id}", create_render_handle("portfolio_bourses.php", ["title"=> "Détails Bourse"]));                                                                        #!
 
     $router->get("/contenu", create_handler("pages/contenu_portfolio.php"));
 
