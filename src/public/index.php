@@ -42,6 +42,8 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
 
     $router->get("/entreprise/{entreprise_id}", create_render_handle("entreprise_portfolio.php", ["title"=> "Entreprises"]));
 
+    $router->get("/bourse/{bourse_id}", create_render_handle("bourse_portfolio.php", ["title"=> "Détails Bourse"]));                                                                          #!
+
     $router->get("/contenu", create_handler("pages/contenu_portfolio.php"));
 
     $router->group("", function ($router) {
@@ -82,5 +84,16 @@ $router->group("/portfolio/{portfolio_id}", function ($router) {
     echo "Nom:".$row["nom"]."<br>";
 }*/
 
+
+/*
+// DEBUG: Print all registered routes to screen
+echo "<pre>";
+$r = new ReflectionClass($router);
+$prop = $r->getProperty('routes');
+$prop->setAccessible(true);
+print_r($prop->getValue($router));
+echo "</pre>";
+die(); // Stop here to see the list
+*/
 
 $router->dispatch(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), $_SERVER['REQUEST_METHOD']);
