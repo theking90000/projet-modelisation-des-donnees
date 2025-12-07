@@ -133,12 +133,6 @@
 
 <?= print_portfolio_header($portfolio_id, $ins["nom_portfolio"], "/portfolio/$portfolio_id") ?>
 
-<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
-<script src="/assets/graph.js" defer></script>
-
 <div class="portfolio-main">
     <div class="section">
         <div class="m-col header-search">
@@ -164,49 +158,48 @@
         <a href="#" class="button" data-open="#edit-instrument">Editer</a>
    
         </div>
+    </div>
 
-         <div id="edit-instrument" data-reload-on-callback="edit-ins" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?=  $portfolio_id ?>/instruments?callback_id=edit-ins&form=1&nopopup=1&update=<?= $instrument_id ?>"></div>
+    <div id="edit-instrument" data-reload-on-callback="edit-ins" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?=  $portfolio_id ?>/instruments?callback_id=edit-ins&form=1&nopopup=1&update=<?= $instrument_id ?>"></div>
 
-        <br>
+    <br>
 
-        <div class="portfolio-main">
-
-            <div class="graph" style="height:100%; min-height: 40vh; width:100%; display: flex; flex-direction: column; align-items: center; justify-content: center">
-                <canvas id="graph" data="<?= $ins["isin"] ?>" data-type="cours" currency="€" label="<?= $instrument["nom"]?>" type="candlestick" style="flex: 1; width: 100%; height: 100%;"></canvas>
-                <div style="display: flex; flex-direction: row; gap: 8px;">
-                    <button class="button" id="week">1 Semaine</button>
-                    <button class="button" id="month">1 Mois</button>
-                    <button class="button" id="year">1 Année</button>
-                </div>
-            </div>
-
-             <div class="section center">
-                <div class="card">
-                    <?php if(/*$ins["type"] === "action"*/true) {
-                        echo "<div>Devise d'échange : ".htmlspecialchars($ins["devise"]). " (" . htmlspecialchars($ins["code_devise"]) . ") </div>";
-                    } ?>
-
-                    <div>Dernier cours enregistré: <?= ucfirst($formatter->format(new DateTime($cours["date"], new DateTimeZone('Europe/Brussels')))); ?></div>
-
-                    <div>Valeur maximale : <?= $cours["valeur_maximale"] ?> <?= $ins["devise"] ?></div>
-                    <div>Valeur minimale : <?= $cours["valeur_minimale"] ?> <?= $ins["devise"] ?></div>
-                    <div>Ouverture : <?= $cours["valeur_ouverture"] ?> <?= $ins["devise"] ?></div>
-                    <div>Clôture : <?= $cours["valeur_fermeture"] ?> <?= $ins["devise"] ?></div>
-                    <div>Volume : <?= $cours["volume"] ?></div>
-                    <div>%Change day : <?= with_color_val("span", $cours["p_change"], '%') ?></div>
-                </div>
-             </div> 
-
-             <div class="section">
-                <div class="row header-search">
-                    <h3>Transactions réalisées sur l'instrument financier</h3>
-                    <label for="date-filer">Après le:</label>
-                    <input placeholder="Rechercher" id="date-filter" type="date" name="date" value="" oninput="search_ajax_debounce(this, '#transactions-<?= $isin ?>', 0, '/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1');" />
-                </div>
-
-                <div id="transactions-<?=$instrument_id ?>" data-lazy="/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1&noLayout=1"></div>
-                
-            </div>
+    <div class="graph" style="width:100%; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center">
+        <div class="graph-container" style="position: relative; height:40vh; width:100%; margin:auto;">
+            <canvas id="graph" data="<?= $ins["isin"] ?>" data-type="cours" currency="<?= $ins["devise"] ?>" label="<?= $ins["nom"]?>" type="candlestick"></canvas>
         </div>
+        <div style="display: flex; flex-direction: row; gap: 8px;">
+            <button class="button" id="week">1 Semaine</button>
+            <button class="button" id="month">1 Mois</button>
+            <button class="button" id="year">1 Année</button>
+        </div>
+    </div>
+
+     <div class="section center">
+        <div class="card">
+            <?php if(/*$ins["type"] === "action"*/true) {
+                echo "<div>Devise d'échange : ".htmlspecialchars($ins["devise"]). " (" . htmlspecialchars($ins["code_devise"]) . ") </div>";
+            } ?>
+
+            <div>Dernier cours enregistré: <?= ucfirst($formatter->format(new DateTime($cours["date"], new DateTimeZone('Europe/Brussels')))); ?></div>
+
+            <div>Valeur maximale : <?= $cours["valeur_maximale"] ?> <?= $ins["devise"] ?></div>
+            <div>Valeur minimale : <?= $cours["valeur_minimale"] ?> <?= $ins["devise"] ?></div>
+            <div>Ouverture : <?= $cours["valeur_ouverture"] ?> <?= $ins["devise"] ?></div>
+            <div>Clôture : <?= $cours["valeur_fermeture"] ?> <?= $ins["devise"] ?></div>
+            <div>Volume : <?= $cours["volume"] ?></div>
+            <div>%Change day : <?= with_color_val("span", $cours["p_change"], '%') ?></div>
+        </div>
+     </div>
+
+     <div class="section">
+        <div class="row header-search">
+            <h3>Transactions réalisées sur l'instrument financier</h3>
+            <label for="date-filer">Après le:</label>
+            <input placeholder="Rechercher" id="date-filter" type="date" name="date" value="" oninput="search_ajax_debounce(this, '#transactions-<?= $isin ?>', 0, '/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1');" />
+        </div>
+
+        <div id="transactions-<?=$instrument_id ?>" data-lazy="/portfolio/<?= $portfolio_id ?>/instrument/<?= $instrument_id ?>?table=1&noLayout=1"></div>
+
     </div>
 </div>

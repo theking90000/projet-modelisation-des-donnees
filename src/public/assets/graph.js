@@ -38,6 +38,8 @@ class Graph {
                             }]
                         },
                         options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
                             parsing: false,
                             scales:
                                 {
@@ -85,6 +87,8 @@ class Graph {
                             }]
                         },
                         options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
                             parsing: false,
                             scales:
                                 {

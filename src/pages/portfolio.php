@@ -19,8 +19,10 @@
 <?= print_portfolio_header($portfolio_id, $portfolio["nom"]) ?>
 
 <div class="portfolio-main">
-    <div class="graph" style="height:100%; min-height: 40vh; width:100%; display: flex; flex-direction: column; align-items: center; justify-content: center">
-        <canvas id="graph" data="<?= $portfolio_id ?>" data-type="portfolio" currency="€" label="<?=  $portfolio["nom"]?>" type="line" style="flex: 1; width: 100%; height: 100%;"></canvas>
+    <div class="graph" style="width:100%; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center">
+        <div class="graph-container" style="position: relative; height:40vh; width:100%; margin:auto;">
+            <canvas id="graph" data="<?= $portfolio_id ?>" data-type="portfolio" currency="<?= $devise ?>" label="<?= $portfolio["nom"] ?>" type="line"></canvas>
+        </div>
         <div style="display: flex; flex-direction: row; gap: 8px;">
             <button class="button" id="week">1 Semaine</button>
             <button class="button" id="month">1 Mois</button>
@@ -47,7 +49,6 @@
         </div>
 
         <div data-lazy="/portfolio/<?= $portfolio_id ?>/transactions?table=1&page=0&perPage=3&sort=date&hideSort=1&noPagination=1&noLayout=1"></div>
-        
     </div>
 </div>
 
