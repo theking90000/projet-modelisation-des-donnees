@@ -144,7 +144,8 @@ class AffichageInstruments extends AffichageTable {
         $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
 
         $stmt->execute(array_values($row));
-                
+
+        require "cours_journaliers.php";
 
         return $row;
     }
