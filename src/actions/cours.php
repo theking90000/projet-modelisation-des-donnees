@@ -15,16 +15,24 @@ if ($timeRange === null) {
     $timeRange = "-7 days";
 }
 
+// $type correspond à l'attribut html "type" sur le canvas correspondant au graphique.
+// 2 options sont prévues : portfolio et cours.
 if ($type === "portfolio") {
-    // Nouveau plan:
-    // Récupérer toutes les currencies différentes contenues dans le portfolio
-    // Pour chaque couple portfolio_currency/instrument_currency récupérer le taux de change
-    // Pour chaque couple, récupérer les données et appliquer le taux (directement dans le sql?)
+    // Dans le cas d'un graphique sur le portfolio,
+    // il y a plusieurs étapes à exécuter pour obtenir les données.
 
-    // Pourquoi ne pas extraire le 'CASE' ? => Performance de la requête
-
+    // La première étape est de récupérer la devise du portfolio,
+    // cela nous permet après de faire des conversions monétaires si nécessaire.
     $portfolio_currency = $database->execute("SELECT p.code_devise as devise FROM Portfolio p WHERE p.id = ?", [$isin])->fetch();
 
+    // Si la devise n'existe pas, soit le portfolio n'existe pas ou alors la devise
+    // est mal configurée (ce qui ne devrait à priori pas arriver).
+    if (!$portfolio_currency) {
+        echo "Ce portfolio n'existe pas.";
+        die;
+    }
+
+    // L'étape d'après est de récupérer les devises de tous les instruments présents dans le portfolio.
     $currencies = $database->execute("SELECT DISTINCT(i.code_devise) as devise FROM Transaction t
         LEFT JOIN Instrument_Financier i ON i.isin = t.isin
         WHERE t.id_portfolio = ?", [$isin])->fetchAll();
@@ -32,7 +40,7 @@ if ($type === "portfolio") {
     $raw_data = [];
 
     foreach ($currencies as $currency) {
-        // récupérer les données ou la currency est =
+        // Pour chaque devise, on récupère tous les cours cumulés des instruments de cette devise.
         $stmt = "SELECT c.date,
         SUM(c.valeur_fermeture * CASE
                 WHEN t.type = 'achat' THEN t.quantite 
@@ -58,12 +66,19 @@ if ($type === "portfolio") {
         $data = $database->execute($stmt, [$currency["devise"], $isin, date("Y-m-d", (new DateTime($timeRange))->getTimestamp())])->fetchAll();
 
         if ($currency["devise"] != $portfolio_currency["devise"]) {
+            // Si la devise est différente de celle du portfolio, récupérer le cours d'échange monétaire
+            // et appliquer la conversion aux données.
+
+            // Problème, si le cours n'existe pas en base de données, comment gérer le cas ?
+            // - Récupérer dynamiquement les données avec l'api ?
+            // - Ajouter le cours dans la base de donnée et récupérer les données ?
+            // - ... ?
+
             // TODO
-            // récupérer la conversion
-            // appliquer la conversion
         }
 
         foreach ($data as $day) {
+            // Finalement, on cumule les données qui sont alors toutes dans la devise du portfolio.
             $date = $day["date"];
             if (!array_key_exists($date, $raw_data)) {
                 $raw_data[$date] = 0.0;
@@ -75,6 +90,7 @@ if ($type === "portfolio") {
 
     $data = [];
 
+    // Transformation des données en json pour le graphique.
     foreach (array_keys($raw_data) as $jour) {
         $date = DateTime::createFromFormat("Y-m-d", $jour)->getTimestamp();
 
@@ -90,19 +106,21 @@ if ($type === "portfolio") {
 
     echo $json;
 } else if ($type === "cours") {
-    $instrument = $database->execute("SELECT * FROM Instrument_Financier WHERE isin=?", [$isin])->fetch();
-
-    if (!$instrument) {
-        echo "Cet instrument n'existe pas";
-        die;
-    }
-
+    // Dans le cas d'un graphique sur un instrument,
+    // on récupère directement son cours via son isin.
     $stmt = "SELECT * FROM Cours c WHERE c.isin=? AND c.date>=?";
     $stmt = $database->execute($stmt, [$isin, date("Y-m-d", (new DateTime($timeRange))->getTimestamp())]);
 
     $raw_data = $stmt->fetchAll();
+    // S'il n'y a aucune donnée, soit l'instrument n'existe pas, soit aucune donnée n'as encore été récupérée.
+    if (!$raw_data) {
+        echo json_encode([]);
+        die;
+    }
+
     $data = [];
 
+    // Transformation des données en json pour le graphique.
     foreach ($raw_data as $jour) {
         $date = DateTime::createFromFormat("Y-m-d", $jour['date'])->getTimestamp();
 
