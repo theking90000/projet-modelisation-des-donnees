@@ -150,3 +150,15 @@ ADD CONSTRAINT instrument_transaction FOREIGN KEY (isin) REFERENCES Instrument_F
 
 ALTER TABLE `Transaction`
 ADD CONSTRAINT utilisateur_transaction FOREIGN KEY (email_utilisateur) REFERENCES Utilisateur (email);
+
+-- Ajout des contraintes "ON DELETE CASCADE"
+
+ALTER TABLE Membre_Portfolio DROP CONSTRAINT portfolio_membre;
+
+ALTER TABLE Membre_Portfolio ADD CONSTRAINT portfolio_membre FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
+ON DELETE CASCADE;
+
+ALTER TABLE Transaction DROP CONSTRAINT portfolio_transaction;
+
+ALTER TABLE Transaction ADD CONSTRAINT portfolio_transaction FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
+ON DELETE CASCADE;
