@@ -84,21 +84,17 @@
                         )
                         -- 5. Sum the Rounded Values
                         SELECT 
-                            SUM(val_now) as total_now,
-                            SUM(val_prev) as total_prev
+                            ROUND(SUM(val_now), 2) as total_now,
+                            ROUND(SUM(val_prev), 2) as total_prev,
+                            ROUND(((SUM(val_now) - SUM(val_prev)) / NULLIF(SUM(val_prev), 0)) * 100, 2) AS p_change,
+                            ROUND(SUM(val_now) - SUM(val_prev) , 2) AS profit_day
                         FROM AssetValues
                     ", [$p['id'], $p['id']])->fetch();
 
-                    $valeur = $stats['total_now'] ?? 0;
-                    $prev = $stats['total_prev'] ?? 0;
-                    $diff_val = $valeur - $prev;
-                    // Avoid division by zero
-                    $diff_pct = $prev != 0 ? ($diff_val / $prev) * 100 : 0;
-                    
-                    // Formatting
-                    $fmt_valeur = number_format($valeur, 2, ',', ' ');
-                    $fmt_diff = ($diff_val > 0 ? '+' : '') . number_format($diff_val, 2, ',', ' ');
-                    $fmt_pct = ($diff_pct > 0 ? '+' : '') . number_format($diff_pct, 2, ',', ' ') . '%';
+                    $valeur = $stats['total_now'];
+                    $prev = $stats['total_prev'];
+                    $diff = $stats['profit_day'];
+                    $pct = $stats['p_change'];
                 ?>
 
                 <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
@@ -117,7 +113,7 @@
                         <div style="flex-grow: 1;">
                             <div style="font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 5px;">Valeur Totale</div>
                             <div style="font-size: 2.2em; font-weight: 800; color: #0f172a; line-height: 1; white-space: nowrap;">
-                                <?= $fmt_valeur ?> 
+                                <?= $valeur ?? 0 ?> 
                                 <span style="font-size: 0.5em; vertical-align: super; color: #64748b;"><?= $p['devise'] ?></span>
                             </div>
                         </div>
@@ -126,10 +122,10 @@
                             <div style="font-size: 0.85em; color: #64748b; margin-bottom: 5px;">Variation 24h</div>
                             <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
                                 <div style="font-size: 1.1em; font-weight: 600;">
-                                    <?= with_color("span", $diff_val >= 0, $fmt_diff, " " . $p['devise']) ?>
+                                    <?= with_color_val("span", $diff, $p['devise']) ?>
                                 </div>
-                                <div style="background: <?= $diff_val >= 0 ? '#dcfce7' : '#fee2e2' ?>; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.9em;">
-                                    <?= with_color("span", $diff_val >= 0, $fmt_pct, "") ?>
+                                <div style="background: <?= $diff >= 0 ? '#dcfce7' : '#fee2e2' ?>; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.9em;">
+                                    <?= with_color_val("span", $pct, "%") ?>
                                 </div>
                             </div>
                         </div>
