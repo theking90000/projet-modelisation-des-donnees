@@ -37,6 +37,15 @@
                 </div>
                 <?php if(isset($erreur_nom)) { echo "<span style='color:red'>$erreur_nom</span>"; } ?>
             </form>
+
+            <form  onsubmit="return confirm('Voulez-vous vraiment supprimer ce portfolio ?');" action="/portfolio/<?= $portfolio_id ?>/parametres" method="post" class="center-col" style="margin-top: 20px;">
+                <input hidden name="delete" value="1" />
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" name="action" value="delete_portfolio" class="button danger">
+                        Supprimer le portfolio
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 

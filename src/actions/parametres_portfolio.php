@@ -2,6 +2,12 @@
 
 require_once __DIR__ . "/../template/layout.php";
 
+if(isset($_POST["delete"])) {
+        Database::instance()->execute("DELETE FROM Portfolio WHERE id = ?", [$portfolio_id]);
+        header("Location: /");
+        die();
+}
+
 $nom = $_POST["nom"];
 
 if(empty($nom)) {

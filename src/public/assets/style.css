@@ -205,10 +205,12 @@ a.button.secondary:hover {
   border-color: #635bff;
 }
 
-a.button.danger {
+a.button.danger,
+.button.danger {
   background-color: var(--error-color);
 }
-a.button.danger:hover {
+a.button.danger:hover,
+.button.danger:hover {
   background-color: #b71c1c;
 }
 
