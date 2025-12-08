@@ -1,15 +1,41 @@
 <?php
 require_once __DIR__ . "/../lib/auth.php";
 require_once __DIR__ . "/../lib/db.php";
+require_once __DIR__ . "/../template/layout.php";
 
 // 1. Validation
 $nom = $_POST['nom'] ?? null;
 $devise = $_POST['devise'] ?? null;
 $description = $_POST['description'] ?? '';
 
-if (!$nom || !$devise) {
-    // Redirect back to home with error (simplified)
-    header("Location: /");
+$errors = [];
+$value = [
+    "nom" => $nom,
+    "description" => $description,
+    "devise" => $devise
+];
+
+if (!$nom) {
+    $errors["nom"] = "Le nom du portfolio est requis.";
+} else if (strlen($nom) < 3) {
+    $errors["nom"] = "Le nom du portfolio doit faire au moins 3 caractères.";
+}
+
+if (!$devise) {
+    $errors["devise"] = "La devise est requise.";
+}
+
+$devise = Database::instance()->execute("SELECT code, symbole FROM Devise WHERE code = ?", [$devise])->fetch();
+
+if (!$devise) {
+    $errors["devise"] = "La devise sélectionnée est invalide.";
+}
+
+$value["nom_devise"] = $devise['code'] . "(" . $devise["symbole"] . ")"  ?? null;
+
+if (!empty($errors)) {
+    // Redirect back to home with errors (simplified)
+    render_page("home.php", ["errors" => $errors, "title" => "Finance App", "value" => $value]);
     die();
 }
 
@@ -37,6 +63,7 @@ try {
 } catch (Exception $e) {
     $db->rollBack();
     // In a real app, you would flash an error message to the session here
-    header("Location: /");
+    $errors["general"] = "Une erreur est survenue lors de la création du portfolio.";
+    render_page("home.php", ["errors" => $errors, "title" => "Finance App", "value" => $value  ]);
     die();
 }

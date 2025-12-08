@@ -29,7 +29,10 @@ $router->get("/cours/{isin}", create_render_handle("cours.php"));
 $router->group("", function($router) {
   $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
   
-  $router->post("/create-portfolio", create_handler("actions/create_portfolio.php"));  #!
+  $router->post("/", create_handler("actions/create_portfolio.php"));  #!
+
+  $router->get('/devises', create_handler("actions/devises_portfolio.php"));
+  $router->post('/devises', create_handler("actions/devises_portfolio.php"));
 }, ['AuthMiddleware']);
 
 $router->group("/portfolio/{portfolio_id}", function ($router) {

@@ -13,8 +13,6 @@
         [Auth::user()]
     );
     $portfolios = $stmt->fetchAll();
-
-    $devises = Database::instance()->execute("SELECT code, nom, symbole FROM Devise")->fetchAll();
 ?>
 
 <?= print_header("Mes Portfolios", create_button("Se déconnecter", "/logout", image("arrow-right.svg")), "house.svg", "/") ?>
@@ -139,25 +137,36 @@
         <?php endif; ?>
     </div>
 
-    <div id="nouveau-portfolio" class="popup" data-popup="1" style="display: none;">
+    <div id="nouveau-portfolio" class="popup" data-popup="1" style="display: <?php 
+        if (isset($errors)) { echo 'block'; } else { echo 'none'; }
+    ?>;">
         <h3>Créer un nouveau portfolio</h3>
-        <form action="/create-portfolio" method="post" class="center-col">
+        <form action="/" method="post" class="center-col">
             <label for="nom">Nom du portfolio</label>
-            <input type="text" name="nom" id="nom" required placeholder="Ex: Investissements 2025">
+            <input type="text" name="nom" id="nom" value="<?= @$value["nom"] ?>" placeholder="Ex: Investissements 2025">
+             <?php if(isset($errors["nom"])) { ?>
+                <span style="color: red;"><?= $errors["nom"] ?></span>
+            <?php } ?>
 
             <label for="description">Description</label>
-            <input type="text" name="description" id="description" placeholder="Optionnel">
+            <input type="text" name="description" id="description" value="<?= @$value["description"] ?>" placeholder="Optionnel">
+            <?php if(isset($errors["description"])) { ?>
+                <span style="color: red;"><?= $errors["description"] ?></span>
+            <?php } ?>
 
-            <label for="devise">Devise principale</label>
-            <select name="devise" id="devise">
-                <?php foreach ($devises as $d): ?>
-                    <option value="<?= $d['code'] ?>">
-                        <?= $d['nom'] ?> (<?= $d['symbole'] ?>)
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <button type="button" data-name="devise" data-value="<?= @$value["devise"] ?>" 
+            placeholder="Devise principale"
+            value="<?= @$value["devise"] ?>"
+            data-ext-select="/devises"
+            ><?= $value["nom_devise"] ?> </button>
+            <?php if(isset($errors["devise"])) { ?>
+                <span style="color: red;"><?= $errors["devise"] ?></span>
+            <?php } ?>
 
             <input type="submit" value="Créer le portfolio">
+            <?php if(isset($errors["general"])) { ?>
+                <span style="color: red;"><?= $errors["general"] ?></span>
+            <?php } ?>
         </form>
     </div>
 

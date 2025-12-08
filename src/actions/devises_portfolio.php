@@ -96,6 +96,9 @@ class AffichageDevise extends AffichageTable {
     }
 
     protected function get_url(): string {
+        if(!isset($this->args["portfolio_id"])) {
+            return "/devises";
+        }
         return "/portfolio"."/".addslashes($this->args["portfolio_id"])."/devises";
     }
 
@@ -108,9 +111,13 @@ class AffichageDevise extends AffichageTable {
     }
 }
 
-$acces = acces_portfolio($portfolio_id);
+if (isset($portfolio_id)) {
+    $acces = acces_portfolio($portfolio_id);
+} else {
+    $acces = 3;
+}
 
-$affichage = new AffichageDevise(["portfolio_id"=>$portfolio_id, "title"=>"Devises"],
+$affichage = new AffichageDevise(["portfolio_id"=>@$portfolio_id, "title"=>"Devises"],
                                 10,$acces>=2, $acces>=2, $acces>=2);
 
 $affichage->render();
