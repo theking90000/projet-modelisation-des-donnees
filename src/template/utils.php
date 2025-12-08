@@ -64,7 +64,9 @@ function print_portfolio_header_back($id, $nom) {
 
 function with_color($elem, $positive, $value, $suffix) {
     $str = "<$elem class=\"";
-    if($positive) {
+    if ($value === 0) {
+        $str .= "neutral\"> ";
+    } else if($positive) {
         $str .= "success\"> +";
     } else {
         $str .= "danger\"> -";
