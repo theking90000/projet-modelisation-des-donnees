@@ -325,7 +325,7 @@ abstract class AffichageTable {
             echo "\" data-ext-select=\"";
             echo addslashes($select);
             echo "\" ";
-            if (!$allowUpdate) {
+            if ($this->update_id && !$allowUpdate) {
                 echo "disabled";
             }
             echo" >";
