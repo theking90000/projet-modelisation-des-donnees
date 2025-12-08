@@ -31,7 +31,9 @@ if (!$devise) {
     $errors["devise"] = "La devise sélectionnée est invalide.";
 }
 
-$value["nom_devise"] = $devise['code'] . "(" . $devise["symbole"] . ")"  ?? null;
+if ($devise) {
+    $value["nom_devise"] = $devise['code'] . "(" . $devise["symbole"] . ")"  ?? null;
+}
 
 if (!empty($errors)) {
     // Redirect back to home with errors (simplified)
@@ -46,7 +48,7 @@ try {
     // 2. Insert the Portfolio
     // Note: 'date_creation' in your schema might default to NOW(), otherwise handle it here
     $stmt = $db->prepare("INSERT INTO Portfolio (nom, description, code_devise, date_creation) VALUES (?, ?, ?, NOW())");
-    $stmt->execute([$nom, $description, $devise]);
+    $stmt->execute([$nom, $description, $devise['code']]);
     
     $portfolio_id = $db->lastInsertId();
 
@@ -63,7 +65,7 @@ try {
 } catch (Exception $e) {
     $db->rollBack();
     // In a real app, you would flash an error message to the session here
-    $errors["general"] = "Une erreur est survenue lors de la création du portfolio.";
+    $errors["general"] = "Une erreur est survenue lors de la création du portfolio." . $e->getMessage();
     render_page("home.php", ["errors" => $errors, "title" => "Finance App", "value" => $value  ]);
     die();
 }

@@ -158,7 +158,7 @@
             placeholder="Devise principale"
             value="<?= @$value["devise"] ?>"
             data-ext-select="/devises"
-            ><?= $value["nom_devise"] ?> </button>
+            ><?= $value["nom_devise"] ?? "Devise principale" ?> </button>
             <?php if(isset($errors["devise"])) { ?>
                 <span style="color: red;"><?= $errors["devise"] ?></span>
             <?php } ?>
