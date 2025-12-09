@@ -56,14 +56,14 @@ if ($type === "portfolio") {
             WHERE p.id = ?
             ) as f
         LEFT JOIN Cours c on c.isin = f.isin
-        LEFT JOIN `Transaction` t on t.isin = f.isin AND c.date >= t.date
+        LEFT JOIN `Transaction` t on t.isin = f.isin AND c.date >= t.date AND p.id
         WHERE c.date >= ?
         GROUP BY
         c.date
         ORDER BY 
         c.date ASC";
 
-        $data = $database->execute($stmt, [$currency["devise"], $isin, date("Y-m-d", (new DateTime($timeRange))->getTimestamp())])->fetchAll();
+        $data = $database->execute($stmt, [$currency["devise"], $isin, $isin, date("Y-m-d", (new DateTime($timeRange))->getTimestamp())])->fetchAll();
 
         if ($currency["devise"] != $portfolio_currency["devise"]) {
             // Si la devise est différente de celle du portfolio, récupérer le cours d'échange monétaire
