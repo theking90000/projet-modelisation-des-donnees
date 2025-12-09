@@ -82,11 +82,11 @@ class Auth {
         unset($_SESSION[$this->session_key]);
     }
 
-    private static function hash_password ($password) {
+    public static function hash_password ($password) {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    private static function verify_password ($password, $hash) {
+    public static function verify_password ($password, $hash) {
         return password_verify($password, $hash);
     }
 

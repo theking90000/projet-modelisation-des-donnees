@@ -15,7 +15,7 @@
     $portfolios = $stmt->fetchAll();
 ?>
 
-<?= print_header("Mes Portfolios", create_button("Se déconnecter", "/logout", image("arrow-right.svg")), "house.svg", "/") ?>
+<?= print_header("Mes Portfolios", create_button("Se déconnecter", "/logout", image("arrow-right.svg")). create_button("Modifier mon compte", "/update", image("user-round-cog.svg")),  "house.svg", "/") ?>
 
 <div class="portfolio-main">
     

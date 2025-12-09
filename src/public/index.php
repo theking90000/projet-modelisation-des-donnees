@@ -37,6 +37,9 @@ $router->group("", function($router) {
 
   $router->get('/devises', create_handler("actions/devises_portfolio.php"));
   $router->post('/devises', create_handler("actions/devises_portfolio.php"));
+
+  $router->get('/update', create_render_handle("update_utilisateur.php", ["title"=>"Finance App - MAJ utilisateur"]));
+  $router->post('/update', create_handler("actions/update_utilisateur.php"));
 }, ['AuthMiddleware']);
 
 $router->group("/portfolio/{portfolio_id}", function ($router) {
