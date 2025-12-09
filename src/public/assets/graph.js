@@ -113,7 +113,7 @@ class Graph {
                                         label: ctx => {
                                             const val = ctx.raw;
                                             return [
-                                                `Fermeture: ${val.y} ` + this.currency,
+                                                `Valeur: ${val.y} ` + this.currency,
                                             ];
                                         }
                                     }
