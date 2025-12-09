@@ -58,8 +58,6 @@ class Auth {
 
         $row = $req->fetch();
 
-        var_dump($row, !!$row);
-
         return !!$row;
     }
 
