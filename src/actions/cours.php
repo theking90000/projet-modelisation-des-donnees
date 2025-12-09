@@ -56,7 +56,7 @@ if ($type === "portfolio") {
             WHERE p.id = ?
             ) as f
         LEFT JOIN Cours c on c.isin = f.isin
-        LEFT JOIN `Transaction` t on t.isin = f.isin AND c.date >= t.date AND p.id
+        LEFT JOIN `Transaction` t on t.isin = f.isin AND t.date <= c.date AND t.id_portfolio = ?
         WHERE c.date >= ?
         GROUP BY
         c.date
@@ -91,8 +91,9 @@ if ($type === "portfolio") {
     $data = [];
 
     // Transformation des données en json pour le graphique.
+    ksort($raw_data);
     foreach (array_keys($raw_data) as $jour) {
-        $date = DateTime::createFromFormat("Y-m-d", $jour)->setTime(0,0)->getTimestamp();
+        $date = DateTime::createFromFormat("Y-m-d", $jour, new DateTimeZone("UTC"))->setTime(0,0)->getTimestamp();
 
         $value = [
             "x" => $date * 1000,
