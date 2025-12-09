@@ -52,6 +52,30 @@ class Auth {
         return true;
     }
 
+    public function exists ($email) {
+        $req = $this->db->prepare("SELECT 1 FROM Utilisateur WHERE email = ?");
+        $req->execute([$email]);
+
+        $row = $req->fetch();
+
+        return !!$row;
+    }
+
+    public function register ($name, $first_name, $email, $password) {
+        try {
+            $password = $this->hash_password($password);
+
+            $stmt = $this->db->prepare("INSERT INTO Utilisateur (email, nom, prenom, mot_de_passe, date_creation) VALUES (?, ?, ?, ?, CURRENT_DATE())");
+            $stmt->execute([$email, $name, $first_name, $password]);
+
+            $_SESSION[$this->session_key] = $email;
+            return true;
+        }
+        catch (PDOException $e) {
+            return false;
+        }
+    }
+
     public function logout() {
         $this->session_check();
 

@@ -707,3 +707,9 @@ form.center-col input[type="submit"] {
   color: #635bff;
   background-color: #f7fafc;
 }
+
+.login {
+  max-width: 90vw;
+  width: 500px;
+  margin: auto;
+}
