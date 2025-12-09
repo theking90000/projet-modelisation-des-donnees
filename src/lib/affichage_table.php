@@ -151,11 +151,12 @@ abstract class AffichageTable {
                         $this->data = [];
                     }
                 }
-
+       
                 Database::instance()->commit();
             } catch (Exception $e) {
                 $this->addError = "Une erreur est survenue : ".$e->getMessage();
-                Database::instance()->rollBack();
+                if (Database::instance()->inTransaction())
+                    Database::instance()->rollBack();
             }
         }
     }
