@@ -58,7 +58,7 @@
             ->addColumn("nom_utilisateur", "Utilisateur")
             ->addColumn("type", "type")
             ->addColumn("quantite", "Quantité")
-            ->addColumn("valeur", "Valeur (".$ins['devise_portfolio'].")", ["type"=>"colored_number"])
+            ->addColumn("valeur", "Valeur (".$ins['devise_portfolio'].")")
             ->addColumn("voir", "", [
                 "sortable"=>false,
                 "type"=> "custom",
