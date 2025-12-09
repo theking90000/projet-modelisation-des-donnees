@@ -46,6 +46,16 @@
 
     $dt = new DateTime($t["date"]. " ". $t["heure"], new DateTimeZone('Europe/Brussels'));
     $date = ucfirst($formatter->format($dt));
+
+    // récupérer le cours pour afficher le PnL si achat
+    $c = Database::instance()->execute("
+        SELECT date, valeur_fermeture FROM Cours Journalier
+        WHERE isin = ? 
+        ORDER BY date DESC
+        LIMIT 1;
+    ", [$t["isin"]])->fetch();
+
+    $profit = ($t["valeur_devise_instrument"] ?? $t["valeur_devise_portfolio"]) - ($c["valeur_fermeture"] * $t["quantite"]) - $t["frais"] - $t["taxes"];
 ?>
 
 <?= print_portfolio_header($portfolio_id, $t["nom_portfolio"], "/portfolio/$portfolio_id") ?>
@@ -99,7 +109,20 @@
                 </div>
              </div> 
 
-             Affichage PnL de la transaction si "achat"
+            <?php if($t["type"] === "achat"): ?>
+            <div class="section center">
+                <div class="card">
+                    <h3>Performance (PnL)</h3>
+                    <small>Basé sur le dernier cours de clôture connu. 
+                        <?= $c["date"] ? "Dernier cours enregistré le ".(new IntlDateFormatter('fr_FR', IntlDateFormatter::SHORT, IntlDateFormatter::NONE))->format(new DateTime($c["date"], new DateTimeZone('Europe/Brussels'))) : "Aucun cours enregistré pour cet instrument." ?>
+                    </small>
+                    <div style="color: <?= $profit >= 0 ? 'var(--success-color);' : 'var(--error-color);' ?>">
+                        <?= $profit >= 0 ? '+' : '' ?><?= number_format($profit, 2, ',', ' ') ?> <?= $t["devise_portfolio"] ?>
+                    </div>
+                    
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>
