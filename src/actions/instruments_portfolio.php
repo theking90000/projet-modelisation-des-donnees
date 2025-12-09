@@ -7,7 +7,9 @@ class AffichageInstruments extends AffichageTable {
 
         $out = $this->check($out, $data, "isin", function ($v) {
             if(empty($v)) return "Le ISIN est requis";
-            if(strlen($v) !== 12) return "Le isin doit faire 12 caractères";
+            if (!(str_contains($v, "-") && strlen($v) < 12)) { // Autoriser les devises X/Y
+                if(strlen($v) !== 12) return "Le isin doit faire 12 caractères";
+            }
         });
 
         $out = $this->check($out, $data, "nom", function ($v) {
@@ -22,7 +24,7 @@ class AffichageInstruments extends AffichageTable {
 
         $type = $out["type"]["value"];
 
-        if($type === "action") {
+        if($type === "action" || $type === "etf") {
             $out = $this->check_transform($out, $data, "entreprise", function ($v) {
                 if(empty($v)) {
                     return ["Une entreprise est requise.", null];
@@ -59,6 +61,35 @@ class AffichageInstruments extends AffichageTable {
                     return ["Bourse inconnue.", null];
                 } else {
                     return [null, $bourse];
+                }
+            });
+        }
+
+        if($type === "obligation") {
+            $out = $this->check($out, $data, "taux", function ($v) {
+                if (!preg_match('/^-?\d+(\.\d+)?$/', $v)) {
+                    return "La valeur doit être un nombre";
+                }
+            });
+
+            $out = $this->check($out, $data, "date_emission", function ($v) {
+                if (!isset($v) || empty($v)) {
+                    return "La date doit être définie";
+                }
+            });
+        
+
+            $out = $this->check($out, $data, "date_echeance", function ($v) {
+                if (!isset($v) || empty($v)) {
+                    return "La date doit être définie";
+                }
+            });
+        }
+
+        if ($type === "devise") {
+            $out = $this->check($out, $data, "couple_devise", function ($v) {
+                if(empty($v)) {
+                    return "Le couple de devise est invalide.";
                 }
             });
         }
@@ -134,14 +165,19 @@ class AffichageInstruments extends AffichageTable {
             "numero_entreprise"=>$data["entreprise"]["value"]["numero"] ?? null,
             "pays_entreprise"=>$data["entreprise"]["value"]["code_pays"] ?? null,
             "id_bourse"=>$data["bourse"]["value"]["id"] ?? null,
-            "code_devise"=>$data["devise_echange"]["value"]["code"] ?? null
+            "code_devise"=>$data["devise_echange"]["value"]["code"] ?? null,
+
+            "taux"=>$data["taux"]["value"] ?? null,
+            "date_emission"=>$data["date_emission"]["value"] ?? null,
+            "date_echeance"=>$data["date_echeance"]["value"] ?? null,
+            "couple_devise"=>$data["couple_devise"]["value"] ?? null,
         ];
     }
 
     protected function insert(array $data): array {
         $row = $this->to_row($data);
 
-        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise, taux, date_emission, date_echeance, couple_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         $stmt->execute(array_values($row));
 
@@ -185,7 +221,7 @@ class AffichageInstruments extends AffichageTable {
 
         $this->print_select("type", ["action", "etf", "obligation", "devise"],["Action", "ETF", "Obligation", "Devise"], $data);
 
-        $this->print_if("type", ["action"], $data, function () use ($data) {
+        $this->print_if("type", ["action", "etf"], $data, function () use ($data) {
             $this->print_ext_select("entreprise", "Selectionner entreprise", "/portfolio"."/".$this->args["portfolio_id"]."/entreprises",
             function ($v) { return $v["code_pays"].$v["numero"]; },
             function ($v) { return $v["nom"]; },
@@ -197,6 +233,16 @@ class AffichageInstruments extends AffichageTable {
             $data);
         });
 
+        $this->print_if("type", ["obligation"], $data, function () use ($data) {
+            $this->print_input("taux", "Taux (%)", $data);
+            $this->print_input("date_emission", "Date d'émission", $data, "date", true);
+            $this->print_input("date_echeance", "Date d'échéance", $data, "date", true);
+        });
+
+        $this->print_if("type", ["devise"], $data, function () use ($data) {
+            $this->print_input("couple_devise", "Couple de devises (ex: EURUSD)", $data);
+        });
+
         $this->print_ext_select("devise_echange", "Devise d'échange", "/portfolio"."/".$this->args["portfolio_id"]."/devises",
             function ($v) { return $v["code"]; },
             function ($v) { return $v["code"].'('.$v["symbole"].')'; },
@@ -205,7 +251,7 @@ class AffichageInstruments extends AffichageTable {
 
     protected function get(string $id): array {
         return Database::instance()
-            ->execute("SELECT isin, symbole, nom, type, CONCAT(pays_entreprise, numero_entreprise) as entreprise, id_bourse AS bourse, code_devise AS devise_echange FROM Instrument_Financier WHERE isin = ?", [$id])
+            ->execute("SELECT isin, symbole, nom, type, CONCAT(pays_entreprise, numero_entreprise) as entreprise, id_bourse AS bourse, code_devise AS devise_echange, couple_devise, taux, date_emission, date_echeance FROM Instrument_Financier WHERE isin = ?", [$id])
             ->fetch();
     }
     
@@ -215,7 +261,9 @@ class AffichageInstruments extends AffichageTable {
         $row["isin"] = $id;
 
         return Database::instance()
-            ->prepare("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise WHERE isin = :isin")
+            ->prepare("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise 
+                , taux = :taux, date_emission = :date_emission, date_echeance = :date_echeance, couple_devise = :couple_devise
+            WHERE isin = :isin")
             ->execute($row);
     }
 }

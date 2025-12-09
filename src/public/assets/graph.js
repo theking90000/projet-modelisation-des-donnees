@@ -4,14 +4,15 @@ class Graph {
         this.canvas = canvas;
         this.currency = this.canvas.getAttribute("currency");
         this.label = this.canvas.getAttribute("label");
-        this.chartType = this.canvas.getAttribute("type");
         this.ctx = this.canvas.getContext("2d");
     }
 
     async fetchData() {
         let source = this.canvas.getAttribute("data");
         let type = this.canvas.getAttribute("data-type");
-        this.data = await fetch(`/donnees/${type}/${source}?range=${this.timeRange}`).then(r => r.json());
+        let response = await fetch(`/donnees/${type}/${source}?range=${this.timeRange}`).then(r => r.json());
+        this.data = response["data"];
+        this.chartType = response["type"];
     }
 
     async changeTimeRange(timeRange) {
@@ -44,10 +45,10 @@ class Graph {
                             scales:
                                 {
                                     x: {
-                                        type: "time", time:
-                                            {
-                                                unit: "day"
-                                            }
+                                        type: "time",
+                                        time: {
+                                            unit: "day"
+                                        }
                                     }
                                     ,
                                     y: {
@@ -93,10 +94,10 @@ class Graph {
                             scales:
                                 {
                                     x: {
-                                        type: "time", time:
-                                            {
-                                                unit: "day"
-                                            }
+                                        type: "time",
+                                        time: {
+                                            unit: "day"
+                                        }
                                     }
                                     ,
                                     y: {
@@ -113,7 +114,7 @@ class Graph {
                                         label: ctx => {
                                             const val = ctx.raw;
                                             return [
-                                                `Fermeture: ${val.y} ` + this.currency,
+                                                `Valeur: ${val.y} ` + this.currency,
                                             ];
                                         }
                                     }

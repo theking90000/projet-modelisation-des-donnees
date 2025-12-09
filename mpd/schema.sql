@@ -162,3 +162,12 @@ ALTER TABLE Transaction DROP CONSTRAINT portfolio_transaction;
 
 ALTER TABLE Transaction ADD CONSTRAINT portfolio_transaction FOREIGN KEY (id_portfolio) REFERENCES Portfolio (id)
 ON DELETE CASCADE;
+
+ALTER TABLE Cours DROP CONSTRAINT instrument_cours;
+
+ALTER TABLE Cours
+ADD CONSTRAINT instrument_cours FOREIGN KEY (isin) REFERENCES Instrument_Financier (isin)
+ON DELETE CASCADE;
+
+ALTER TABLE Instrument_Financier
+MODIFY symbole VARCHAR(50);

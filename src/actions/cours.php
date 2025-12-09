@@ -92,7 +92,7 @@ if ($type === "portfolio") {
 
     // Transformation des données en json pour le graphique.
     foreach (array_keys($raw_data) as $jour) {
-        $date = DateTime::createFromFormat("Y-m-d", $jour)->getTimestamp();
+        $date = DateTime::createFromFormat("Y-m-d", $jour)->setTime(0,0)->getTimestamp();
 
         $value = [
             "x" => $date * 1000,
@@ -102,7 +102,7 @@ if ($type === "portfolio") {
         $data[] = $value;
     }
 
-    $json = json_encode($data, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+    $json = json_encode(["type" => "line", "data" => $data], JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
 
     echo $json;
 } else if ($type === "cours") {
@@ -119,23 +119,42 @@ if ($type === "portfolio") {
     }
 
     $data = [];
+    $type_instrument = $database->execute("SELECT i.type FROM Instrument_Financier i WHERE i.isin = ?", [$isin])->fetch()["type"];
+
+    if ($type_instrument == "devise") {
+        $type = "line";
+    } else {
+        $type = "candlestick";
+    }
 
     // Transformation des données en json pour le graphique.
     foreach ($raw_data as $jour) {
-        $date = DateTime::createFromFormat("Y-m-d", $jour['date'])->getTimestamp();
+        $date = DateTime::createFromFormat("Y-m-d", $jour['date'])->setTime(0,0)->getTimestamp();
 
-        $value = [
-            "x" => $date * 1000,
-            "o" => round(floatval($jour['valeur_ouverture']), 2),
-            "h" => round(floatval($jour['valeur_maximale']), 2),
-            "l" => round(floatval($jour['valeur_minimale']), 2),
-            "c" => round(floatval($jour['valeur_fermeture']), 2)
-        ];
+        $o = round(floatval($jour['valeur_ouverture']), 2);
+        $h = round(floatval($jour['valeur_maximale']), 2);
+        $l = round(floatval($jour['valeur_minimale']), 2);
+        $c = round(floatval($jour['valeur_fermeture']), 2);
+
+        if ($type == "line") {
+            $value = [
+                "x" => $date * 1000,
+                "y" => $c
+            ];
+        } else {
+            $value = [
+                "x" => $date * 1000,
+                "o" => $o,
+                "h" => $h,
+                "l" => $l,
+                "c" => $c
+            ];
+        }
 
         $data[] = $value;
     }
 
-    $json = json_encode($data, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
+    $json = json_encode(["type" => $type, "data" => $data], JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
 
     echo $json;
 }
