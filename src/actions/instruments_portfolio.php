@@ -251,7 +251,7 @@ class AffichageInstruments extends AffichageTable {
 
     protected function get(string $id): array {
         return Database::instance()
-            ->execute("SELECT isin, symbole, nom, type, CONCAT(pays_entreprise, numero_entreprise) as entreprise, id_bourse AS bourse, code_devise AS devise_echange FROM Instrument_Financier WHERE isin = ?", [$id])
+            ->execute("SELECT isin, symbole, nom, type, CONCAT(pays_entreprise, numero_entreprise) as entreprise, id_bourse AS bourse, code_devise AS devise_echange, couple_devise, taux, date_emission, date_echeance FROM Instrument_Financier WHERE isin = ?", [$id])
             ->fetch();
     }
     
