@@ -12,6 +12,10 @@ $router->group("", function ($router) {
   $router->get('/login', create_render_handle("login.php", ["title"=>"Finance App - Se connecter"]));
 
   $router->post('/login', create_handler('actions/login.php'));
+
+  $router->get('/register', create_render_handle("register.php", ["title"=>"Finance App - S'inscrire"]));
+
+  $router->post('/register', create_handler('actions/register.php'));
 }, ['WithoutAuthMiddleware']);
 
 $router->get('/logout', create_handler('actions/logout.php'));
