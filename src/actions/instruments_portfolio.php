@@ -7,7 +7,9 @@ class AffichageInstruments extends AffichageTable {
 
         $out = $this->check($out, $data, "isin", function ($v) {
             if(empty($v)) return "Le ISIN est requis";
-            if(strlen($v) !== 12) return "Le isin doit faire 12 caractères";
+            if (!(str_contains($v, "-") && strlen($v) < 12)) { // Autoriser les devises X/Y
+                if(strlen($v) !== 12) return "Le isin doit faire 12 caractères";
+            }
         });
 
         $out = $this->check($out, $data, "nom", function ($v) {
