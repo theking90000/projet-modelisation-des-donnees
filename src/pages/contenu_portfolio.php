@@ -18,11 +18,11 @@
     if(isset($_GET["table"])) {
         $cols = [
             "nom"=>"Instrument financier",
-            "valeur"=>"Valeur",
+            "valeur"=>"Valeur" . " (".htmlspecialchars($portfolio["devise"]).")",
             "prix_moyen_achat"=>"Prix Moyen (achat)",
             "prix_actuel"=> "Prix Actuel",
             "p_change"=> "% Change Day",
-            "profit"=> "Profit"
+            "profit"=> "Profit" . " (".htmlspecialchars($portfolio["devise"]).")"
         ];
         $recherche = $_GET["recherche"] ?? "";
         $page = intval($_GET["page"] ?? 0);
