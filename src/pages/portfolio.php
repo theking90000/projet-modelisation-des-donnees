@@ -21,7 +21,7 @@
 <div class="portfolio-main">
     <div class="graph" style="width:100%; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center">
         <div class="graph-container" style="position: relative; height:40vh; width:100%; margin:auto;">
-            <canvas id="graph" data="<?= $portfolio_id ?>" data-type="portfolio" currency="<?= $devise ?>" label="<?= $portfolio["nom"] ?>" type="line"></canvas>
+            <canvas id="graph" data="<?= $portfolio_id ?>" data-type="portfolio" currency="<?= $devise ?>" label="<?= $portfolio["nom"] ?>"></canvas>
         </div>
         <div style="display: flex; flex-direction: row; gap: 8px;">
             <button class="button" id="week">1 Semaine</button>
