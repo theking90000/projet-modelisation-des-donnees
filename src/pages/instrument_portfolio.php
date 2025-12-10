@@ -4,6 +4,9 @@
             ins.isin, 
             ins.nom,
             ins.symbole,
+            ins.taux,
+            ins.date_emission,
+            ins.date_echeance,
             di.code as code_devise,
             di.symbole as devise,
             p.nom as nom_portfolio,
@@ -13,13 +16,17 @@
             e.nom as nom_entreprise,
             b.id AS id_bourse,
             b.nom AS nom_bourse,
-            CONCAT(e.code_pays, e.numero) as id_entreprise
+            CONCAT(e.code_pays, e.numero) as id_entreprise,
+
+            pays.nom as pays,
+            pays.code as code_pays
         FROM Instrument_Financier ins
             LEFT JOIN Devise di ON di.code = ins.code_devise
             JOIN Portfolio p ON p.id = ?
             JOIN Devise dp ON dp.code = p.code_devise
             LEFT JOIN Entreprise e ON e.numero = ins.numero_entreprise AND e.code_pays = ins.pays_entreprise
             LEFT JOIN Bourse b ON b.id = ins.id_bourse
+            LEFT JOIN Pays pays ON pays.code = ins.code_pays
         WHERE 
             isin = ?;
     ", [$portfolio_id, $instrument_id]);
@@ -161,6 +168,21 @@
                         echo $ins["id_bourse"];
                         echo "</a>)</em>";
                     } ?>
+                    <?php if($ins["type"] === "obligation") {
+                        echo '<em>Emise par ';
+                        echo $ins["pays"];
+                        echo "</em>";
+                    } ?>
+                    <?php if($ins["type"] === "etf") {
+                        echo '<em>(Emis par <a href="/portfolio/';
+                        echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
+                        echo '">';
+                        echo $ins["nom_entreprise"];
+                        echo "</a>)</em>";
+                    } ?>
+                    <?php if($ins["type"] === "devise") {
+                                            echo '<em>(Devise)</em>';
+                                        } ?>
                 </div>
                 <sub><?= $ins["isin"] ?></sub>
             </span>

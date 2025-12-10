@@ -84,6 +84,22 @@ class AffichageInstruments extends AffichageTable {
                     return "La date doit être définie";
                 }
             });
+
+            $out = $this->check_transform($out, $data, "pays", function ($v) {
+                if(empty($v)) {
+                    return [null, null];
+                }
+
+                $stmt = Database::instance()->execute("SELECT code, nom FROM Pays WHERE code = ?", [$v]);
+
+                $pays = $stmt->fetch();
+
+                if(!$pays) {
+                    return ["Pays inconnue.", null];
+                } else {
+                    return [null, $pays];
+                }
+            });
         }
 
         if ($type === "devise") {
@@ -171,13 +187,15 @@ class AffichageInstruments extends AffichageTable {
             "date_emission"=>$data["date_emission"]["value"] ?? null,
             "date_echeance"=>$data["date_echeance"]["value"] ?? null,
             "couple_devise"=>$data["couple_devise"]["value"] ?? null,
+
+            "pays"=>$data["pays"]["value"]["code"] ?? null,
         ];
     }
 
     protected function insert(array $data): array {
         $row = $this->to_row($data);
 
-        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise, taux, date_emission, date_echeance, couple_devise) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        $stmt = Database::instance()->prepare("INSERT INTO Instrument_Financier (isin, symbole, nom, type, numero_entreprise, pays_entreprise, id_bourse, code_devise, taux, date_emission, date_echeance, couple_devise, code_pays) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         $stmt->execute(array_values($row));
 
@@ -237,6 +255,11 @@ class AffichageInstruments extends AffichageTable {
             $this->print_input("taux", "Taux (%)", $data);
             $this->print_input("date_emission", "Date d'émission", $data, "date", true);
             $this->print_input("date_echeance", "Date d'échéance", $data, "date", true);
+
+            $this->print_ext_select("pays", "Pays émetteur (optionnel)", "/portfolio"."/".$this->args["portfolio_id"]."/pays",
+            function ($v) { return $v["code"]; },
+            function ($v) { return $v["code"].'('.$v["nom"].')'; },
+            $data);
         });
 
         $this->print_if("type", ["devise"], $data, function () use ($data) {
@@ -247,6 +270,8 @@ class AffichageInstruments extends AffichageTable {
             function ($v) { return $v["code"]; },
             function ($v) { return $v["code"].'('.$v["symbole"].')'; },
             $data);
+
+        
     }
 
     protected function get(string $id): array {
@@ -262,7 +287,7 @@ class AffichageInstruments extends AffichageTable {
 
         return Database::instance()
             ->prepare("UPDATE Instrument_Financier SET symbole = :symbole, nom = :nom, `type` = :type, numero_entreprise = :numero_entreprise, pays_entreprise = :pays_entreprise, id_bourse =:id_bourse, code_devise = :code_devise 
-                , taux = :taux, date_emission = :date_emission, date_echeance = :date_echeance, couple_devise = :couple_devise
+                , taux = :taux, date_emission = :date_emission, date_echeance = :date_echeance, couple_devise = :couple_devise, code_pays = :pays
             WHERE isin = :isin")
             ->execute($row);
     }
