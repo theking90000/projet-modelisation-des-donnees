@@ -7,8 +7,7 @@
 
     if(!$portfolio) { render_page("404.php"); die(); }
 
-    // 2. Fetch Members (excluding the current user/owner to prevent self-deletion)
-    // We explicitly check for 'owner' status to list potential candidates for ownership transfer
+    // 2. Fetch Members
     $members = Database::instance()->execute(
         "SELECT u.email, u.nom, u.prenom, mp.niveau_acces 
          FROM Membre_Portfolio mp 
@@ -18,7 +17,6 @@
         [$portfolio_id]
     )->fetchAll();
 
-    // Separate current user from the list for display logic
     $currentUser = Auth::user();
 ?>
 
@@ -29,26 +27,31 @@
     <div class="section">
         <div class="card" style="display: block;">
             <h3>Général</h3>
-            <form action="/portfolio/<?= $portfolio_id ?>/parametres" method="post" class="center-col" style="margin-top: 20px;">
+            
+            <form action="/portfolio/<?= $portfolio_id ?>/parametres" method="post" style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap; margin-top: 15px;">
                 
-                <label for="nom">Nom du portfolio</label>
-                <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($portfolio['nom']) ?>" required placeholder="Mon Portfolio">
-
-                <label for="description">Description</label>
-                <textarea name="description" id="description" rows="3" placeholder="Ex: Stratégie long terme sur actions tech..." style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; resize: vertical;"><?= htmlspecialchars($portfolio['description'] ?? '') ?></textarea>
-
-                <div style="text-align: right; margin-top: 20px;">
-                    <input type="submit" value="Enregistrer les modifications" style="width: auto; padding: 12px 24px;">
+                <div style="flex: 1; min-width: 250px;">
+                    <label for="nom" style="display: block; margin-bottom: 5px; font-size: 0.85em; color: #64748b; font-weight: 600;">NOM DU PORTFOLIO</label>
+                    <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($portfolio['nom']) ?>" required style="margin-bottom: 0;">
                 </div>
 
-                <?php if(isset($_GET['success'])): ?>
-                    <div style="color: var(--success-color); font-weight: 600; margin-top: 10px; text-align: center;">
-                        Modifications enregistrées avec succès.
-                    </div>
-                <?php endif; ?>
-                
-                <?php if(isset($erreur_nom)) { echo "<span style='color:red'>$erreur_nom</span>"; } ?>
+                <div style="flex: 2; min-width: 300px;">
+                    <label for="description" style="display: block; margin-bottom: 5px; font-size: 0.85em; color: #64748b; font-weight: 600;">DESCRIPTION</label>
+                    <textarea name="description" id="description" rows="1" placeholder="Optionnel" style="width: 100%; height: 46px; padding: 10px; border: 1px solid #d9dce1; border-radius: 8px; font-family: inherit; resize: none; vertical-align: bottom;"><?= htmlspecialchars($portfolio['description'] ?? '') ?></textarea>
+                </div>
+
+                <div>
+                    <input type="submit" value="Enregistrer" style="margin: 0; height: 46px; padding: 0 24px;">
+                </div>
+
             </form>
+
+            <?php if(isset($_GET['success'])): ?>
+                <div style="color: var(--success-color); font-weight: 600; margin-top: 10px; font-size: 0.9em;">
+                    ✅ Modifications enregistrées.
+                </div>
+            <?php endif; ?>
+            <?php if(isset($erreur_nom)) { echo "<div style='color:red; margin-top:10px;'>$erreur_nom</div>"; } ?>
         </div>
     </div>
 
@@ -88,7 +91,7 @@
                             ?>
                         </td>
                         <td>
-                            <?php if($m['email'] !== $currentUser): // Don't show actions for self ?>
+                            <?php if($m['email'] !== $currentUser): ?>
                                 <div style="display: flex; gap: 5px; justify-content: flex-end;">
                                     <a href="#" 
                                        onclick="openEditPopup('<?= $m['email'] ?>', '<?= $m['niveau_acces'] ?>'); return false;"
@@ -115,17 +118,14 @@
         <h3>Ajouter un membre</h3>
         <form action="/portfolio/<?= $portfolio_id ?>/membres" method="post" class="center-col">
             <input type="hidden" name="action" value="add">
-            
             <label>Email de l'utilisateur</label>
             <input type="email" name="email" required placeholder="exemple@email.com">
-
             <label>Niveau d'accès</label>
             <select name="niveau">
                 <option value="1">Lecture Seule</option>
                 <option value="2">Édition (Lecture + Écriture)</option>
             </select>
-
-            <input type="submit" value="Ajouter">
+            <input type="submit" value="Ajouter le membre">
         </form>
     </div>
 
@@ -133,29 +133,25 @@
         <h3>Modifier les accès</h3>
         <form action="/portfolio/<?= $portfolio_id ?>/membres" method="post" class="center-col">
             <input type="hidden" name="action" value="update">
-            
             <label>Utilisateur</label>
-            <input type="text" id="edit-email-display" readonly style="background: #f4f6f8; color: #64748b;">
+            <input type="text" id="edit-email-display" readonly style="background: #f4f6f8; color: #64748b; border-color: #e2e8f0;">
             <input type="hidden" name="email" id="edit-email-input">
-
             <label>Nouveau Niveau</label>
             <select name="niveau" id="edit-niveau">
                 <option value="1">Lecture Seule</option>
                 <option value="2">Édition</option>
             </select>
-
             <input type="submit" value="Enregistrer">
         </form>
     </div>
 
     <div id="transfer-owner" class="popup" data-popup="1" style="display: none;">
         <h3>Transférer la propriété</h3>
-        <p style="color: var(--error-color); font-size: 0.9em; margin-bottom: 20px;">
-            Attention : Cette action est irréversible. Vous perdrez le contrôle administratif de ce portfolio.
-        </p>
+        <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9em;">
+            <strong>Attention :</strong> Cette action est irréversible.
+        </div>
         <form action="/portfolio/<?= $portfolio_id ?>/membres" method="post" class="center-col">
             <input type="hidden" name="action" value="transfer">
-            
             <label>Nouveau Propriétaire</label>
             <select name="new_owner_email" required>
                 <option value="" disabled selected>Choisir un membre...</option>
@@ -165,14 +161,12 @@
                     <?php endif; ?>
                 <?php endforeach; ?>
             </select>
-            
             <label>Votre nouveau statut</label>
             <select name="my_new_role">
                 <option value="2">Devenir Éditeur</option>
                 <option value="1">Devenir Lecteur</option>
                 <option value="0">Quitter le portfolio</option>
             </select>
-
             <input type="submit" value="Confirmer le transfert" class="button danger">
         </form>
     </div>
@@ -180,13 +174,10 @@
 </div>
 
 <script>
-    // Helper to open the edit popup with the correct data
     function openEditPopup(email, level) {
         document.getElementById('edit-email-display').value = email;
         document.getElementById('edit-email-input').value = email;
         document.getElementById('edit-niveau').value = level;
-        
-        // Use your existing logic to open popup
         const popup = document.getElementById('edit-member');
         popup.style.display = 'block';
     }
