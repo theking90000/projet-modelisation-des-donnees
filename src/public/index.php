@@ -26,10 +26,6 @@ $router->notFound(create_render_handle("404.php", ["title"=>"Finance App - Erreu
 
 $router->get("/donnees", create_handler("actions/cours_journaliers.php"));
 
-$router->get("/donnees/{type}/{isin}", create_handler("actions/cours.php"));
-
-$router->get("/cours/{isin}", create_render_handle("cours.php"));
-
 $router->group("", function($router) {
   $router->get("/", create_render_handle("home.php", ["title"=>"Finance App"]));
   
@@ -40,6 +36,8 @@ $router->group("", function($router) {
 
   $router->get('/update', create_render_handle("update_utilisateur.php", ["title"=>"Finance App - MAJ utilisateur"]));
   $router->post('/update', create_handler("actions/update_utilisateur.php"));
+
+  $router->get("/donnees/{type}/{isin}", create_handler("actions/cours.php"));
 }, ['AuthMiddleware']);
 
 $router->group("/portfolio/{portfolio_id}", function ($router) {

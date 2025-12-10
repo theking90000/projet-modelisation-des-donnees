@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../lib/db.php';
+require_once __DIR__ . '/../lib/auth.php';
 
 use GuzzleHttp\Exception\GuzzleException;
 use Scheb\YahooFinanceApi\ApiClient;
@@ -18,6 +19,11 @@ if ($timeRange === null) {
 // $type correspond à l'attribut html "type" sur le canvas correspondant au graphique.
 // 2 options sont prévues : portfolio et cours.
 if ($type === "portfolio") {
+    // Avant tout, vérifier si l'utilisateur a accès au portfolio
+    if (!acces_portfolio($isin)) {
+        http_response_code(401);
+        die();
+    }
     // Dans le cas d'un graphique sur le portfolio,
     // il y a plusieurs étapes à exécuter pour obtenir les données.
 
