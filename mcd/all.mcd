@@ -8,28 +8,24 @@
 %Audit: Adresse Mail, _Identifiant Portfolio, _Date, Action
 
 Est située, 11 Entreprise, 0N Pays
-Pays: Code ISO3166-1, Nom
-Est située1, 11 Bourse, 0N Pays
-Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
-:
-:
-
 Entreprise: Numero entreprise, Nom, Secteur d'activité
-émet1, 0N Pays, 01 Instrument Financier
-échange, 01 Instrument Financier, 0N Bourse
-encode, 0N Utilisateur, 11 Transaction, 0N Portfolio
-Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
-est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
-
 émet, 01 Instrument Financier, 0N Entreprise
-Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise)
 contient, 11 Transaction, 0N Instrument Financier
 Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes
-%historique de transactions, 0N Portfolio, 11 Transaction
-Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
+encode, 0N Utilisateur, 11 Transaction, 0N Portfolio
+Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
 
-Cours: Date, _Heure, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume
+Pays: Code ISO3166-1, Nom
+émet1, 0N Pays, 01 Instrument Financier
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise)
 concerne, 0N Instrument Financier, 11 Cours
+Cours: Date, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume
+Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio
+est membre de, 0N Utilisateur, 1N Portfolio: Niveau Accès
+
+Est située1, 11 Bourse, 0N Pays
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture,
+échange, 01 Instrument Financier, 0N Bourse
 devise2, 0N Devise, 11 Instrument Financier
 Devise: Code ISO4217, Nom, Symbole
 devise1, 0N Devise, 11 Portfolio
