@@ -30,21 +30,24 @@
         <div class="card" style="display: block;">
             <h3>Général</h3>
             <form action="/portfolio/<?= $portfolio_id ?>/parametres" method="post" class="center-col" style="margin-top: 20px;">
+                
                 <label for="nom">Nom du portfolio</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($portfolio['nom']) ?>" required style="margin-bottom: 0;">
-                    <input type="submit" value="Renommer" style="margin-top: 0; width: auto;">
-                </div>
-                <?php if(isset($erreur_nom)) { echo "<span style='color:red'>$erreur_nom</span>"; } ?>
-            </form>
+                <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($portfolio['nom']) ?>" required placeholder="Mon Portfolio">
 
-            <form  onsubmit="return confirm('Voulez-vous vraiment supprimer ce portfolio ?');" action="/portfolio/<?= $portfolio_id ?>/parametres" method="post" class="center-col" style="margin-top: 20px;">
-                <input hidden name="delete" value="1" />
-                <div style="display: flex; gap: 10px;">
-                    <button type="submit" name="action" value="delete_portfolio" class="button danger">
-                        Supprimer le portfolio
-                    </button>
+                <label for="description">Description</label>
+                <textarea name="description" id="description" rows="3" placeholder="Ex: Stratégie long terme sur actions tech..." style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; resize: vertical;"><?= htmlspecialchars($portfolio['description'] ?? '') ?></textarea>
+
+                <div style="text-align: right; margin-top: 20px;">
+                    <input type="submit" value="Enregistrer les modifications" style="width: auto; padding: 12px 24px;">
                 </div>
+
+                <?php if(isset($_GET['success'])): ?>
+                    <div style="color: var(--success-color); font-weight: 600; margin-top: 10px; text-align: center;">
+                        Modifications enregistrées avec succès.
+                    </div>
+                <?php endif; ?>
+                
+                <?php if(isset($erreur_nom)) { echo "<span style='color:red'>$erreur_nom</span>"; } ?>
             </form>
         </div>
     </div>
