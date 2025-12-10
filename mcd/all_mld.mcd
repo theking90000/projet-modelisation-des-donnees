@@ -1,0 +1,28 @@
+%%mocodo
+:::
+Entreprise: Numero entreprise, Nom, Secteur d'activité, #Code ISO3166-1 > Pays > Code ISO3166-1
+:::
+Transaction: Identifiant Transaction, Type (Vente/Achat), Date, Heure, Quantité, Prix dans la Devise du Portfolio, Prix dans la Devise de l'Instrument Financier, Frais, Taxes, #ISIN > Instrument Financier > ISIN, #Adresse Mail > Utilisateur > Adresse Mail, #Identifiant Portfolio > Portfolio > Identifiant Portfolio
+:::
+Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
+:
+
+
+:
+Pays: Code ISO3166-1, Nom
+:::
+Instrument Financier: ISIN, Nom, Type Instrument (Action/ETF/Obligation/Devise), Symbole (Action/ETF), Taux (Obligation), Date Emission (Obligation), Date Echeance (Obligation), Couple Devise (Devise), #Numero entreprise > Entreprise > Numero entreprise, #Code ISO3166-1 > Pays > Code ISO3166-1, #Identifiant Bourse > Bourse > Identifiant Bourse, #Code ISO4217 > Devise > Code ISO4217
+:
+Cours: Date, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume, #ISIN > Instrument Financier > ISIN
+:
+Portfolio: Identifiant Portfolio, Nom, Description, Date De Création Portfolio, #Code ISO4217 > Devise > Code ISO4217
+:
+est membre de: #Adresse Mail > Utilisateur > Adresse Mail, _#Identifiant Portfolio > Portfolio > Identifiant Portfolio, Niveau Accès
+:
+
+
+:::
+Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture, #Code ISO3166-1 > Pays > Code ISO3166-1
+:::
+Devise: Code ISO4217, Nom, Symbole
+:::::
