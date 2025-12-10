@@ -57,7 +57,6 @@
              <div class="section">
                 <div class="row header-search">
                     <h3>Instruments financiers liés à l'entreprise</h3>
-                    <label for="date-filer">Après le:</label>
                     <input placeholder="Rechercher" id="contenu-filter" type="search" name="recherche" value="" oninput="search_ajax_debounce(this, '#contenu-portfolio', 0, '/portfolio/<?= $portfolio_id ?>/contenu?table=1&entreprise=<?= $entreprise_id ?>');" />
                 </div>
 
