@@ -93,8 +93,8 @@ class AffichageBourses extends AffichageTable {
         return $stmt;
     }
 
-    protected function insert(array $data): array {
-        $row = [
+    protected function to_row(array $data): array {
+        return [
             "id"=>$data["id"]["value"], 
             "nom"=>$data["nom"]["value"], 
             "ville"=>$data["pays"]["value"]["code"], 
@@ -103,6 +103,10 @@ class AffichageBourses extends AffichageTable {
             "heure_fermeture"=>$data["heure_fermeture"]["value"],
             "code_pays"=>$data["pays"]["value"]["code"],
         ];
+    }
+
+    protected function insert(array $data): array {
+        $row = $this->to_row($data);
 
         Database::instance()->execute("INSERT INTO Bourse (id, nom, ville, fuseau_horaire, heure_ouverture, heure_fermeture, code_pays) VALUES (:id, :nom, :ville, :fuseau_horaire, :heure_ouverture, :heure_fermeture, :code_pays);",
                 $row);
@@ -159,6 +163,22 @@ class AffichageBourses extends AffichageTable {
         function ($v) { return $v["code"]; },
         function ($v) { return $v["nom"]; },
         $data);
+    }
+
+    protected function get(string $id): array {
+        return Database::instance()
+            ->execute("SELECT Bourse.*, Pays.code AS pays FROM Bourse JOIN Pays ON Pays.code = Bourse.code_pays WHERE Bourse.id = ?", [$id])
+            ->fetch();
+    }
+
+    protected function update(string $id, array $data) {
+        $row = $this->to_row($data);
+
+        $row["id"] = $id;
+
+        return Database::instance()
+            ->execute("UPDATE Bourse SET nom = :nom, ville = :ville, fuseau_horaire = :fuseau_horaire, heure_ouverture = :heure_ouverture, heure_fermeture = :heure_fermeture, code_pays = :code_pays WHERE id = :id",
+                $row);
     }
 }
 

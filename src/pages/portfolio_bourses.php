@@ -59,6 +59,12 @@
 <div class="portfolio-main">
     
     <div class="section">
+
+        <a href="#" class="button" data-open="#edit-bourse">Editer</a>
+    
+            <div id="edit-bourse" data-reload-on-callback="edit-bourse" class="popup" data-popup="1" style="display: none" data-load="/portfolio/<?=  $portfolio_id ?>/bourses?callback_id=edit-bourse&form=1&nopopup=1&update=<?= $bourse_id ?>"></div>
+
+
         <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 40px; flex-wrap: wrap; gap: 30px; max-width: 1100px; margin: 0 auto; width: 100%;">
             
             <div style="flex: 1; min-width: 280px;">
