@@ -1,5 +1,11 @@
 # Projet modélisation des données
 
+**Groupe 5** : Petro B., Martin C., Alexandre D., Louis G.
+
+[Rapport final du projet (PDF)](./rapport.pdf)
+
+**Gestion de portfolio financiers**
+
 ## Livrable 1: Cahier des charges
 
 Disponible dans le dossier [Cahier des charges (cdc)](./cdc/)
@@ -23,3 +29,7 @@ Disponible dans le dossier [Cahier des charges (cdc)](./cdc/)
 - Il faut mettre à jour toute la partie relative aux instruments financiers avec les entreprises, pays et bourse. Vous trouverez une ébauche de proposition dans l’image du lien suivant : ...
 
 - Modifier le MLD en fonction du MCD et ajouter l’information qu’un portfolio ne contient qu’une seule devise dans le cahier des charges (c’est bien noté dans les explications du MCD mais pas dans le cahier des charges) -> devise OK
+
+## Livrable 3: Code source et Rapport
+
+- [Rapport](./rapport.pdf)
