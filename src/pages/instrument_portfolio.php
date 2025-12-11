@@ -155,29 +155,29 @@
         <div class="m-col header-search">
             <span>
                 <div style="display:flex; align-items:center;">
-                    <h3><?= $ins["symbole"]?></h3> 
-                    <div style="margin: 0 8px;"> <?= $ins["nom"] ?> </div>
+                    <h3><?= htmlspecialchars($ins["symbole"]) ?></h3> 
+                    <div style="margin: 0 8px;"> <?= htmlspecialchars($ins["nom"]) ?> </div>
                     <?php if($ins["type"] === "action") {
                         echo '<em>(<a href="/portfolio/';
                         echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
                         echo '">';
-                        echo $ins["nom_entreprise"];
+                        echo htmlspecialchars($ins["nom_entreprise"]);
                         echo "</a> - cotée à la bourse <em><a href=\"/portfolio/";
                         echo $portfolio_id . "/bourse/".$ins["id_bourse"] ;
                         echo "\">";
-                        echo $ins["id_bourse"];
+                        echo htmlspecialchars($ins["id_bourse"]);
                         echo "</a>)</em>";
                     } ?>
                     <?php if($ins["type"] === "obligation") {
                         echo '<em>Emise par ';
-                        echo $ins["pays"];
+                        echo htmlspecialchars($ins["pays"]);
                         echo "</em>";
                     } ?>
                     <?php if($ins["type"] === "etf") {
                         echo '<em>(Emis par <a href="/portfolio/';
                         echo $portfolio_id. "/entreprise/".$ins["id_entreprise"];
                         echo '">';
-                        echo $ins["nom_entreprise"];
+                        echo htmlspecialchars($ins["nom_entreprise"]);
                         echo "</a>)</em>";
                     } ?>
                     <?php if($ins["type"] === "devise") {
