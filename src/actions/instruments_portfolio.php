@@ -233,7 +233,7 @@ class AffichageInstruments extends AffichageTable {
     protected function form(array $data) {
         $this->print_input("isin", "ISIN", $data, false);
 
-        $this->print_input("symbole", "Symbole", $data);
+        $this->print_input("symbole", "Symbole boursier", $data);
 
         $this->print_input("nom", "Nom", $data);
 
