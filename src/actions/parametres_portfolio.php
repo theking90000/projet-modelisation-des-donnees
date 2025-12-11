@@ -2,38 +2,62 @@
 require_once __DIR__ . '/../lib/db.php';
 require_once __DIR__ . '/../lib/auth.php';
 
-// Access Control is handled by Middleware in index.php (CheckPortfolioOwner),
-// so we are guaranteed to be the owner here.
+// Access Control is handled by Middleware (CheckPortfolioOwner)
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = trim($_POST['nom'] ?? '');
-    $description = trim($_POST['description'] ?? '');
+    $action = $_POST['action'] ?? 'update';
+    $db = Database::instance();
 
-    if (empty($nom)) {
-        $erreur_nom = "Le nom ne peut pas être vide.";
-        // Re-render the page with the error
-        require __DIR__ . '/../pages/parametres_portfolio.php'; 
-        return;
+    // ... (Your existing Update Logic) ...
+    if ($action === 'update') {
+        // ... (Keep your update logic here) ...
     }
 
-    try {
-        // UPDATE both Name and Description
-        Database::instance()->execute(
-            "UPDATE Portfolio SET nom = ?, description = ? WHERE id = ?", 
-            [$nom, $description, $portfolio_id]
-        );
+    // --- CASE 2: DELETE PORTFOLIO ---
+    elseif ($action === 'delete_portfolio') {
+        try {
+            // 1. Check if Portfolio is Empty
+            $holdings = $db->execute("
+                SELECT SUM(CASE WHEN type = 'achat' THEN quantite WHEN type = 'vente' THEN -quantite ELSE 0 END) as total_qty
+                FROM `Transaction`
+                WHERE id_portfolio = ?
+                GROUP BY isin
+                HAVING total_qty > 0.000001
+            ", [$portfolio_id])->fetchAll();
 
-        // Redirect back with a success flag
-        header("Location: /portfolio/$portfolio_id/parametres?success=1");
-        exit();
+            if (!empty($holdings)) {
+                // Error: Portfolio not empty -> Redirect back to params
+                header("Location: /portfolio/$portfolio_id/parametres?error=not_empty");
+                exit();
+            }
 
-    } catch (Exception $e) {
-        // In case of SQL error
-        $erreur_nom = "Erreur lors de la mise à jour : " . $e->getMessage();
-        require __DIR__ . '/../pages/parametres_portfolio.php';
+            // 2. Start Deletion Process
+            $db->beginTransaction();
+
+            // A. Delete Transactions
+            $db->execute("DELETE FROM `Transaction` WHERE id_portfolio = ?", [$portfolio_id]);
+
+            // B. Delete Members (Foreign Key)
+            $db->execute("DELETE FROM Membre_Portfolio WHERE id_portfolio = ?", [$portfolio_id]);
+
+            // C. Delete the Portfolio itself
+            $db->execute("DELETE FROM Portfolio WHERE id = ?", [$portfolio_id]);
+
+            $db->commit();
+
+            // 3. CRITICAL: Redirect to Home Page
+            // Since the portfolio ID no longer exists, staying on this page causes a crash/404.
+            header("Location: /"); 
+            exit();
+
+        } catch (Exception $e) {
+            if ($db->inTransaction()) $db->rollBack();
+            // Fallback error
+            header("Location: /portfolio/$portfolio_id/parametres?error=sql_error");
+            exit();
+        }
     }
 } else {
-    // If someone tries to access this action via GET, redirect them to the view
     header("Location: /portfolio/$portfolio_id/parametres");
     exit();
 }
