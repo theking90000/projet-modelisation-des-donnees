@@ -74,7 +74,7 @@ CREATE TABLE Cours
     valeur_maximale DECIMAL(18, 9),
     valeur_minimale DECIMAL(18, 9),
     volume INT,
-    PRIMARY KEY(isin, `date`, heure)
+    PRIMARY KEY(isin, `date`)
 );
 
 CREATE TABLE Portfolio
