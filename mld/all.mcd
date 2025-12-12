@@ -3,7 +3,7 @@
 :
 Bourse: Identifiant Bourse, Nom, Ville, Fuseau Horaire, Heure Ouveture, Heure Fermeture, #Code ISO3166-1 > Pays > Code ISO3166-1
 :
-Cours: Date, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume, #ISIN > Instrument Financier > ISIN
+Cours: Date, _#ISIN > Instrument Financier > ISIN, Valeur Ouverture, Valeur Fermeture, Valeur Maximale, Valeur Minimale, Volume
 :
 :
 :
@@ -21,7 +21,7 @@ Utilisateur: Adresse Mail, Nom, Mot De Passe, Date De Création Utilisateur
 :
 
 :
-Entreprise: Numero entreprise, Nom, Secteur d'activité, #Code ISO3166-1 > Pays > Code ISO3166-1
+Entreprise: Numero entreprise, _#Code ISO3166-1 > Pays > Code ISO3166-1, Nom, Secteur d'activité
 :
 Devise: Code ISO4217, Nom, Symbole
 :
